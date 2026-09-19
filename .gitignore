@@ -2,5 +2,8 @@
 .env
 .env.*
 node_modules
+package.json
+package-lock.json
+*.heic
 Thumbs.db
 .DS_Store

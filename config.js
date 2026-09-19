@@ -10,6 +10,14 @@ window.STUDIO = {
   whatsapp: "5519992908985",
   instagram: "https://www.instagram.com/espaco_miseixas",
   endereco: "Rua Rio Grande do Sul 196, Vargem Grande do Sul - SP",
+  logoClaro: "imagem/logo-branco.png",
+  logoEscuro: "imagem/logo-preto.png",
+  fotosEstudio: [
+    { src: "imagem/aula1.jpg", alt: "Alunas no reformer" },
+    { src: "imagem/aula2.jpg", alt: "Aula de Pilates no Cadillac" },
+    { src: "imagem/aula3.jpg", alt: "Exercício com bola no estúdio" },
+    { src: "imagem/aula4.jpg", alt: "Alongamento no reformer" }
+  ],
   videoHero: "https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FPippit_Wellness_Studio_Golden_Hour.mp4?alt=media&token=ee0c22a1-d895-4b6b-ae5a-c8013d134cdb",
   videoSobre: "https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FSaveClip.App_AQNCi4WYU6iKuaSpvJTXvpy1trRKlnLDZoeNfzMcojNJl0NqY8xXoru6c9_5T-Xg-nSTkYevxdoXsOBARM2lLSTIJwDJL8EzW7p-W_k.mp4?alt=media&token=530a902f-880c-46f4-a70a-cd5a4d956a2a",
   instrutoras: [
@@ -51,6 +59,36 @@ window.STUDIO = {
   fotoDe: function (nome) {
     const p = this.instrutoras.find(function (i) { return i.nome === nome; });
     return p ? p.foto : "";
+  },
+  normalizeDia: function (valor) {
+    const raw = String(valor || "").trim();
+    const key = raw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const map = {
+      domingo: "Domingo",
+      segunda: "Segunda",
+      "segunda-feira": "Segunda",
+      terca: "Terça",
+      "terca-feira": "Terça",
+      quarta: "Quarta",
+      "quarta-feira": "Quarta",
+      quinta: "Quinta",
+      "quinta-feira": "Quinta",
+      sexta: "Sexta",
+      "sexta-feira": "Sexta",
+      sabado: "Sábado"
+    };
+    if (map[key]) return map[key];
+    if (this.diasOrdem.indexOf(raw) !== -1) return raw;
+    return "";
+  },
+  gradeVisivel: function (lista) {
+    const self = this;
+    const mapped = (lista || []).map(function (t, i) {
+      const dia = self.normalizeDia(t.dia || t.diaSemana || t.day || t.weekday);
+      return Object.assign({}, t, { id: t.id || ("t-" + i), dia: dia });
+    }).filter(function (t) { return self.diasOrdem.indexOf(t.dia) !== -1; });
+    if (mapped.length) return mapped;
+    return this.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); });
   },
   proximaData: function (diaNome) {
     const idx = this.diaIndex[diaNome];

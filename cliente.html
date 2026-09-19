@@ -60,6 +60,7 @@
 <body>
   <div id="login-wrap">
     <div class="login-card">
+      <img src="imagem/logo-preto.png" alt="Michele Seixas" style="height:92px;width:auto;margin:0 auto 8px;border-radius:50%;object-fit:contain;">
       <h1>Michele Seixas</h1>
       <p class="sub">Minha área</p>
       <div class="campo"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com"></div>
@@ -172,10 +173,9 @@
     async function loadTurmas() {
       try {
         const snap = await getDocs(collection(db, "turmas"));
-        state.turmas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      } catch { state.turmas = []; }
-      if (!state.turmas.length) {
-        state.turmas = ST.turmasPadrao.map((t, i) => ({ id: "padrao-" + i, ...t }));
+        state.turmas = ST.gradeVisivel(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch {
+        state.turmas = ST.gradeVisivel([]);
       }
     }
 

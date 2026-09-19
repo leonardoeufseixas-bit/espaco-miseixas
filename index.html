@@ -8,16 +8,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="icon" href="imagem/logo-branco.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="nav-bar">
     <div class="container">
-      <a href="#home" class="nav-logo">Michele <span>Seixas</span><small>Estúdio de Pilates</small></a>
+      <a href="#home" class="nav-logo">
+        <img src="imagem/logo-branco.png" alt="Michele Seixas Studio de Pilates" class="brand-logo">
+      </a>
       <ul class="nav-links" id="navLinks">
         <li><a href="#home" class="active">Início</a></li>
         <li><a href="#turmas">Turmas</a></li>
+        <li><a href="#estudio">O espaço</a></li>
         <li><a href="#instrutoras">Instrutoras</a></li>
         <li><a href="#experimental">Aula experimental</a></li>
         <li><a href="#sobre">Sobre</a></li>
@@ -41,8 +45,8 @@
     <div class="container">
       <div class="hero-inner">
         <div>
-          <div class="eyebrow"><i class="fas fa-spa"></i> Pilates em Vargem Grande do Sul</div>
-          <h1>Um estúdio de Pilates<br><em>feito para o seu corpo</em></h1>
+          <div class="eyebrow"><i class="fas fa-spa"></i> Estúdio de Pilates · Vargem Grande do Sul</div>
+          <h1>Cuidado, postura e força<br><em>em um espaço feito para você</em></h1>
           <p class="lead">Turmas com fisioterapeutas, horários claros e aula experimental para você conhecer o espaço sem compromisso.</p>
           <div class="hero-actions">
             <a href="#experimental" class="btn-primary"><i class="fas fa-calendar-check"></i> Agendar aula experimental</a>
@@ -73,7 +77,18 @@
     </div>
   </section>
 
-  <section id="instrutoras" class="section">
+  <section id="estudio" class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="tag">O espaço</span>
+        <h2>Aulas de verdade, no estúdio</h2>
+        <p>Reformer, Cadillac e bola — o dia a dia das turmas com a Michele, a Lilian e a Maria.</p>
+      </div>
+      <div class="studio-gallery" id="studioGallery"></div>
+    </div>
+  </section>
+
+  <section id="instrutoras" class="section section-alt">
     <div class="container">
       <div class="section-head">
         <span class="tag">Quem conduz as aulas</span>
@@ -167,7 +182,7 @@
     <div class="container">
       <div class="footer-grid">
         <div>
-          <div class="footer-logo">Michele <span>Seixas</span></div>
+          <img src="imagem/logo-preto.png" alt="Michele Seixas" class="footer-brand-logo">
           <p class="footer-desc">Estúdio de Pilates em Vargem Grande do Sul.</p>
         </div>
         <div class="footer-col">
@@ -209,6 +224,10 @@
       if (el) el.href = wa;
     });
 
+    document.getElementById("studioGallery").innerHTML = S.fotosEstudio.map(function (f) {
+      return '<figure class="studio-shot"><img src="' + f.src + '" alt="' + f.alt + '" loading="lazy"></figure>';
+    }).join("");
+
     document.getElementById("teamGrid").innerHTML = S.instrutoras.map(function (p) {
       return '<article class="team-card"><img class="team-photo" src="' + p.foto + '" alt="' + p.nome + '"><div class="team-body"><h3>' + p.nome + '</h3><div class="team-role">' + p.cargo + '</div><p>' + p.bio + '</p></div></article>';
     }).join("");
@@ -243,16 +262,16 @@
 
       const grade = document.getElementById("gradeTurmas");
       grade.innerHTML = S.diasOrdem.map(function (dia) {
-        const doDia = turmas.filter(function (t) { return t.dia === dia; });
+        const doDia = turmas.filter(function (t) { return S.normalizeDia(t.dia) === dia; });
         const rows = doDia.length ? doDia.map(function (t) {
           const L = S.lotacao(t);
           const cls = L.cheia ? "cheia" : (L.livres <= 1 ? "quase" : "");
           const foto = S.fotoDe(t.instrutor);
-          const avatar = foto ? '<img src="' + foto + '" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:top;">' : "";
+          const avatar = foto ? '<img class="turma-av" src="' + foto + '" alt="">' : "";
           return '<div class="turma-row">' +
             '<div class="turma-hora">' + t.horario + '</div>' +
-            '<div class="turma-meta"><strong>' + (t.nome || "Pilates") + '</strong><span>' + avatar + ' ' + (t.instrutor || "Instrutora") + '</span></div>' +
-            '<span class="turma-vagas ' + cls + '">' + L.livres + '/' + L.vagas + '</span>' +
+            '<div class="turma-meta"><strong>' + (t.nome || "Pilates") + '</strong><span class="turma-prof">' + avatar + ' ' + (t.instrutor || "Instrutora") + '</span></div>' +
+            '<span class="turma-vagas ' + cls + '">' + L.livres + ' vagas</span>' +
             '<button class="btn-exp" ' + (L.cheia ? "disabled" : "") + ' data-id="' + t.id + '">Experimentar</button>' +
             '</div>';
         }).join("") : '<p style="color:var(--n-400);font-size:.9rem;">Sem turma neste dia.</p>';
@@ -282,11 +301,12 @@
       }).join("") || '<div class="hp-item"><span class="txt">Confira a grade abaixo</span></div>';
     }
 
+    renderTurmas(S.gradeVisivel([]));
     db.collection("turmas").get().then(function (snap) {
       const lista = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
-      renderTurmas(lista.length ? lista : S.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); }));
+      renderTurmas(S.gradeVisivel(lista));
     }).catch(function () {
-      renderTurmas(S.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); }));
+      renderTurmas(S.gradeVisivel([]));
     });
 
     document.getElementById("formExperimental").addEventListener("submit", async function (e) {
