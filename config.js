@@ -19,8 +19,9 @@ window.STUDIO = {
   whatsapp: "5519992908985",
   instagram: "https://www.instagram.com/espaco_miseixas",
   endereco: "Rua Rio Grande do Sul 196, Vargem Grande do Sul - SP",
-  logoClaro: "imagem/logo-branco.png",
-  logoEscuro: "imagem/logo-preto.png",
+  logoClaro: "imagem/logo-transparente.png",
+  logoEscuro: "imagem/logo-transparente.png",
+  logoTransparente: "imagem/logo-transparente.png",
   fotosEstudio: [
     { src: "imagem/aula1.jpg", alt: "Alunas no reformer" },
     { src: "imagem/aula2.jpg", alt: "Aula de Pilates no Cadillac" },

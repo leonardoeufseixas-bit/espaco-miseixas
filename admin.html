@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#1A3D2B">
   <title>Michele Seixas · Painel do Estúdio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -36,8 +36,9 @@
       gap: 12px;
     }
     .sb-brand .icon { font-size: 28px; background: rgba(201,168,76,0.15); border-radius: 14px; padding: 8px; border: 1px solid rgba(201,168,76,0.2); }
-    .sb-brand h2 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: #fff; }
-    .sb-brand p { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; }
+    .sb-brand h2 { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: #fff; letter-spacing: 0.14em; text-transform: uppercase; }
+    .sb-brand p { font-size: 9px; color: rgba(255,255,255,0.45); letter-spacing: 0.16em; text-transform: uppercase; }
+    .sb-logo { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: #0a0a0a; border: 1px solid rgba(201,168,76,.4); }
     .sb-nav { flex: 1; overflow-y: auto; padding: 12px 10px; }
     .sb-sec { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.2); padding: 16px 12px 4px; }
     .sb-btn {
@@ -242,7 +243,11 @@
   <!-- ===== LOGIN ===== -->
   <div id="login-wrap">
     <div class="login-card">
-      <div class="login-logo"><span class="icon">🌿</span><h1>Michele Seixas</h1><p>Painel do Estúdio de Pilates</p></div>
+      <div class="login-logo">
+        <img src="imagem/logo-transparente.png" alt="Michele Seixas">
+        <h1>Michele Seixas</h1>
+        <p>Painel do Estúdio de Pilates</p>
+      </div>
       <div class="campo"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com"></div>
       <div class="campo"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••••"></div>
       <div class="login-err" id="l-err"></div>
@@ -260,7 +265,13 @@
 
     <!-- SIDEBAR -->
     <nav class="sidebar" id="sidebar">
-      <div class="sb-brand"><span class="icon">🌿</span><div><h2>Michele Seixas</h2><p>Estúdio de Pilates</p></div></div>
+      <div class="sb-brand">
+        <img src="imagem/logo-transparente.png" alt="" class="sb-logo">
+        <div>
+          <h2>Michele Seixas</h2>
+          <p>Estúdio de Pilates</p>
+        </div>
+      </div>
       <div class="sb-nav" id="nav-admin" style="display:none">
         <div class="sb-sec">Principal</div>
         <button class="sb-btn on" onclick="App.Nav.ir('dashboard',this)"><span class="ico">📊</span><span class="lbl">Dashboard</span></button>

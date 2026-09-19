@@ -108,12 +108,27 @@ h1, h2, h3, h4, .logo, .nav-logo, .hero h1, .section-title {
   gap: 12px;
 }
 .nav-logo {
-  font-size: 1.4rem;
   color: var(--g-800);
-  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  text-decoration: none;
+}
+.brand-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0a0a0a;
+  flex-shrink: 0;
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .brand-logo {
   height: 56px;
@@ -121,14 +136,31 @@ h1, h2, h3, h4, .logo, .nav-logo, .hero h1, .section-title {
   max-width: 160px;
   object-fit: contain;
 }
-.nav-logo span { color: var(--gold); }
-.nav-logo small {
-  font-size: 0.6rem;
-  font-weight: 400;
-  color: var(--n-400);
-  letter-spacing: 0.5px;
-  font-family: 'Inter', sans-serif;
+.brand-word {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  min-width: 0;
 }
+.brand-word strong {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g-800);
+}
+.brand-word small {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-top: 3px;
+}
+.brand-word-light strong { color: #fff; }
+.brand-word-light small { color: var(--gold); }
 .nav-links {
   display: flex;
   gap: 24px;
@@ -213,6 +245,9 @@ h1, h2, h3, h4, .logo, .nav-logo, .hero h1, .section-title {
   .nav-contato .btn-whatsapp-header { display: none; }
   .nav-bar .container { gap: 8px; }
   .brand-logo { height: 48px; }
+  .brand-mark { width: 44px; height: 44px; }
+  .brand-word strong { font-size: 0.72rem; letter-spacing: 0.12em; }
+  .brand-word small { font-size: 0.42rem; letter-spacing: 0.16em; }
 }
 
 /* ===== BOTÕES GENÉRICOS ===== */
@@ -882,13 +917,19 @@ footer {
   margin-bottom: 8px;
 }
 .footer-logo span { color: var(--gold); }
-.footer-brand-logo {
-  height: 88px;
-  width: auto;
-  max-width: 180px;
-  object-fit: contain;
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 10px;
+}
+.footer-brand-logo {
+  height: 64px;
+  width: 64px;
+  object-fit: cover;
   border-radius: 50%;
+  background: #0a0a0a;
+  border: 1px solid rgba(201, 168, 76, 0.35);
 }
 .footer-desc { font-size: 0.9rem; max-width: 280px; }
 .footer-social {
@@ -977,10 +1018,23 @@ footer {
   box-shadow: 0 24px 60px rgba(0,0,0,.35);
 }
 .login-logo { text-align: center; margin-bottom: 20px; }
+.login-logo img {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #0a0a0a;
+  border: 1px solid rgba(201,168,76,.45);
+  margin: 0 auto 12px;
+  display: block;
+}
 .login-logo h1 {
-  font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  font-family: 'Cinzel', 'Playfair Display', serif;
   color: #fff;
-  font-size: 28px;
+  font-size: 18px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 .login-logo p { color: #E8D5A0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; margin-top: 6px; }
 .login-card .campo label { color: #E8D5A0; }
