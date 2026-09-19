@@ -1,12 +1,21 @@
 window.STUDIO = {
   firebaseConfig: {
-    apiKey: "AIzaSyBPQDEK3Lv6gvl7vI8MWUvvcw4bx9YbdvI",
-    authDomain: "projetoest-cf077.firebaseapp.com",
-    projectId: "projetoest-cf077",
-    storageBucket: "projetoest-cf077.firebasestorage.app",
-    messagingSenderId: "745686276129",
-    appId: "1:745686276129:web:c31cf643cedf83299beb60"
+    apiKey: "AIzaSyBXZiqV9zJvUqUO0kYVAR4I7rw2NLQ6jwE",
+    authDomain: "studio-9d8b4.firebaseapp.com",
+    projectId: "studio-9d8b4",
+    storageBucket: "studio-9d8b4.firebasestorage.app",
+    messagingSenderId: "557543089301",
+    appId: "1:557543089301:web:83571319ef1a8a140f279c",
+    measurementId: "G-TC9781LSGW"
   },
+  /* Firestore (mesmo projeto do app Android com.micheleseixas.app)
+     turmas:        { nome, dia, horario, vagas, instrutor, alunos[], ativo }
+     agendamentos:  { nome, telefone, turmaId, data, horario, instrutor, tipo, status, origem }
+     funcionarios:  { nome, cargo, foto, comissao, ativo }
+     clientes:      { nome, email, telefone, ativo }
+     users:         { nome, email, role }  role: cliente | admin | funcionario
+     sys_config/horarios: { abre, fecha }
+  */
   whatsapp: "5519992908985",
   instagram: "https://www.instagram.com/espaco_miseixas",
   endereco: "Rua Rio Grande do Sul 196, Vargem Grande do Sul - SP",
@@ -56,6 +65,19 @@ window.STUDIO = {
     { nome: "Pilates manhã", dia: "Sexta", horario: "07:00", vagas: 8, instrutor: "Lilian", alunos: [] },
     { nome: "Pilates sábado", dia: "Sábado", horario: "09:00", vagas: 8, instrutor: "Michele", alunos: [] }
   ],
+  normalizeTurma: function (t, i) {
+    const alunos = t.alunos || t.alunas || [];
+    return Object.assign({}, t, {
+      id: t.id || ("t-" + i),
+      nome: t.nome || t.turma || "Pilates",
+      dia: this.normalizeDia(t.dia || t.diaSemana || t.day || t.weekday),
+      horario: t.horario || t.hora || t.horarioInicio || "",
+      instrutor: t.instrutor || t.profissional || t.instrutora || "",
+      vagas: Number(t.vagas || t.capacidade || 8),
+      alunos: Array.isArray(alunos) ? alunos : [],
+      ativo: t.ativo !== false
+    });
+  },
   fotoDe: function (nome) {
     const p = this.instrutoras.find(function (i) { return i.nome === nome; });
     return p ? p.foto : "";
@@ -84,9 +106,10 @@ window.STUDIO = {
   gradeVisivel: function (lista) {
     const self = this;
     const mapped = (lista || []).map(function (t, i) {
-      const dia = self.normalizeDia(t.dia || t.diaSemana || t.day || t.weekday);
-      return Object.assign({}, t, { id: t.id || ("t-" + i), dia: dia });
-    }).filter(function (t) { return self.diasOrdem.indexOf(t.dia) !== -1; });
+      return self.normalizeTurma(t, i);
+    }).filter(function (t) {
+      return t.ativo && self.diasOrdem.indexOf(t.dia) !== -1;
+    });
     if (mapped.length) return mapped;
     return this.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); });
   },

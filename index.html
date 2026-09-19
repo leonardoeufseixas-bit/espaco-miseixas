@@ -330,13 +330,18 @@
       btn.disabled = true;
       btn.textContent = "Enviando...";
       const payload = {
+        nome: nome,
         clienteNome: nome,
+        telefone: tel,
         tel: tel,
         servico: "Aula experimental",
         tipo: "experimental",
+        origem: "site",
         data: data,
         hora: turma.horario,
+        horario: turma.horario,
         profissional: turma.instrutor || "",
+        instrutor: turma.instrutor || "",
         turmaId: turma.id,
         turmaNome: turma.nome || "Pilates",
         status: "pendente",

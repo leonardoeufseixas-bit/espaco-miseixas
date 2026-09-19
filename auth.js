@@ -7,12 +7,12 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = window.STUDIO ? window.STUDIO.firebaseConfig : {
-  apiKey: "AIzaSyBPQDEK3Lv6gvl7vI8MWUvvcw4bx9YbdvI",
-  authDomain: "projetoest-cf077.firebaseapp.com",
-  projectId: "projetoest-cf077",
-  storageBucket: "projetoest-cf077.firebasestorage.app",
-  messagingSenderId: "745686276129",
-  appId: "1:745686276129:web:c31cf643cedf83299beb60"
+  apiKey: "AIzaSyBXZiqV9zJvUqUO0kYVAR4I7rw2NLQ6jwE",
+  authDomain: "studio-9d8b4.firebaseapp.com",
+  projectId: "studio-9d8b4",
+  storageBucket: "studio-9d8b4.firebasestorage.app",
+  messagingSenderId: "557543089301",
+  appId: "1:557543089301:web:83571319ef1a8a140f279c"
 };
 
 const app = initializeApp(firebaseConfig);

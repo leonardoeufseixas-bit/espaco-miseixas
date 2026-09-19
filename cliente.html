@@ -212,13 +212,17 @@
       if (!state.sel) return;
       const data = ST.proximaData(state.sel.dia);
       await addDoc(collection(db, "agendamentos"), {
+        nome: state.nome,
         clienteNome: state.nome,
         clienteId: state.clienteId || "",
+        telefone: state.tel || "",
         tel: state.tel || "",
         servico: "Aula experimental",
         tipo: "experimental",
-        data, hora: state.sel.horario,
+        origem: "area-cliente",
+        data, hora: state.sel.horario, horario: state.sel.horario,
         profissional: state.sel.instrutor || "",
+        instrutor: state.sel.instrutor || "",
         turmaId: state.sel.id,
         turmaNome: state.sel.nome || "Pilates",
         status: "pendente",

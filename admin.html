@@ -681,7 +681,7 @@
     }
     async function cacheTurmas() {
       const snap = await getDocs(collection(db,'turmas'));
-      S.turmas = snap.docs.map(d=>({id:d.id,...d.data()}));
+      S.turmas = snap.docs.map(d => window.STUDIO.normalizeTurma({ id: d.id, ...d.data() }));
     }
 
     // ============================================================
@@ -696,6 +696,7 @@
             comissao: p.comissao,
             foto: p.foto,
             cargo: p.cargo,
+            ativo: true,
             criadoEm: serverTimestamp()
           });
         }
@@ -711,8 +712,13 @@
       if (tSnap.empty) {
         for (const t of window.STUDIO.turmasPadrao) {
           await addDoc(collection(db,'turmas'), {
-            ...t,
+            nome: t.nome,
+            dia: t.dia,
+            horario: t.horario,
+            vagas: t.vagas,
+            instrutor: t.instrutor,
             alunos: [],
+            ativo: true,
             criadoEm: serverTimestamp()
           });
         }
@@ -1206,6 +1212,7 @@
         try {
           await addDoc(collection(db,'turmas'), {
             nome, dia, horario, vagas, instrutor, alunos: [],
+            ativo: true,
             criadoEm: serverTimestamp()
           });
           U.toast('Turma criada!');
