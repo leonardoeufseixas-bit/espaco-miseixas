@@ -8,22 +8,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:opsz,wght@9..40,400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    html,body { height:100%; font-family:'DM Sans',sans-serif; background:#f5f2ed; color:#1a1a1a; }
+    html,body { min-height:100%; font-family:'DM Sans',sans-serif; background:#0D2118; color:#1a1a1a; }
     :root { --g-800:#1A3D2B; --g-600:#2D6A4F; --gold:#C9A84C; --gold-dark:#8C6A1A; --n-400:#9E9C97; --radius:16px; }
-    #video-bg { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2; filter:brightness(.4); }
-    .overlay { position:fixed; inset:0; background:linear-gradient(145deg,rgba(13,33,24,.7),rgba(26,61,43,.5)); z-index:-1; }
-    #login-wrap { position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; padding:20px; }
-    .login-card { background:rgba(255,255,255,.08); backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,.15); border-radius:24px; width:100%; max-width:420px; padding:32px 28px; }
+    #login-wrap {
+      position:fixed; inset:0; z-index:20;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:24px 16px;
+      background:linear-gradient(160deg,#0D2118 0%,#1A3D2B 55%,#235239 100%);
+    }
+    .login-card {
+      background:#143326;
+      border:1px solid rgba(201,168,76,.4);
+      border-radius:24px;
+      width:100%; max-width:420px;
+      padding:32px 28px 24px;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
     .login-card h1 { font-family:'Cormorant Garamond',serif; color:#fff; text-align:center; font-size:28px; }
-    .login-card p { text-align:center; color:rgba(255,255,255,.5); font-size:12px; letter-spacing:.16em; text-transform:uppercase; margin:6px 0 22px; }
+    .login-card p.sub { text-align:center; color:#E8D5A0; font-size:12px; letter-spacing:.16em; text-transform:uppercase; margin:6px 0 22px; }
     .campo { margin-bottom:14px; }
-    .campo label { display:block; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.5); margin-bottom:5px; }
-    .campo input,.campo select { width:100%; padding:12px 14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:12px; color:#fff; }
+    .campo label { display:block; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#E8D5A0; margin-bottom:5px; }
+    .campo input,.campo select { width:100%; padding:12px 14px; background:#fff; border:1.5px solid #d8d4cc; border-radius:12px; color:#1a1a1a; }
+    .login-credit { margin-top:18px; text-align:center; font-size:12px; color:rgba(255,255,255,.55); }
     .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:12px 24px; border-radius:12px; font-weight:600; border:none; cursor:pointer; }
     .btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#fff; width:100%; }
     .btn-danger { background:#FEF2F2; color:#b91c1c; padding:6px 10px; font-size:11px; }
     .login-err { color:#fca5a5; font-size:12px; min-height:18px; margin:4px 0 10px; }
-    #app { display:none; height:100vh; flex-direction:column; }
+    #app { display:none; height:100vh; flex-direction:column; position:relative; z-index:5; background:#f5f2ed; }
     #app.on { display:flex; }
     .topbar { padding:14px 20px; background:rgba(255,255,255,.7); backdrop-filter:blur(16px); display:flex; justify-content:space-between; align-items:center; }
     .topbar h2 { font-family:'Cormorant Garamond',serif; color:var(--g-800); font-size:18px; }
@@ -47,22 +58,18 @@
   </style>
 </head>
 <body>
-  <video id="video-bg" autoplay muted loop playsinline>
-    <source src="https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FPippit_Wellness_Studio_Golden_Hour.mp4?alt=media&token=ee0c22a1-d895-4b6b-ae5a-c8013d134cdb" type="video/mp4">
-  </video>
-  <div class="overlay"></div>
-
   <div id="login-wrap">
     <div class="login-card">
       <h1>Michele Seixas</h1>
-      <p>Minha área</p>
-      <div class="campo"><label>E-mail</label><input type="email" id="l-email"></div>
-      <div class="campo"><label>Senha</label><input type="password" id="l-senha"></div>
+      <p class="sub">Minha área</p>
+      <div class="campo"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com"></div>
+      <div class="campo"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••••"></div>
       <div class="login-err" id="l-err"></div>
       <button class="btn btn-gold" id="l-btn">Entrar</button>
-      <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.45);margin-top:16px">
+      <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.7);margin-top:16px">
         Sem conta? <a href="index.html#experimental">Agende a aula experimental no site</a>
       </div>
+      <p class="login-credit">Desenvolvido por Leonardo Seixas</p>
     </div>
   </div>
 
