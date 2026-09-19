@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Michele Seixas · Estúdio de Pilates</title>
+  <meta name="description" content="Estúdio de Pilates em Vargem Grande do Sul. Turmas, horários, instrutoras e aula experimental.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="nav-bar">
+    <div class="container">
+      <a href="#home" class="nav-logo">Michele <span>Seixas</span><small>Estúdio de Pilates</small></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="active">Início</a></li>
+        <li><a href="#turmas">Turmas</a></li>
+        <li><a href="#instrutoras">Instrutoras</a></li>
+        <li><a href="#experimental">Aula experimental</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#faq">Dúvidas</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+      <div class="nav-contato">
+        <a href="https://www.instagram.com/espaco_miseixas" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="cliente.html" class="btn-outline" id="btnAreaCliente"><i class="fas fa-user"></i> Minha área</a>
+        <a href="#" id="btnWhatsHeader" class="btn-whatsapp-header" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <section id="home" class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FPippit_Wellness_Studio_Golden_Hour.mp4?alt=media&token=ee0c22a1-d895-4b6b-ae5a-c8013d134cdb" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="container">
+      <div class="hero-inner">
+        <div>
+          <div class="eyebrow"><i class="fas fa-spa"></i> Pilates em Vargem Grande do Sul</div>
+          <h1>Um estúdio de Pilates<br><em>feito para o seu corpo</em></h1>
+          <p class="lead">Turmas com fisioterapeutas, horários claros e aula experimental para você conhecer o espaço sem compromisso.</p>
+          <div class="hero-actions">
+            <a href="#experimental" class="btn-primary"><i class="fas fa-calendar-check"></i> Agendar aula experimental</a>
+            <a href="#turmas" class="btn-ghost">Ver turmas e horários</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat"><div class="num">3</div><div class="lbl">Instrutoras</div></div>
+            <div class="hero-stat"><div class="num">2</div><div class="lbl">Estúdios</div></div>
+            <div class="hero-stat"><div class="num">13+</div><div class="lbl">Anos de experiência</div></div>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="hp-row"><span class="hp-label">Próximas turmas</span><span class="hp-badge"><i class="fas fa-circle"></i> Ao vivo</span></div>
+          <div class="hp-list" id="heroTurmas"><div class="hp-item"><span class="txt">Carregando horários...</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="turmas" class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="tag">Grade semanal</span>
+        <h2>Turmas, horários e vagas</h2>
+        <p>Escolha o dia e a instrutora. Se a turma tiver vaga, você agenda a aula experimental pelo site ou WhatsApp.</p>
+      </div>
+      <div class="grade-dias" id="gradeTurmas"></div>
+    </div>
+  </section>
+
+  <section id="instrutoras" class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="tag">Quem conduz as aulas</span>
+        <h2>Nossas instrutoras</h2>
+        <p>Três fisioterapeutas para acompanhar você com atenção e qualidade.</p>
+      </div>
+      <div class="team-grid" id="teamGrid"></div>
+    </div>
+  </section>
+
+  <section id="experimental" class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="tag">Primeiro passo</span>
+        <h2>Aula experimental</h2>
+        <p>Conheça o estúdio, a turma e a instrutora. Preencha os dados e confirmamos pelo WhatsApp.</p>
+      </div>
+      <form class="glass" id="formExperimental" style="max-width:640px;margin:0 auto;">
+        <div class="campo" style="margin-bottom:14px;">
+          <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--n-400);margin-bottom:6px;">Seu nome</label>
+          <input id="exNome" required placeholder="Nome completo" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;">
+        </div>
+        <div class="campo" style="margin-bottom:14px;">
+          <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--n-400);margin-bottom:6px;">WhatsApp</label>
+          <input id="exTel" required placeholder="(19) 99999-9999" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;">
+        </div>
+        <div class="campo" style="margin-bottom:14px;">
+          <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--n-400);margin-bottom:6px;">Turma preferida</label>
+          <select id="exTurma" required style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;background:#fff;"></select>
+        </div>
+        <p id="exErro" class="error-msg" style="color:#dc2626;text-align:center;min-height:20px;"></p>
+        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;" id="exBtn">
+          <i class="fas fa-paper-plane"></i> Solicitar aula experimental
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <section id="sobre" class="section">
+    <div class="container">
+      <div class="quem-somos-grid">
+        <div class="quem-somos-text">
+          <h2>Vem fazer Pilates com a gente</h2>
+          <p>O Espaço Michele Seixas é um estúdio de Pilates em Vargem Grande do Sul, pensado para o seu bem-estar em cada detalhe.</p>
+          <p>Ambiente amplo, dois estúdios, iluminação natural e climatização — com o acompanhamento de três fisioterapeutas.</p>
+          <p><span class="highlight">Aqui, seu cuidado é prioridade.</span></p>
+        </div>
+        <div class="video-wrapper">
+          <video autoplay muted loop playsinline>
+            <source src="https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FSaveClip.App_AQNCi4WYU6iKuaSpvJTXvpy1trRKlnLDZoeNfzMcojNJl0NqY8xXoru6c9_5T-Xg-nSTkYevxdoXsOBARM2lLSTIJwDJL8EzW7p-W_k.mp4?alt=media&token=530a902f-880c-46f4-a70a-cd5a4d956a2a" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="tag">Dúvidas</span>
+        <h2>Perguntas frequentes</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item"><button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')">Como funciona a aula experimental?<i class="fas fa-chevron-down"></i></button><div class="faq-answer">Você escolhe uma turma com vaga, envia nome e WhatsApp e confirmamos o horário. É o jeito mais simples de conhecer o estúdio e a instrutora.</div></div>
+        <div class="faq-item"><button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')">Preciso de indicação médica?<i class="fas fa-chevron-down"></i></button><div class="faq-answer">Não é obrigatório. Se você tiver alguma condição de saúde, conte para a instrutora na primeira aula para adaptarmos os exercícios.</div></div>
+        <div class="faq-item"><button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')">Quais formas de pagamento?<i class="fas fa-chevron-down"></i></button><div class="faq-answer">Pix, cartão e dinheiro. Combinamos o plano depois da aula experimental, conforme sua rotina.</div></div>
+        <div class="faq-item"><button class="faq-question" type="button" onclick="this.parentElement.classList.toggle('open')">Posso remarcar?<i class="fas fa-chevron-down"></i></button><div class="faq-answer">Sim, com antecedência pelo WhatsApp. Assim liberamos a vaga para outra aluna.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contato" class="section">
+    <div class="container">
+      <div class="contato-simples">
+        <span class="tag">Contato</span>
+        <h2>Fale com o estúdio</h2>
+        <p>Tire dúvidas ou confirme sua aula experimental</p>
+        <div class="contato-buttons">
+          <a href="#" id="btnWaContato" class="btn-wa-large" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://www.instagram.com/espaco_miseixas" target="_blank" class="btn-ig-large"><i class="fab fa-instagram"></i> Instagram</a>
+          <a href="cliente.html" class="btn-cliente-large"><i class="fas fa-user"></i> Minha área</a>
+        </div>
+        <div class="contato-endereco">
+          <p><i class="fas fa-map-pin"></i> Rua Rio Grande do Sul 196, Vargem Grande do Sul - SP</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">Michele <span>Seixas</span></div>
+          <p class="footer-desc">Estúdio de Pilates em Vargem Grande do Sul.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navegação</h4>
+          <a href="#turmas">Turmas</a>
+          <a href="#instrutoras">Instrutoras</a>
+          <a href="#experimental">Aula experimental</a>
+          <a href="admin.html">Painel</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <a href="#" id="btnWaFooter"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://www.instagram.com/espaco_miseixas" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Michele Seixas · Todos os direitos reservados.</p>
+        <p>Desenvolvido por Leonardo Seixas</p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" id="waFloat" class="wa-float" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+  <div class="mobile-cta">
+    <a href="#" id="mWpp" class="m-wpp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    <a href="#experimental" class="m-agenda"><i class="fas fa-calendar-check"></i> Experimental</a>
+  </div>
+  <div class="toasts" id="toasts"></div>
+
+  <script src="config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    const S = window.STUDIO;
+    const wa = S.waInfo();
+    ["btnWhatsHeader", "btnWaContato", "btnWaFooter", "waFloat", "mWpp"].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.href = wa;
+    });
+
+    document.getElementById("teamGrid").innerHTML = S.instrutoras.map(function (p) {
+      return '<article class="team-card"><img class="team-photo" src="' + p.foto + '" alt="' + p.nome + '"><div class="team-body"><h3>' + p.nome + '</h3><div class="team-role">' + p.cargo + '</div><p>' + p.bio + '</p></div></article>';
+    }).join("");
+
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.getElementById("navLinks");
+    hamburger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      navLinks.classList.toggle("open");
+    });
+    navLinks.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () { navLinks.classList.remove("open"); });
+    });
+
+    let turmas = S.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); });
+    let db = null;
+
+    firebase.initializeApp(S.firebaseConfig);
+    db = firebase.firestore();
+    firebase.auth().onAuthStateChanged(function (user) {
+      const btn = document.getElementById("btnAreaCliente");
+      if (user) btn.innerHTML = '<i class="fas fa-user"></i> Minha área';
+    });
+
+    function renderTurmas(lista) {
+      turmas = lista.slice().sort(function (a, b) {
+        const da = S.diasOrdem.indexOf(a.dia);
+        const db_ = S.diasOrdem.indexOf(b.dia);
+        if (da !== db_) return da - db_;
+        return String(a.horario).localeCompare(String(b.horario));
+      });
+
+      const grade = document.getElementById("gradeTurmas");
+      grade.innerHTML = S.diasOrdem.map(function (dia) {
+        const doDia = turmas.filter(function (t) { return t.dia === dia; });
+        const rows = doDia.length ? doDia.map(function (t) {
+          const L = S.lotacao(t);
+          const cls = L.cheia ? "cheia" : (L.livres <= 1 ? "quase" : "");
+          const foto = S.fotoDe(t.instrutor);
+          const avatar = foto ? '<img src="' + foto + '" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:top;">' : "";
+          return '<div class="turma-row">' +
+            '<div class="turma-hora">' + t.horario + '</div>' +
+            '<div class="turma-meta"><strong>' + (t.nome || "Pilates") + '</strong><span>' + avatar + ' ' + (t.instrutor || "Instrutora") + '</span></div>' +
+            '<span class="turma-vagas ' + cls + '">' + L.livres + '/' + L.vagas + '</span>' +
+            '<button class="btn-exp" ' + (L.cheia ? "disabled" : "") + ' data-id="' + t.id + '">Experimentar</button>' +
+            '</div>';
+        }).join("") : '<p style="color:var(--n-400);font-size:.9rem;">Sem turma neste dia.</p>';
+        return '<div class="dia-col"><h3>' + dia + '</h3>' + rows + '</div>';
+      }).join("");
+
+      grade.querySelectorAll(".btn-exp").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.getElementById("exTurma").value = btn.getAttribute("data-id");
+          document.getElementById("experimental").scrollIntoView({ behavior: "smooth" });
+        });
+      });
+
+      const sel = document.getElementById("exTurma");
+      sel.innerHTML = '<option value="">Selecione a turma</option>' + turmas.map(function (t) {
+        const L = S.lotacao(t);
+        return '<option value="' + t.id + '" ' + (L.cheia ? "disabled" : "") + '>' + t.dia + " · " + t.horario + " · " + (t.instrutor || "") + (L.cheia ? " (lotada)" : "") + "</option>";
+      }).join("");
+
+      const hojeIdx = new Date().getDay();
+      const nomes = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+      let proximas = turmas.filter(function (t) { return t.dia === nomes[hojeIdx]; });
+      if (!proximas.length) proximas = turmas.slice(0, 3);
+      document.getElementById("heroTurmas").innerHTML = proximas.slice(0, 3).map(function (t) {
+        const L = S.lotacao(t);
+        return '<div class="hp-item"><div class="hp-item-left"><div class="ic"><i class="fas fa-clock"></i></div><span class="txt">' + t.dia + " · " + t.horario + '</span></div><span class="val">' + (t.instrutor || "") + " · " + L.livres + " vagas</span></div>";
+      }).join("") || '<div class="hp-item"><span class="txt">Confira a grade abaixo</span></div>';
+    }
+
+    db.collection("turmas").get().then(function (snap) {
+      const lista = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      renderTurmas(lista.length ? lista : S.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); }));
+    }).catch(function () {
+      renderTurmas(S.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); }));
+    });
+
+    document.getElementById("formExperimental").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const err = document.getElementById("exErro");
+      const btn = document.getElementById("exBtn");
+      err.textContent = "";
+      const nome = document.getElementById("exNome").value.trim();
+      const tel = document.getElementById("exTel").value.trim();
+      const turmaId = document.getElementById("exTurma").value;
+      const turma = turmas.find(function (t) { return t.id === turmaId; });
+      if (!nome || !tel || !turma) {
+        err.textContent = "Preencha nome, WhatsApp e turma.";
+        return;
+      }
+      if (S.lotacao(turma).cheia) {
+        err.textContent = "Essa turma está lotada. Escolha outro horário.";
+        return;
+      }
+      const data = S.proximaData(turma.dia);
+      btn.disabled = true;
+      btn.textContent = "Enviando...";
+      const payload = {
+        clienteNome: nome,
+        tel: tel,
+        servico: "Aula experimental",
+        tipo: "experimental",
+        data: data,
+        hora: turma.horario,
+        profissional: turma.instrutor || "",
+        turmaId: turma.id,
+        turmaNome: turma.nome || "Pilates",
+        status: "pendente",
+        criadoEm: new Date()
+      };
+      try {
+        await db.collection("agendamentos").add(payload);
+      } catch (ex) {
+        console.warn(ex);
+      }
+      const msg = "Olá! Quero agendar uma *aula experimental* de Pilates.\n\n" +
+        "👤 Nome: " + nome + "\n" +
+        "📱 WhatsApp: " + tel + "\n" +
+        "🧘 Turma: " + (turma.nome || "Pilates") + "\n" +
+        "📅 " + turma.dia + " " + S.dataBR(data) + " às " + turma.horario + "\n" +
+        "👩‍⚕️ Instrutora: " + (turma.instrutor || "—");
+      window.open(S.wa(msg), "_blank");
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar aula experimental';
+      document.getElementById("formExperimental").reset();
+      const toast = document.createElement("div");
+      toast.className = "toast toast-ok";
+      toast.textContent = "Pedido enviado. Confirme no WhatsApp com o estúdio.";
+      document.getElementById("toasts").appendChild(toast);
+      setTimeout(function () { toast.remove(); }, 4000);
+    });
+  </script>
+</body>
+</html>
