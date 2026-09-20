@@ -1,0 +1,179 @@
+html { scroll-behavior: smooth; }
+body { font-family: Montserrat, sans-serif; color: #333; background: #fff; }
+section[id], header { scroll-margin-top: 88px; }
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(62, 39, 35, 0.72);
+}
+
+#navLinks.open { display: flex; }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: reveal .7s ease forwards;
+}
+@keyframes reveal {
+  to { opacity: 1; transform: none; }
+}
+
+.gallery-shot img {
+  transition: transform .6s ease, filter .4s ease;
+}
+.gallery-shot:hover img { transform: scale(1.06); }
+.gallery-shot.is-bw img { filter: grayscale(1) contrast(1.05); }
+.gallery-shot.is-bw:hover img { filter: grayscale(0.15) contrast(1.05); }
+
+.grade-dias {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.dia-col {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 24px;
+  padding: 18px 16px;
+  box-shadow: 0 10px 30px rgba(62, 39, 35, 0.04);
+}
+.dia-col h3 {
+  font-family: "Playfair Display", serif;
+  color: #3E2723;
+  font-size: 1.15rem;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+.turma-row {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 8px 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f3f3;
+}
+.turma-row:last-child { border-bottom: none; }
+.turma-hora {
+  font-weight: 700;
+  color: #3E2723;
+  font-size: .9rem;
+}
+.turma-meta strong { display: block; font-size: .82rem; color: #333; }
+.turma-prof {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .72rem;
+  color: #6b6b6b;
+  margin-top: 2px;
+}
+.turma-av {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+.turma-vagas {
+  grid-column: 2;
+  font-size: 11px;
+  font-weight: 600;
+  color: #3E2723;
+  background: #F5F5F5;
+  border-radius: 999px;
+  padding: 3px 8px;
+  width: fit-content;
+}
+.turma-vagas.quase { background: #efe6d8; }
+.turma-vagas.cheia { background: #eee; color: #888; }
+.btn-exp {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  background: #3E2723;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.btn-exp:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(62,39,35,.2); }
+.btn-exp:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.mobile-cta {
+  display: none;
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 40;
+  gap: 8px;
+}
+.mobile-cta a {
+  flex: 1;
+  text-align: center;
+  border-radius: 999px;
+  padding: 12px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+.m-wpp { background: #25D366; }
+.m-agenda { background: #3E2723; }
+.wa-float {
+  position: fixed;
+  right: 18px;
+  bottom: 22px;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background: #25D366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  z-index: 30;
+  box-shadow: 0 10px 24px rgba(37,211,102,.35);
+}
+.toasts { position: fixed; right: 16px; bottom: 90px; z-index: 50; }
+.toast {
+  background: #3E2723;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 14px;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+@media (max-width: 1024px) {
+  .grade-dias { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  #navLinks.open { display: flex !important; }
+  .grade-dias { grid-template-columns: 1fr; }
+  .turma-row {
+    grid-template-columns: 56px 1fr;
+  }
+  .turma-vagas { grid-column: 2; }
+  .btn-exp {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    width: 100%;
+    margin-top: 4px;
+  }
+  #home { min-height: auto; }
+  .mobile-cta { display: flex; }
+  .wa-float { display: none; }
+  body { padding-bottom: 100px; }
+}

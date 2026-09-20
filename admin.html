@@ -252,8 +252,18 @@
       <div class="campo"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••••"></div>
       <div class="login-err" id="l-err"></div>
       <button class="btn btn-gold btn-full" id="l-btn" onclick="App.Auth.login()">Entrar</button>
+      <div id="primeiro-box" style="display:none;margin-top:16px;border-top:1px solid rgba(255,255,255,.12);padding-top:16px">
+        <p style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:10px">Crie o login da Michele para o painel. Código do estúdio: número do endereço (196).</p>
+        <div class="campo"><label>Nome</label><input id="p-nome" placeholder="Michele Seixas"></div>
+        <div class="campo"><label>E-mail</label><input type="email" id="p-email" placeholder="michele@email.com"></div>
+        <div class="campo"><label>Senha</label><input type="password" id="p-senha" placeholder="mínimo 6 caracteres"></div>
+        <div class="campo"><label>WhatsApp</label><input id="p-tel" placeholder="(19) 99290-8985"></div>
+        <div class="campo"><label>Código do estúdio</label><input id="p-codigo" placeholder="196"></div>
+        <div class="login-err" id="p-err"></div>
+        <button class="btn btn-gold btn-full" id="p-btn" onclick="App.Auth.primeiroAcesso()">Criar acesso do painel</button>
+      </div>
       <div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.55);margin-top:16px">
-        Não tem conta? <a href="#" onclick="App.Modals.abrir('m-cadastro');return false" style="color:var(--gold);font-weight:600">Cadastre-se</a>
+        Primeiro acesso? <a href="#" onclick="document.getElementById('primeiro-box').style.display='block';return false" style="color:var(--gold);font-weight:600">Criar login da Michele</a>
       </div>
       <p class="login-credit">Desenvolvido por Leonardo Seixas</p>
     </div>
@@ -790,6 +800,38 @@
         }
       },
       logout: () => signOut(auth),
+      primeiroAcesso: async () => {
+        const nome = document.getElementById('p-nome').value.trim();
+        const email = document.getElementById('p-email').value.trim();
+        const senha = document.getElementById('p-senha').value;
+        const tel = document.getElementById('p-tel').value.trim();
+        const codigo = document.getElementById('p-codigo').value.trim();
+        const err = document.getElementById('p-err');
+        const btn = document.getElementById('p-btn');
+        err.textContent = '';
+        if (codigo !== String(window.STUDIO.codigoPainel)) {
+          err.textContent = 'Código do estúdio incorreto.';
+          return;
+        }
+        if (!nome || !email || !senha || !tel) {
+          err.textContent = 'Preencha todos os campos.';
+          return;
+        }
+        if (senha.length < 6) {
+          err.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+          return;
+        }
+        btn.disabled = true; btn.textContent = 'Criando...';
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, email, senha);
+          await setDoc(doc(db,'users', cred.user.uid), {
+            nome, email, telefone: tel, role: 'admin', criadoEm: serverTimestamp()
+          });
+        } catch(e) {
+          err.textContent = e.code === 'auth/email-already-in-use' ? 'Este e-mail já tem conta. Use Entrar.' : (e.message || 'Não foi possível criar o acesso.');
+          btn.disabled = false; btn.textContent = 'Criar acesso do painel';
+        }
+      },
       cadastrar: async () => {
         const nome = document.getElementById('cad-nome').value.trim();
         const email = document.getElementById('cad-email').value.trim();

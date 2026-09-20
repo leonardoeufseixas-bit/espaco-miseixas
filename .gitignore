@@ -1,9 +1,27 @@
+# Dependências
+node_modules/
+package-lock.json
+
+# Vercel
 .vercel
+
+# Variáveis de ambiente
 .env
 .env.*
-node_modules
-package.json
-package-lock.json
-*.heic
-Thumbs.db
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+firebase-debug.log*
+
+# Firebase
+.firebase/
+
+# Sistema
 .DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.heic
+*.tmp

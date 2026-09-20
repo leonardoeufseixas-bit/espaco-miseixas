@@ -17,23 +17,32 @@ window.STUDIO = {
      sys_config/horarios: { abre, fecha }
   */
   whatsapp: "5519992908985",
-  instagram: "https://www.instagram.com/espaco_miseixas",
+  instagram: "https://www.instagram.com/espaco_miseixas/",
+  instagramHandle: "@espaco_miseixas",
   endereco: "Rua Rio Grande do Sul 196, Vargem Grande do Sul - SP",
-  logoClaro: "imagem/logo-transparente.png",
-  logoEscuro: "imagem/logo-transparente.png",
-  logoTransparente: "imagem/logo-transparente.png",
+  codigoPainel: "196",
+  logoClaro: "imagem/logo-ms.png",
+  logoEscuro: "imagem/logo-ms.png",
+  logoTransparente: "imagem/logo-ms.png",
   fotosEstudio: [
-    { src: "imagem/aula1.jpg", alt: "Alunas no reformer" },
-    { src: "imagem/aula2.jpg", alt: "Aula de Pilates no Cadillac" },
-    { src: "imagem/aula3.jpg", alt: "Exercício com bola no estúdio" },
-    { src: "imagem/aula4.jpg", alt: "Alongamento no reformer" }
+    { src: "imagem/estudio-ambiente.jpg", alt: "Estúdio de Pilates ambiente clínico", bw: false },
+    { src: "imagem/reformer-bw.jpg", alt: "Exercício no Reformer", bw: true },
+    { src: "imagem/cadillac.jpg", alt: "Pilates Cadillac para reabilitação", bw: false },
+    { src: "imagem/bola.jpg", alt: "Pilates com bola, equilíbrio e coordenação", bw: false },
+    { src: "imagem/grupo-reformer.jpg", alt: "Aula em grupo no Reformer", bw: true },
+    { src: "imagem/aulaexp.jpg", alt: "Aula experimental no estúdio", bw: false },
+    { src: "imagem/aulaexp2.jpg", alt: "Aluna na aula experimental", bw: true },
+    { src: "imagem/aula3.jpg", alt: "Aula de Pilates no estúdio", bw: false },
+    { src: "imagem/aula4.jpg", alt: "Movimento no Reformer", bw: true },
+    { src: "imagem/aula5.jpg", alt: "Aula de Pilates", bw: false },
+    { src: "imagem/aula7.jpg", alt: "Prática de Pilates", bw: false }
   ],
   videoHero: "https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FPippit_Wellness_Studio_Golden_Hour.mp4?alt=media&token=ee0c22a1-d895-4b6b-ae5a-c8013d134cdb",
   videoSobre: "https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FSaveClip.App_AQNCi4WYU6iKuaSpvJTXvpy1trRKlnLDZoeNfzMcojNJl0NqY8xXoru6c9_5T-Xg-nSTkYevxdoXsOBARM2lLSTIJwDJL8EzW7p-W_k.mp4?alt=media&token=530a902f-880c-46f4-a70a-cd5a4d956a2a",
   instrutoras: [
     {
       nome: "Michele",
-      cargo: "Fisioterapeuta · Instrutora",
+      cargo: "Fisioterapeuta · Instrutora principal",
       bio: "Fundadora do estúdio. Acompanha cada aluna de perto, do primeiro contato à evolução nas aulas.",
       foto: "https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2Fmichele.JPEG?alt=media&token=f6c8a073-87ee-4e81-a540-0c4a134ddaa4",
       comissao: 0
@@ -132,7 +141,10 @@ window.STUDIO = {
     return "https://wa.me/" + this.whatsapp + "?text=" + encodeURIComponent(text);
   },
   waInfo: function () {
-    return this.wa("Olá, vim pelo site do Espaço Michele Seixas e gostaria de informações sobre as aulas de Pilates e a aula experimental.");
+    return this.wa("Olá! Vim pelo site do Studio de Pilates M. S. (" + this.instagramHandle + ") e gostaria de informações sobre as aulas de Pilates.");
+  },
+  waAgendar: function () {
+    return this.wa("Olá! Quero agendar uma *aula experimental* de Pilates no Studio de Pilates M. S.\n\nPode me passar os horários com vaga?");
   },
   lotacao: function (turma) {
     const alunos = turma.alunos || [];
