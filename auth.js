@@ -101,10 +101,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       try {
-        await signInWithEmailAndPassword(auth, email, senha);
+        const cred = await signInWithEmailAndPassword(auth, email, senha);
         closeModal();
-        // Redireciona para a área do cliente
-        window.location.href = 'cliente.html';
+        let data = {};
+        try {
+          const snap = await getDoc(doc(db, "users", cred.user.uid));
+          if (snap.exists()) data = snap.data();
+        } catch (err) {}
+        const equipe = window.STUDIO && window.STUDIO.isEquipe
+          ? window.STUDIO.isEquipe(cred.user, data)
+          : (data.role === "admin" || data.role === "funcionario");
+        window.location.href = equipe ? "admin.html" : "cliente.html";
       } catch (e) {
         const msgs = {
           'auth/user-not-found': 'Usuário não encontrado.',

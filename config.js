@@ -21,6 +21,7 @@ window.STUDIO = {
   instagramHandle: "@espaco_miseixas",
   endereco: "Rua Rio Grande do Sul 196, Vargem Grande do Sul - SP",
   codigoPainel: "196",
+  emailsEquipe: ["michele@admin.com"],
   logoClaro: "imagem/logo-ms.png",
   logoEscuro: "imagem/logo-ms.png",
   logoTransparente: "imagem/logo-ms.png",
@@ -136,6 +137,51 @@ window.STUDIO = {
     if (!s) return "—";
     const p = String(s).split("-");
     return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : s;
+  },
+  normalizeRole: function (role) {
+    const x = String(role || "").toLowerCase().trim();
+    if (x === "admin" || x === "administradora" || x === "administrador") return "admin";
+    if (x === "funcionario" || x === "funcionaria" || x === "staff" || x === "equipe") return "funcionario";
+    if (x === "cliente" || x === "aluna" || x === "aluno") return "cliente";
+    return "";
+  },
+  isAdminEmail: function (email) {
+    const e = String(email || "").toLowerCase().trim();
+    if (!e) return false;
+    if ((this.emailsEquipe || []).indexOf(e) >= 0) return true;
+    return e.indexOf("admin") >= 0;
+  },
+  isEquipe: function (user, data) {
+    const role = this.normalizeRole(data && data.role);
+    if (role === "admin" || role === "funcionario") return true;
+    return !!(user && this.isAdminEmail(user.email));
+  },
+  waTo: function (tel, text) {
+    var d = String(tel || "").replace(/\D/g, "");
+    if (d.length === 11) d = "55" + d;
+    if (d.length === 10 && d.indexOf("19") === 0) d = "55" + d;
+    if (!d) d = this.whatsapp;
+    return "https://wa.me/" + d + "?text=" + encodeURIComponent(text);
+  },
+  msgs: {
+    confirmar: function (nome, quando) {
+      return "Olá, " + nome + "! Confirmamos sua aula no Studio de Pilates M. S. em *" + quando + "*. Qualquer ajuste, me chame por aqui.";
+    },
+    lembrete: function (nome, quando) {
+      return "Oi, " + nome + "! Lembrete da sua aula de Pilates *" + quando + "* no Studio M. S. Te esperamos.";
+    },
+    retorno: function (nome, dias) {
+      return "Oi, " + nome + "! Faz " + dias + " dias que você não treina com a gente. Queremos te ver de volta — tem horário com vaga esta semana. Posso te encaixar?";
+    },
+    bonus: function (nome, qtd) {
+      return "Oi, " + nome + "! Você já completou *" + qtd + " aulas* no Studio M. S. Obrigada pela constância. Na próxima, combinamos um carinho especial da casa.";
+    },
+    experimental: function (nome, quando) {
+      return "Olá, " + nome + "! Recebemos seu pedido de *aula experimental* para " + quando + ". Confirmamos presença por aqui. Até breve no Studio M. S.!";
+    },
+    cadastro: function (nome) {
+      return "Olá, " + nome + "! Seja bem-vinda ao Studio de Pilates M. S. Qualquer dúvida de horários ou experimental, é só responder esta mensagem.";
+    }
   },
   wa: function (text) {
     return "https://wa.me/" + this.whatsapp + "?text=" + encodeURIComponent(text);

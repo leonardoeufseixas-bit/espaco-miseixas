@@ -2,1809 +2,469 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#1A3D2B">
-  <title>Michele Seixas · Painel do Estúdio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    /* ===== ADMIN-SPECIFIC STYLES ===== */
-    #app { display: none; height: 100vh; overflow: hidden; position: relative; }
-    #app.on { display: flex; }
-
-    .sidebar {
-      width: 260px;
-      background: rgba(13,33,24,0.85);
-      backdrop-filter: blur(16px);
-      border-right: 1px solid rgba(255,255,255,0.06);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      z-index: 30;
-      transition: left 0.3s ease;
-      overflow: hidden;
-    }
-    .sb-brand {
-      padding: 24px 20px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .sb-brand .icon { font-size: 28px; background: rgba(201,168,76,0.15); border-radius: 14px; padding: 8px; border: 1px solid rgba(201,168,76,0.2); }
-    .sb-brand h2 { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: #fff; letter-spacing: 0.14em; text-transform: uppercase; }
-    .sb-brand p { font-size: 9px; color: rgba(255,255,255,0.45); letter-spacing: 0.16em; text-transform: uppercase; }
-    .sb-logo { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: #0a0a0a; border: 1px solid rgba(201,168,76,.4); }
-    .sb-nav { flex: 1; overflow-y: auto; padding: 12px 10px; }
-    .sb-sec { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.2); padding: 16px 12px 4px; }
-    .sb-btn {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      color: rgba(255,255,255,0.5);
-      font-size: 13px;
-      transition: var(--transition);
-      width: 100%;
-      text-align: left;
-      background: transparent;
-      border: none;
-      margin-bottom: 2px;
-    }
-    .sb-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
-    .sb-btn.on { background: rgba(201,168,76,0.15); color: #fff; font-weight: 600; border-left: 3px solid var(--gold); }
-    .sb-btn .ico { font-size: 16px; width: 22px; text-align: center; }
-    .sb-btn .lbl { flex: 1; }
-    .sb-badge { background: var(--gold); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 8px; border-radius: 99px; }
-    .sb-foot {
-      padding: 14px 16px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .sb-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; background: var(--gold); }
-    .sb-user { flex: 1; overflow: hidden; }
-    .sb-user-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sb-user-role { font-size: 11px; color: rgba(255,255,255,0.3); }
-    .sb-logout { color: rgba(255,255,255,0.25); padding: 6px; border-radius: 8px; transition: var(--transition); font-size: 18px; }
-    .sb-logout:hover { color: #fff; background: rgba(255,255,255,0.06); }
-
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: rgba(245,242,237,0.6);
-      backdrop-filter: blur(4px);
-    }
-    .topbar {
-      padding: 16px 24px;
-      background: rgba(255,255,255,0.5);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .topbar-l { display: flex; align-items: center; gap: 14px; }
-    .hamburger { display: none; font-size: 22px; color: var(--n-600); padding: 4px; }
-    .topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--g-800); }
-    .topbar-sub { font-size: 12px; color: var(--n-400); margin-top: 2px; }
-    .topbar-r { display: flex; gap: 8px; }
-    .scroll { flex: 1; overflow-y: auto; padding: 20px 24px; }
-
-    .tela { display: none; animation: fadeIn 0.4s ease; }
-    .tela.on { display: block; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
-
-    /* ===== VAGA CARD (admin) ===== */
-    .vaga-card {
-      background: rgba(255,255,255,0.5);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      transition: var(--transition);
-    }
-    .vaga-card:hover { box-shadow: var(--shadow-glass); transform: translateY(-2px); }
-    .vaga-badge {
-      width: 56px; height: 56px;
-      border-radius: 16px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 20px;
-      line-height: 1;
-    }
-    .vb-livre { background: var(--g-100); color: var(--g-700); }
-    .vb-quase { background: #FFFBEB; color: var(--gold-dark); }
-    .vb-lotado { background: #FEF2F2; color: #b91c1c; }
-    .vaga-badge span { font-size: 9px; font-weight: 600; margin-top: 2px; opacity: 0.7; }
-    .vaga-info { flex: 1; min-width: 0; }
-    .vaga-hora { font-size: 17px; font-weight: 800; color: var(--g-800); }
-    .vaga-prof { font-size: 12px; color: var(--n-400); margin-top: 2px; }
-    .vaga-svc { font-size: 12px; color: var(--n-300); }
-
-    /* ===== TURMA CARD ===== */
-    .turma-card {
-      background: rgba(255,255,255,0.5);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      margin-bottom: 14px;
-      transition: var(--transition);
-    }
-    .turma-card:hover { box-shadow: var(--shadow-glass); }
-    .turma-head {
-      padding: 16px 20px;
-      background: linear-gradient(135deg, var(--g-700), var(--g-600));
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .turma-head .title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: #fff; }
-    .turma-head .sub { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
-    .turma-body { padding: 16px 20px; }
-    .progress-bar { height: 6px; background: rgba(0,0,0,0.06); border-radius: 99px; margin: 10px 0 6px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
-    .pg-green { background: linear-gradient(90deg, var(--g-400), var(--g-300)); }
-    .pg-orange { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
-    .pg-red { background: linear-gradient(90deg, #dc2626, #f87171); }
-    .aluno-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0,0,0,0.04);
-      border-radius: 99px;
-      padding: 4px 12px;
-      font-size: 12px;
-      font-weight: 500;
-      margin: 3px;
-    }
-    .aluno-chip button { font-size: 14px; color: var(--n-400); transition: var(--transition); }
-    .aluno-chip button:hover { color: #b91c1c; }
-
-    /* ===== TIPOS DE PAGAMENTO ===== */
-    .tp {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .tp-pix { background: #EFF9F1; color: var(--g-700); }
-    .tp-credito { background: #EFF6FF; color: #1D4ED8; }
-    .tp-debito { background: #F5F3FF; color: #6D28D9; }
-    .tp-dinheiro { background: #FFFBEB; color: var(--gold-dark); }
-
-    /* ===== EXTRA UI ===== */
-    .lem-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 4px;
-      border-bottom: 1px solid rgba(0,0,0,0.04);
-      font-size: 13px;
-    }
-    .lem-item:last-child { border-bottom: none; }
-    .checkbox-row { display: flex; align-items: center; gap: 8px; }
-    .checkbox-row input { width: 16px; height: 16px; }
-    .fcx-day-row {
-      display: grid;
-      grid-template-columns: 90px 1fr 1fr 90px;
-      gap: 10px;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      font-size: 13px;
-    }
-    .fcx-grid .stat { min-height: 80px; }
-
-    /* ===== RESPONSIVO ===== */
-    @media (max-width: 768px) {
-      .sidebar { position: fixed; left: -280px; top:0; bottom:0; width:280px !important; border-right:none; box-shadow: 0 0 40px rgba(0,0,0,0.3); transition: left 0.3s ease; }
-      .sidebar.open { left:0; }
-      .hamburger { display:block; }
-      .topbar { padding:12px 16px; }
-      .scroll { padding:14px 16px; }
-      .stats { grid-template-columns:1fr 1fr; }
-      .fcx-day-row { grid-template-columns: 80px 1fr 1fr 80px; }
-    }
-    @media (max-width: 480px) {
-      .stats { grid-template-columns:1fr; }
-      .modal-box { border-radius: var(--radius); }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#3E2723">
+  <title>Painel · Studio de Pilates M. S.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
-  <!-- ===== VÍDEO DE FUNDO ===== -->
-  <video id="video-bg" autoplay muted loop playsinline>
-    <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-doing-yoga-on-a-beach-3275-large.mp4" type="video/mp4">
-  </video>
-  <div class="overlay"></div>
-
-  <!-- ===== LOGIN ===== -->
-  <div id="login-wrap">
-    <div class="login-card">
-      <div class="login-logo">
-        <img src="imagem/logo-transparente.png" alt="Michele Seixas">
-        <h1>Michele Seixas</h1>
-        <p>Painel do Estúdio de Pilates</p>
-      </div>
-      <div class="campo"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com"></div>
-      <div class="campo"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••••"></div>
-      <div class="login-err" id="l-err"></div>
-      <button class="btn btn-gold btn-full" id="l-btn" onclick="App.Auth.login()">Entrar</button>
-      <div id="primeiro-box" style="display:none;margin-top:16px;border-top:1px solid rgba(255,255,255,.12);padding-top:16px">
-        <p style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:10px">Crie o login da Michele para o painel. Código do estúdio: número do endereço (196).</p>
+  <div id="login-wrap" class="auth-page">
+    <div class="auth-card">
+      <img class="logo" src="imagem/logo-ms.png" alt="Studio de Pilates M. S.">
+      <h1>Painel da administradora</h1>
+      <p class="sub">Studio de Pilates M. S.</p>
+      <div class="campo"><label>E-mail</label><input id="l-email" type="email" placeholder="michele@email.com"></div>
+      <div class="campo"><label>Senha</label><input id="l-senha" type="password" placeholder="••••••••"></div>
+      <p class="err" id="l-err"></p>
+      <button class="btn btn-brown btn-full" id="l-btn">Entrar no painel</button>
+      <div id="primeiro-box" class="hidden" style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Código <strong>196</strong> (número da Rua Rio Grande do Sul). Cria o login ou promove uma conta que já existe para administradora.</p>
         <div class="campo"><label>Nome</label><input id="p-nome" placeholder="Michele Seixas"></div>
-        <div class="campo"><label>E-mail</label><input type="email" id="p-email" placeholder="michele@email.com"></div>
-        <div class="campo"><label>Senha</label><input type="password" id="p-senha" placeholder="mínimo 6 caracteres"></div>
+        <div class="campo"><label>E-mail</label><input id="p-email" type="email"></div>
+        <div class="campo"><label>Senha</label><input id="p-senha" type="password"></div>
         <div class="campo"><label>WhatsApp</label><input id="p-tel" placeholder="(19) 99290-8985"></div>
-        <div class="campo"><label>Código do estúdio</label><input id="p-codigo" placeholder="196"></div>
-        <div class="login-err" id="p-err"></div>
-        <button class="btn btn-gold btn-full" id="p-btn" onclick="App.Auth.primeiroAcesso()">Criar acesso do painel</button>
+        <div class="campo"><label>Código</label><input id="p-codigo" placeholder="196"></div>
+        <p class="err" id="p-err"></p>
+        <button class="btn btn-gold btn-full" id="p-btn">Liberar painel</button>
       </div>
-      <div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.55);margin-top:16px">
-        Primeiro acesso? <a href="#" onclick="document.getElementById('primeiro-box').style.display='block';return false" style="color:var(--gold);font-weight:600">Criar login da Michele</a>
-      </div>
-      <p class="login-credit">Desenvolvido por Leonardo Seixas</p>
+      <p class="switch">Primeiro acesso? <a href="#" id="go-primeiro">Criar ou liberar o painel (código 196)</a></p>
+      <p class="switch"><a href="cliente.html">Sou aluna · Minha área</a> · <a href="index.html">Site</a></p>
     </div>
   </div>
 
-  <!-- ===== APP ===== -->
-  <div id="app">
-    <div class="sb-overlay" id="sb-overlay" onclick="App.Nav.closeSidebar()"></div>
-
-    <!-- SIDEBAR -->
-    <nav class="sidebar" id="sidebar">
+  <div id="app" class="app">
+    <aside class="sb" id="sidebar">
       <div class="sb-brand">
-        <img src="imagem/logo-transparente.png" alt="" class="sb-logo">
-        <div>
-          <h2>Michele Seixas</h2>
-          <p>Estúdio de Pilates</p>
-        </div>
+        <img src="imagem/logo-ms.png" alt="">
+        <div><strong>Painel</strong><small>Administradora</small></div>
       </div>
-      <div class="sb-nav" id="nav-admin" style="display:none">
-        <div class="sb-sec">Principal</div>
-        <button class="sb-btn on" onclick="App.Nav.ir('dashboard',this)"><span class="ico">📊</span><span class="lbl">Dashboard</span></button>
-        <button class="sb-btn" onclick="App.Nav.ir('agenda',this)"><span class="ico">📅</span><span class="lbl">Agenda</span></button>
-        <button class="sb-btn" onclick="App.Nav.ir('experimentais',this)"><span class="ico">✨</span><span class="lbl">Experimentais</span><span class="sb-badge" id="badge-exp">0</span></button>
-        <button class="sb-btn" onclick="App.Nav.ir('horarios-disp',this)"><span class="ico">⚡</span><span class="lbl">Horários</span></button>
-        <div class="sb-sec">Pilates</div>
-        <button class="sb-btn" onclick="App.Nav.ir('turmas',this)"><span class="ico">🧘</span><span class="lbl">Turmas</span></button>
-        <div class="sb-sec">Gestão</div>
-        <button class="sb-btn" onclick="App.Nav.ir('clientes',this)"><span class="ico">👥</span><span class="lbl">Clientes</span></button>
-        <button class="sb-btn" onclick="App.Nav.ir('funcionarios',this)"><span class="ico">👩‍⚕️</span><span class="lbl">Funcionárias</span></button>
-        <button class="sb-btn" onclick="App.Nav.ir('financeiro',this)"><span class="ico">💰</span><span class="lbl">Financeiro</span></button>
-        <button class="sb-btn" onclick="App.Nav.ir('fechamento',this)"><span class="ico">🔒</span><span class="lbl">Fechamento</span></button>
-        <div class="sb-sec">Sistema</div>
-        <button class="sb-btn" onclick="App.Nav.ir('relatorios',this)"><span class="ico">📈</span><span class="lbl">Relatórios</span></button>
-        <button class="sb-btn" onclick="App.Nav.ir('lembretes',this)"><span class="ico">🔔</span><span class="lbl">Lembretes</span><span class="sb-badge" id="badge-lem">0</span></button>
-        <button class="sb-btn" onclick="App.Nav.ir('config',this)"><span class="ico">⚙️</span><span class="lbl">Configurações</span></button>
-      </div>
-      <div class="sb-foot">
-        <div class="sb-av" id="sb-av">MS</div>
-        <div class="sb-user"><div class="sb-user-name" id="sb-nome">—</div><div class="sb-user-role" id="sb-role">—</div></div>
-        <button class="sb-logout" onclick="App.Auth.logout()">↩</button>
-      </div>
-    </nav>
-
-    <!-- MAIN -->
+      <nav>
+        <button class="on" data-tela="dash">Visão geral</button>
+        <button data-tela="agenda">Calendário</button>
+        <button data-tela="turmas">Turmas e vagas</button>
+        <button data-tela="clientes">Alunas</button>
+        <button data-tela="leads">Experimentais</button>
+        <button data-tela="retornos">Retornos</button>
+      </nav>
+      <div class="sb-foot" id="sb-nome">—</div>
+    </aside>
     <div class="main">
-      <div class="topbar">
-        <div class="topbar-l">
-          <button class="hamburger" onclick="App.Nav.openSidebar()">☰</button>
-          <div><div class="topbar-title" id="top-title">Dashboard</div><div class="topbar-sub" id="top-sub">Visão geral da clínica</div></div>
+      <div class="top">
+        <button class="hamb" id="hamb">☰</button>
+        <div>
+          <h2 id="top-title">Visão geral</h2>
+          <div style="font-size:12px;color:var(--muted)" id="top-sub">Tudo o que entra no estúdio, em um só lugar.</div>
         </div>
-        <div class="topbar-r" id="top-acts" style="display:none">
-          <button class="btn btn-outline btn-sm" onclick="App.Modals.abrir('m-atendimento')">+ Atendimento</button>
-          <button class="btn btn-gold btn-sm" onclick="App.Modals.abrir('m-agendamento')">+ Agendar</button>
-        </div>
+        <button class="btn btn-ghost btn-sm" id="btnSair">Sair</button>
       </div>
-
-      <div class="scroll" id="scroll">
-
-        <!-- DASHBOARD -->
-        <div id="t-dashboard" class="tela on">
-          <div class="stats">
-            <div class="stat"><span class="icon">💵</span><div class="stat-label">Faturamento Hoje</div><div class="stat-value" id="s-hoje">R$ 0</div><div class="stat-hint" id="s-hoje-n">0 atendimentos</div></div>
-            <div class="stat gold"><span class="icon">📈</span><div class="stat-label">Faturamento Mês</div><div class="stat-value" id="s-mes">R$ 0</div><div class="stat-hint">Este mês</div></div>
-            <div class="stat"><span class="icon">📅</span><div class="stat-label">Agendamentos Hoje</div><div class="stat-value" id="s-agnd">0</div><div class="stat-hint" id="s-agnd-n">—</div></div>
-            <div class="stat gold"><span class="icon">✨</span><div class="stat-label">Lucro Líquido Mês</div><div class="stat-value" id="s-lucro">R$ 0</div><div class="stat-hint">Após comissões</div></div>
+      <div class="scroll">
+        <div id="t-dash" class="tela on">
+          <div class="kpis">
+            <div class="kpi"><b id="k-hoje">0</b><span>Aulas hoje</span></div>
+            <div class="kpi"><b id="k-exp">0</b><span>Experimentais</span></div>
+            <div class="kpi"><b id="k-inativos">0</b><span>Sem treinar 21+ dias</span></div>
+            <div class="kpi"><b id="k-bonus">0</b><span>Bônus 5 aulas</span></div>
           </div>
-          <div id="d-alertas" class="mb14"></div>
-          <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
-            <div class="glass"><div class="card-title">Agenda de hoje</div><div id="d-agenda"><div class="loading"><div class="spin"></div></div></div></div>
-            <div class="glass"><div class="card-title">Comissões do mês</div><div id="d-comissoes"></div></div>
-          </div>
-        </div>
-
-        <!-- EXPERIMENTAIS -->
-        <div id="t-experimentais" class="tela">
-          <div class="glass">
-            <div class="card-title">Pedidos de aula experimental</div>
-            <p style="font-size:13px;color:var(--n-400);margin-bottom:12px;">Chegam pelo site. Confirme, ligue no WhatsApp ou recuse se a turma estiver cheia.</p>
-            <div id="lista-experimentais"><div class="loading"><div class="spin"></div></div></div>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Agenda de hoje</h3>
+              <div id="dash-hoje"></div>
+            </div>
+            <div class="card">
+              <h3>Turmas quase cheias</h3>
+              <div id="dash-cheias"></div>
+            </div>
           </div>
         </div>
 
-        <!-- AGENDA -->
         <div id="t-agenda" class="tela">
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
-            <div class="tabs" style="display:flex;gap:4px;background:rgba(255,255,255,0.3);padding:4px;border-radius:12px;">
-              <button class="tab on" onclick="App.Agenda.setFiltro('hoje',this)">Hoje</button>
-              <button class="tab" onclick="App.Agenda.setFiltro('semana',this)">Semana</button>
-              <button class="tab" onclick="App.Agenda.setFiltro('mes',this)">Mês</button>
-              <button class="tab" onclick="App.Agenda.setFiltro('todos',this)">Todos</button>
-            </div>
-            <div class="pills" style="display:flex;gap:6px;flex-wrap:wrap;" id="pills-agenda"></div>
-            <button class="btn btn-gold btn-sm" style="margin-left:auto;" onclick="App.Modals.abrir('m-agendamento')">+ Novo</button>
-          </div>
-          <div class="glass">
-            <div class="card-title" id="agenda-titulo">Hoje</div>
-            <div style="margin-bottom:16px;">
-              <div class="cal-nav">
-                <button onclick="App.Agenda.anteriorMes()">←</button>
-                <span class="cal-mes" id="ag-cal-mes">—</span>
-                <button onclick="App.Agenda.proximoMes()">→</button>
+          <div class="grid-2">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <h3 id="cal-titulo" style="margin:0">Calendário</h3>
+                <div>
+                  <button class="btn btn-ghost btn-sm" id="cal-prev">←</button>
+                  <button class="btn btn-ghost btn-sm" id="cal-next">→</button>
+                </div>
               </div>
-              <div class="cal-wrap" id="ag-cal-dow"></div>
-              <div class="cal-wrap" id="ag-cal-grid" style="margin-top:6px;"></div>
+              <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Cinza claro: vazio · Dourado: ocupando · Marrom: cheio</p>
+              <div class="cal" id="cal-dow"></div>
+              <div class="cal" id="cal-grid"></div>
             </div>
-            <div id="lista-agenda"><div class="loading"><div class="spin"></div></div></div>
+            <div class="card">
+              <h3 id="dia-titulo">Dia</h3>
+              <div id="dia-lista"></div>
+              <button class="btn btn-brown btn-full" id="btnNovoAg" style="margin-top:12px">Novo agendamento</button>
+            </div>
           </div>
         </div>
 
-        <!-- HORÁRIOS DISPONÍVEIS -->
-        <div id="t-horarios-disp" class="tela">
-          <div class="glass" style="background:linear-gradient(135deg,var(--g-800),var(--g-600));border:none;color:#fff;margin-bottom:14px">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;">📋 Horários &amp; Vagas em Tempo Real</div>
-            <div style="font-size:13px;opacity:0.8;margin-bottom:14px;">Use enquanto responde clientes no WhatsApp</div>
-            <button class="btn btn-gold" onclick="App.Vagas.gerarWhatsApp()">📲 Gerar mensagem WhatsApp</button>
-          </div>
-          <div id="lista-vagas" style="display:flex;flex-direction:column;gap:8px;"></div>
-        </div>
-
-        <!-- TURMAS -->
         <div id="t-turmas" class="tela">
-          <div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-gold" onclick="App.Turmas.abrirModalNova()">+ Nova turma</button></div>
-          <div id="lista-turmas"></div>
+          <div class="card" id="lista-turmas"></div>
         </div>
 
-        <!-- CLIENTES -->
         <div id="t-clientes" class="tela">
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
-            <div style="flex:1;min-width:200px;position:relative;">
-              <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--n-300);">🔍</span>
-              <input id="busca-cli" type="text" placeholder="Buscar cliente..." oninput="App.Clientes.filtrar()" style="width:100%;padding:10px 12px 10px 36px;border:1.5px solid rgba(0,0,0,0.06);border-radius:12px;background:rgba(255,255,255,0.5);backdrop-filter:blur(4px);">
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <h3>Cadastrar aluna (presencial)</h3>
+                <div class="campo"><label>Nome</label><input id="nc-nome"></div>
+                <div class="campo"><label>WhatsApp</label><input id="nc-tel" placeholder="(19) 99999-9999"></div>
+                <div class="campo"><label>E-mail</label><input id="nc-email" type="email"></div>
+                <div class="campo"><label>Observação</label><textarea id="nc-obs" placeholder="Como conheceu, restrições..."></textarea></div>
+                <button class="btn btn-brown" id="nc-btn">Salvar aluna</button>
+              </div>
+              <div class="card">
+                <h3>Base de alunas</h3>
+                <input class="search" id="cli-busca" placeholder="Buscar nome ou telefone">
+                <div id="cli-lista"></div>
+              </div>
             </div>
-            <button class="btn btn-gold" onclick="App.Modals.abrir('m-cliente')">+ Novo cliente</button>
-          </div>
-          <div class="glass">
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Cliente</th><th>Contato</th><th>Última visita</th><th>Total gasto</th><th>Sessões</th><th>Status</th><th></th></tr></thead>
-                <tbody id="tbody-clientes"><tr><td colspan="7"><div class="loading"><div class="spin"></div></div></td></tr></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- PERFIL CLIENTE -->
-        <div id="t-perfil-cliente" class="tela">
-          <button class="btn btn-outline btn-sm" style="margin-bottom:14px;" onclick="App.Nav.ir('clientes',null)">← Voltar</button>
-          <div id="perfil-body"></div>
-        </div>
-
-        <!-- FUNCIONÁRIAS -->
-        <div id="t-funcionarios" class="tela">
-          <div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-gold" onclick="App.Modals.abrir('m-funcionario')">+ Nova funcionária</button></div>
-          <div id="lista-funcs"></div>
-        </div>
-
-        <!-- FINANCEIRO -->
-        <div id="t-financeiro" class="tela">
-          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
-            <div class="tabs" style="display:flex;gap:4px;background:rgba(255,255,255,0.3);padding:4px;border-radius:12px;">
-              <button class="tab on" onclick="App.Financeiro.setFiltro('mes',this)">Mês</button>
-              <button class="tab" onclick="App.Financeiro.setFiltro('semana',this)">Semana</button>
-              <button class="tab" onclick="App.Financeiro.setFiltro('todos',this)">Todos</button>
-            </div>
-          </div>
-          <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px;">
-            <div class="stat"><span class="icon">💵</span><div class="stat-label">Faturamento Bruto</div><div class="stat-value" id="fin-bruto">R$ 0</div></div>
-            <div class="stat gold"><span class="icon">📊</span><div class="stat-label">Total Comissões</div><div class="stat-value" id="fin-comm">R$ 0</div></div>
-            <div class="stat"><span class="icon">✨</span><div class="stat-label">Lucro Líquido</div><div class="stat-value" id="fin-lucro">R$ 0</div></div>
-          </div>
-          <div class="glass">
-            <div class="card-title">Atendimentos registrados</div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Valor</th><th>Pagamento</th><th>Profissional</th><th>Comissão</th><th>Lucro</th></tr></thead>
-                <tbody id="tbody-fin"><tr><td colspan="8"><div class="loading"><div class="spin"></div></div></td></tr></tbody>
-              </table>
+            <div class="card" id="cli-detalhe">
+              <h3>Ficha da aluna</h3>
+              <p style="color:var(--muted)">Selecione uma aluna à esquerda.</p>
             </div>
           </div>
         </div>
 
-        <!-- FECHAMENTO -->
-        <div id="t-fechamento" class="tela">
-          <div class="glass">
-            <div class="card-title">Fechamento de caixa — <span id="fcx-data"></span></div>
-            <div class="stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px;" id="fcx-grid"></div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Cliente</th><th>Serviço</th><th>Profissional</th><th>Pagamento</th><th>Valor</th></tr></thead>
-                <tbody id="tbody-fcx"></tbody>
-              </table>
-            </div>
+        <div id="t-leads" class="tela">
+          <div class="card">
+            <h3>Pedidos de aula experimental</h3>
+            <div id="lista-leads"></div>
           </div>
         </div>
 
-        <!-- RELATÓRIOS -->
-        <div id="t-relatorios" class="tela">
-          <div class="glass" style="margin-bottom:14px;">
-            <div class="card-title">Relatório por período</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-              <div class="campo"><label>Data inicial</label><input type="date" id="rel-ini"></div>
-              <div class="campo"><label>Data final</label><input type="date" id="rel-fim"></div>
-            </div>
-            <button class="btn btn-gold" onclick="App.Relatorios.gerar()">Gerar relatório</button>
-          </div>
-          <div id="rel-resultado"></div>
-        </div>
-
-        <!-- LEMBRETES -->
-        <div id="t-lembretes" class="tela">
-          <div class="glass" style="margin-bottom:14px;"><div class="card-title">⚠️ Clientes inativos (30+ dias)</div><div id="lem-inativos"></div></div>
-          <div class="glass" style="margin-bottom:14px;"><div class="card-title">⏰ Agendamentos pendentes hoje</div><div id="lem-pendentes"></div></div>
-          <div class="glass"><div class="card-title">🧘 Turmas quase cheias (≤ 1 vaga)</div><div id="lem-turmas"></div></div>
-        </div>
-
-        <!-- CONFIG -->
-        <div id="t-config" class="tela">
-          <div class="glass">
-            <div class="card-title">Horários de funcionamento</div>
-            <div id="config-hr"></div>
-            <button class="btn btn-gold" style="margin-top:14px;" onclick="App.Config.salvarHorarios()">Salvar horários</button>
+        <div id="t-retornos" class="tela">
+          <div class="card">
+            <h3>Quem sumiu da grade</h3>
+            <p style="font-size:13px;color:var(--muted)">Alunas há 21 dias ou mais sem agendar. Mensagem pronta no WhatsApp delas.</p>
+            <div id="lista-retornos"></div>
           </div>
         </div>
-
-      </div><!-- /scroll -->
-    </div><!-- /main -->
-  </div><!-- /app -->
-
-  <!-- ===== MODAIS ===== -->
-  <!-- Modal Agendamento -->
-  <div class="modal-bg" id="m-agendamento">
-    <div class="modal-box">
-      <button class="modal-close" onclick="App.Modals.fechar('m-agendamento')">✕</button>
-      <h3>Novo Agendamento</h3>
-      <div class="campo"><label>Cliente</label><input id="ag-cliente" placeholder="Nome do cliente"></div>
-      <div class="campo"><label>Serviço</label><input id="ag-servico" placeholder="Ex: Pilates"></div>
-      <div class="campo"><label>Data</label><input type="date" id="ag-data"></div>
-      <div class="campo"><label>Hora</label><input type="time" id="ag-hora"></div>
-      <div class="campo"><label>Profissional</label>
-        <select id="ag-prof"><option value="">Selecione</option><option>Michele</option><option>Lilian</option><option>Maria</option></select>
       </div>
+    </div>
+  </div>
+
+  <div class="hidden" id="m-ag" style="position:fixed;inset:0;background:rgba(62,39,35,.35);align-items:center;justify-content:center;padding:20px;z-index:40">
+    <div class="auth-card" style="max-width:460px">
+      <h3 style="margin-top:0;color:var(--brown)">Novo agendamento</h3>
+      <div class="campo"><label>Aluna</label><select id="ag-cli"></select></div>
+      <div class="campo"><label>Turma</label><select id="ag-turma"></select></div>
+      <div class="campo"><label>Data</label><input id="ag-data" type="date"></div>
       <div class="campo"><label>Status</label>
-        <select id="ag-status"><option value="pendente">Pendente</option><option value="confirmado">Confirmado</option><option value="concluido">Concluído</option><option value="cancelado">Cancelado</option></select>
+        <select id="ag-status"><option value="pendente">Pendente</option><option value="confirmado">Confirmado</option></select>
       </div>
-      <button class="btn btn-gold btn-full" onclick="App.Agenda.salvar()">Salvar</button>
+      <p class="err" id="ag-err"></p>
+      <button class="btn btn-brown btn-full" id="ag-salvar">Salvar</button>
+      <button class="btn btn-ghost btn-full" id="ag-fechar" style="margin-top:8px">Cancelar</button>
     </div>
   </div>
 
-  <!-- Modal Atendimento -->
-  <div class="modal-bg" id="m-atendimento">
-    <div class="modal-box">
-      <button class="modal-close" onclick="App.Modals.fechar('m-atendimento')">✕</button>
-      <h3>Registrar Atendimento</h3>
-      <div class="campo"><label>Cliente</label><input id="at-cliente" placeholder="Nome do cliente"></div>
-      <div class="campo"><label>Serviço</label><input id="at-servico" placeholder="Ex: Pilates"></div>
-      <div class="campo"><label>Data</label><input type="date" id="at-data"></div>
-      <div class="campo"><label>Valor</label><input type="number" id="at-valor" placeholder="0.00"></div>
-      <div class="campo"><label>Pagamento</label>
-        <select id="at-pagamento"><option value="Pix">Pix</option><option value="Crédito">Crédito</option><option value="Débito">Débito</option><option value="Dinheiro">Dinheiro</option></select>
-      </div>
-      <div class="campo"><label>Profissional</label>
-        <select id="at-prof"><option value="">Selecione</option><option>Michele</option><option>Lilian</option><option>Maria</option></select>
-      </div>
-      <button class="btn btn-gold btn-full" onclick="App.Financeiro.salvarAtendimento()">Salvar</button>
-    </div>
-  </div>
-
-  <!-- Modal Cliente -->
-  <div class="modal-bg" id="m-cliente">
-    <div class="modal-box">
-      <button class="modal-close" onclick="App.Modals.fechar('m-cliente')">✕</button>
-      <h3>Novo Cliente</h3>
-      <div class="campo"><label>Nome</label><input id="cli-nome" placeholder="Nome completo"></div>
-      <div class="campo"><label>E-mail</label><input id="cli-email" placeholder="email@exemplo.com"></div>
-      <div class="campo"><label>Telefone</label><input id="cli-tel" placeholder="(19) 99999-9999"></div>
-      <button class="btn btn-gold btn-full" onclick="App.Clientes.salvar()">Salvar</button>
-    </div>
-  </div>
-
-  <!-- Modal Cadastro (para criar usuário) -->
-  <div class="modal-bg" id="m-cadastro">
-    <div class="modal-box">
-      <button class="modal-close" onclick="App.Modals.fechar('m-cadastro')">✕</button>
-      <h3>Criar Conta</h3>
-      <div class="campo"><label>Nome</label><input id="cad-nome" placeholder="Nome completo"></div>
-      <div class="campo"><label>E-mail</label><input id="cad-email" placeholder="email@exemplo.com"></div>
-      <div class="campo"><label>Senha</label><input type="password" id="cad-senha" placeholder="Min 6 caracteres"></div>
-      <div class="campo"><label>Telefone</label><input id="cad-tel" placeholder="(19) 99999-9999"></div>
-      <div class="campo"><label>Função</label>
-        <select id="cad-role"><option value="cliente">Cliente</option><option value="funcionario">Funcionária</option><option value="admin">Administradora</option></select>
-      </div>
-      <button class="btn btn-gold btn-full" onclick="App.Auth.cadastrar()">Cadastrar</button>
-    </div>
-  </div>
-
-  <!-- Modal Funcionário -->
-  <div class="modal-bg" id="m-funcionario">
-    <div class="modal-box">
-      <button class="modal-close" onclick="App.Modals.fechar('m-funcionario')">✕</button>
-      <h3>Nova Funcionária</h3>
-      <div class="campo"><label>Nome</label><input id="func-nome" placeholder="Nome completo"></div>
-      <div class="campo"><label>E-mail</label><input id="func-email" placeholder="email@exemplo.com"></div>
-      <div class="campo"><label>Telefone</label><input id="func-tel" placeholder="(19) 99999-9999"></div>
-      <div class="campo"><label>Comissão (%)</label><input type="number" id="func-comissao" placeholder="30" value="30"></div>
-      <button class="btn btn-gold btn-full" onclick="App.Funcionarios.salvar()">Salvar</button>
-    </div>
-  </div>
-
-  <!-- Modal Turma -->
-  <div class="modal-bg" id="m-turma">
-    <div class="modal-box">
-      <button class="modal-close" onclick="App.Modals.fechar('m-turma')">✕</button>
-      <h3>Nova Turma</h3>
-      <div class="campo"><label>Nome</label><input id="turma-nome" placeholder="Ex: Pilates Avançado"></div>
-      <div class="campo"><label>Dia da semana</label>
-        <select id="turma-dia"><option value="Segunda">Segunda</option><option value="Terça">Terça</option><option value="Quarta">Quarta</option><option value="Quinta">Quinta</option><option value="Sexta">Sexta</option><option value="Sábado">Sábado</option></select>
-      </div>
-      <div class="campo"><label>Horário</label><input type="time" id="turma-horario" value="08:00"></div>
-      <div class="campo"><label>Vagas</label><input type="number" id="turma-vagas" value="10"></div>
-      <div class="campo"><label>Instrutora</label>
-        <select id="turma-instrutor">
-          <option>Michele</option>
-          <option>Lilian</option>
-          <option>Maria</option>
-        </select>
-      </div>
-      <button class="btn btn-gold btn-full" onclick="App.Turmas.salvar()">Salvar</button>
-    </div>
-  </div>
-
-  <!-- Modal Inscrição em Turma -->
-  <div class="modal-bg" id="m-inscrever">
-    <div class="modal-box">
-      <button class="modal-close" onclick="App.Modals.fechar('m-inscrever')">✕</button>
-      <h3>Inscrever Aluno</h3>
-      <div class="campo"><label>Aluno</label><input id="insc-aluno" placeholder="Nome do aluno"></div>
-      <div class="campo"><label>Turma</label>
-        <select id="insc-turma"><option value="">Selecione</option></select>
-      </div>
-      <button class="btn btn-gold btn-full" onclick="App.Turmas.inscrever()">Inscrever</button>
-    </div>
-  </div>
-
-  <!-- Modal WhatsApp (para copiar mensagem) -->
-  <div class="modal-bg" id="m-whatsapp">
-    <div class="modal-box">
-      <button class="modal-close" onclick="App.Modals.fechar('m-whatsapp')">✕</button>
-      <h3>📲 Mensagem WhatsApp</h3>
-      <textarea id="wa-msg" rows="6" style="width:100%;border-radius:12px;padding:12px;border:1px solid #ddd;font-family:inherit;"></textarea>
-      <button class="btn btn-gold btn-full" style="margin-top:12px;" onclick="App.Vagas.copiarMsg()">Copiar mensagem</button>
-    </div>
-  </div>
-
-  <div class="toasts" id="toasts"></div>
-
-  <!-- ==========================================================
-  JAVASCRIPT COMPLETO (Firebase + App)
-  ========================================================== -->
   <script src="config.js"></script>
-  <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
-      }
-    }
-  </script>
+  <script src="js/booking.js"></script>
+  <script src="js/clinic.js"></script>
+  <script type="importmap">{ "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+  }}</script>
   <script type="module">
-    // ============================================================
-    // FIREBASE CONFIG
-    // ============================================================
-    import { initializeApp, getApps } from "firebase/app";
+    import { initializeApp } from "firebase/app";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-    import { getFirestore, collection, doc, setDoc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, serverTimestamp, Timestamp, increment, arrayUnion, arrayRemove } from "firebase/firestore";
+    import { getFirestore, collection, doc, setDoc, addDoc, getDoc, getDocs, updateDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
 
-    const firebaseConfig = window.STUDIO.firebaseConfig;
+    const S = window.STUDIO, C = window.Clinic, B = window.StudioBooking;
+    const auth = getAuth(initializeApp(S.firebaseConfig));
+    const db = getFirestore();
+    const state = { turmas: [], ags: [], clientes: [], selDia: C.hoje(), mes: new Date(), cli: null };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const $ = id => document.getElementById(id);
+    function ir(tela) {
+      document.querySelectorAll(".tela").forEach(t => t.classList.remove("on"));
+      document.querySelectorAll(".sb nav button").forEach(b => b.classList.toggle("on", b.dataset.tela === tela));
+      $("t-" + tela).classList.add("on");
+      const titles = { dash: "Visão geral", agenda: "Calendário da clínica", turmas: "Turmas e vagas", clientes: "Alunas e histórico", leads: "Aulas experimentais", retornos: "Retornos e inativas" };
+      $("top-title").textContent = titles[tela];
+      $("sidebar").classList.remove("open");
+      if (tela === "agenda") renderCal();
+      if (tela === "turmas") renderTurmas();
+      if (tela === "clientes") renderClientes();
+      if (tela === "leads") renderLeads();
+      if (tela === "retornos") renderRetornos();
+    }
+    document.querySelectorAll(".sb nav button").forEach(b => b.onclick = () => ir(b.dataset.tela));
+    $("hamb").onclick = () => $("sidebar").classList.toggle("open");
+    $("btnSair").onclick = () => signOut(auth);
+    $("go-primeiro").onclick = e => { e.preventDefault(); $("primeiro-box").classList.remove("hidden"); };
 
-    // ============================================================
-    // UTILITÁRIOS
-    // ============================================================
-    const U = {
-      fmt: v => 'R$ ' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2}),
-      hoje: () => new Date().toISOString().split('T')[0],
-      iniMes: () => { const d=new Date(); d.setDate(1); return d.toISOString().split('T')[0]; },
-      iniSem: () => { const d=new Date(); d.setDate(d.getDate()-7); return d.toISOString().split('T')[0]; },
-      tsData: ts => { if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('pt-BR'); },
-      dataBR: s => { if(!s) return '—'; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; },
-      iniciais: n => (n||'?').split(' ').filter(Boolean).slice(0,2).map(p=>p[0]).join('').toUpperCase(),
-      toast: (msg, tipo='ok') => {
-        const el=document.createElement('div');
-        el.className=`toast toast-${tipo}`;
-        el.innerHTML=`<span>${tipo==='ok'?'✅':tipo==='err'?'❌':'⚠️'}</span> ${msg}`;
-        document.getElementById('toasts').appendChild(el);
-        setTimeout(()=>el.remove(),3500);
-      },
-      badgeStatus: s => {
-        const m={confirmado:'badge-success',pendente:'badge-warning',concluido:'badge-info',cancelado:'badge-danger'};
-        const l={confirmado:'Confirmado',pendente:'Pendente',concluido:'Concluído',cancelado:'Cancelado'};
-        return `<span class="badge ${m[s]||'badge-info'}"><span class="badge-dot"></span>${l[s]||s}</span>`;
-      },
-      classPag: p => {
-        const m={Pix:'tp-pix','Crédito':'tp-credito',Credito:'tp-credito','Débito':'tp-debito',Debito:'tp-debito',Dinheiro:'tp-dinheiro'};
-        return m[p] || '';
+    $("l-btn").onclick = async () => {
+      $("l-err").textContent = "";
+      try { await signInWithEmailAndPassword(auth, $("l-email").value.trim(), $("l-senha").value); }
+      catch { $("l-err").textContent = "E-mail ou senha incorretos."; }
+    };
+    async function gravarAdmin(user, extra) {
+      const base = extra || {};
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email || base.email || "",
+        nome: base.nome || "Michele",
+        telefone: base.telefone || base.tel || "",
+        role: S.normalizeRole(base.role) === "funcionario" ? "funcionario" : "admin",
+        atualizadoEm: serverTimestamp()
+      }, { merge: true });
+    }
+
+    $("p-btn").onclick = async () => {
+      $("p-err").textContent = "";
+      if ($("p-codigo").value.trim() !== String(S.codigoPainel)) { $("p-err").textContent = "Código incorreto."; return; }
+      const nome = $("p-nome").value.trim(), email = $("p-email").value.trim(), senha = $("p-senha").value, tel = $("p-tel").value.trim();
+      if (!nome || !email || !senha || !tel) { $("p-err").textContent = "Preencha todos os campos."; return; }
+      try {
+        let user;
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, email, senha);
+          user = cred.user;
+        } catch (e) {
+          if (e.code !== "auth/email-already-in-use") throw e;
+          const cred = await signInWithEmailAndPassword(auth, email, senha);
+          user = cred.user;
+        }
+        await gravarAdmin(user, { nome, email, telefone: tel, role: "admin" });
+        location.reload();
+      } catch (e) {
+        $("p-err").textContent = e.code === "auth/wrong-password" || e.code === "auth/invalid-credential"
+          ? "E-mail já existe. Use a senha certa para liberar o painel."
+          : (e.message || "Não foi possível criar.");
       }
     };
 
-    // ============================================================
-    // ESTADO GLOBAL
-    // ============================================================
-    const S = {
-      user: null, role: null, nome: '',
-      clientes: [], funcs: [], turmas: [],
-      filtroAgenda: 'hoje', filtroFin: 'mes',
-      agendaDataSel: U.hoje(),
-      agendaMes: new Date().getMonth(),
-      agendaAno: new Date().getFullYear(),
-      PROFS: window.STUDIO.instrutoras.map(p => ({ nome: p.nome, comissao: p.comissao, foto: p.foto })),
-      getComissao: nome => { const p=S.PROFS.find(x=>x.nome===nome); return p ? p.comissao : 30; }
-    };
-
-    // ============================================================
-    // FUNÇÕES DE CARGA (CACHE)
-    // ============================================================
-    async function cacheClientes() {
-      const snap = await getDocs(collection(db,'clientes'));
-      S.clientes = snap.docs.map(d=>({id:d.id,...d.data()}));
-    }
-    async function cacheFuncs() {
-      const snap = await getDocs(collection(db,'funcionarios'));
-      S.funcs = snap.docs.map(d=>({id:d.id,...d.data()}));
-    }
-    async function cacheTurmas() {
-      const snap = await getDocs(collection(db,'turmas'));
-      S.turmas = snap.docs.map(d => window.STUDIO.normalizeTurma({ id: d.id, ...d.data() }));
-    }
-
-    // ============================================================
-    // SEED (cria dados iniciais se não existirem)
-    // ============================================================
     async function seed() {
-      const snap = await getDocs(collection(db,'funcionarios'));
-      if (snap.empty) {
-        for (const p of window.STUDIO.instrutoras) {
-          await addDoc(collection(db,'funcionarios'), {
-            nome: p.nome,
-            comissao: p.comissao,
-            foto: p.foto,
-            cargo: p.cargo,
-            ativo: true,
-            criadoEm: serverTimestamp()
-          });
-        }
-        U.toast('Instrutoras iniciais criadas.');
-      } else {
-        for (const d of snap.docs) {
-          if (d.data().nome === 'Mariana') {
-            await updateDoc(d.ref, { nome: 'Maria', foto: window.STUDIO.fotoDe('Maria') });
-          }
-        }
-      }
-      const tSnap = await getDocs(collection(db,'turmas'));
+      const tSnap = await getDocs(collection(db, "turmas"));
       if (tSnap.empty) {
-        for (const t of window.STUDIO.turmasPadrao) {
-          await addDoc(collection(db,'turmas'), {
-            nome: t.nome,
-            dia: t.dia,
-            horario: t.horario,
-            vagas: t.vagas,
-            instrutor: t.instrutor,
-            alunos: [],
-            ativo: true,
-            criadoEm: serverTimestamp()
-          });
-        }
-        U.toast('Grade de turmas criada. Edite em Turmas.');
-      } else {
-        for (const d of tSnap.docs) {
-          if (d.data().instrutor === 'Mariana') await updateDoc(d.ref, { instrutor: 'Maria' });
+        for (const t of S.turmasPadrao) {
+          await addDoc(collection(db, "turmas"), { ...t, alunos: [], ativo: true, criadoEm: serverTimestamp() });
         }
       }
-      await cacheFuncs();
-      await cacheTurmas();
     }
 
-    // ============================================================
-    // POPULAR DATALISTS (para selects)
-    // ============================================================
-    function popularDataLists() {
-      // Atualiza select de profissionais nos modais
-      const profs = S.PROFS.map(p => p.nome);
-      ['ag-prof', 'at-prof'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          const currentVal = el.value;
-          el.innerHTML = '<option value="">Selecione</option>';
-          profs.forEach(p => {
-            el.innerHTML += `<option value="${p}">${p}</option>`;
-          });
-          el.value = currentVal;
-        }
+    function mergeClientes() {
+      const map = new Map();
+      state.clientes.forEach(c => map.set(c.id, Object.assign({}, c)));
+      state.ags.forEach(a => {
+        const id = a.clienteId || a.clientId || ("n-" + C.nome(a) + C.tel(a));
+        if (!map.has(id)) map.set(id, { id, nome: C.nome(a), telefone: C.tel(a), email: a.email || "", origem: "agenda" });
       });
+      return Array.from(map.values());
     }
 
-    // ============================================================
-    // APP – MÓDULOS
-    // ============================================================
-    window.App = {};
+    function renderDash() {
+      const hoje = C.hoje();
+      const hojeAgs = state.ags.filter(a => a.data === hoje && C.ativo(a));
+      const exp = state.ags.filter(a => (a.tipo === "experimental" || a.servico === "Aula experimental") && a.status === "pendente");
+      const base = mergeClientes();
+      const inativos = base.filter(c => C.statsCliente(c, state.ags).inativo);
+      const bonus = base.filter(c => C.statsCliente(c, state.ags).bonus);
+      $("k-hoje").textContent = hojeAgs.length;
+      $("k-exp").textContent = exp.length;
+      $("k-inativos").textContent = inativos.length;
+      $("k-bonus").textContent = bonus.length;
+      $("dash-hoje").innerHTML = hojeAgs.length ? hojeAgs.map(a => `<div class="row"><div><strong>${C.hora(a)}</strong><div style="font-size:12px;color:var(--muted)">${C.nome(a)} · ${a.instrutor || a.profissional || ""}</div></div><span class="badge b-${a.status}">${a.status}</span></div>`).join("") : "<p style='color:var(--muted)'>Nada marcado para hoje.</p>";
+      $("dash-cheias").innerHTML = S.diasOrdem.map(dia => {
+        const ts = state.turmas.filter(t => t.dia === dia);
+        return ts.map(t => {
+          const L = S.lotacao(t);
+          const pct = Math.round((L.ocupados / L.vagas) * 100);
+          return `<div class="row"><div><strong>${dia} ${t.horario}</strong><div style="font-size:12px;color:var(--muted)">${t.instrutor} · ${L.ocupados}/${L.vagas}</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:6px;width:160px"><i style="width:${pct}%"></i></div></div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : ""}</div>`;
+        }).join("");
+      }).join("") || "<p>Sem turmas.</p>";
+    }
 
-    // ============================================================
-    // AUTH
-    // ============================================================
-    App.Auth = {
-      login: async () => {
-        const email = document.getElementById('l-email').value.trim();
-        const senha = document.getElementById('l-senha').value;
-        const err = document.getElementById('l-err');
-        const btn = document.getElementById('l-btn');
-        err.textContent = ''; btn.disabled = true; btn.textContent = 'Entrando...';
-        try {
-          await signInWithEmailAndPassword(auth, email, senha);
-        } catch(e) {
-          const msgs = {
-            'auth/user-not-found': 'Usuário não encontrado.',
-            'auth/wrong-password': 'Senha incorreta.',
-            'auth/invalid-credential': 'Credenciais inválidas.'
-          };
-          err.textContent = msgs[e.code] || 'E-mail ou senha incorretos.';
-          btn.disabled = false; btn.textContent = 'Entrar';
-        }
-      },
-      logout: () => signOut(auth),
-      primeiroAcesso: async () => {
-        const nome = document.getElementById('p-nome').value.trim();
-        const email = document.getElementById('p-email').value.trim();
-        const senha = document.getElementById('p-senha').value;
-        const tel = document.getElementById('p-tel').value.trim();
-        const codigo = document.getElementById('p-codigo').value.trim();
-        const err = document.getElementById('p-err');
-        const btn = document.getElementById('p-btn');
-        err.textContent = '';
-        if (codigo !== String(window.STUDIO.codigoPainel)) {
-          err.textContent = 'Código do estúdio incorreto.';
-          return;
-        }
-        if (!nome || !email || !senha || !tel) {
-          err.textContent = 'Preencha todos os campos.';
-          return;
-        }
-        if (senha.length < 6) {
-          err.textContent = 'A senha deve ter pelo menos 6 caracteres.';
-          return;
-        }
-        btn.disabled = true; btn.textContent = 'Criando...';
-        try {
-          const cred = await createUserWithEmailAndPassword(auth, email, senha);
-          await setDoc(doc(db,'users', cred.user.uid), {
-            nome, email, telefone: tel, role: 'admin', criadoEm: serverTimestamp()
-          });
-        } catch(e) {
-          err.textContent = e.code === 'auth/email-already-in-use' ? 'Este e-mail já tem conta. Use Entrar.' : (e.message || 'Não foi possível criar o acesso.');
-          btn.disabled = false; btn.textContent = 'Criar acesso do painel';
-        }
-      },
-      cadastrar: async () => {
-        const nome = document.getElementById('cad-nome').value.trim();
-        const email = document.getElementById('cad-email').value.trim();
-        const senha = document.getElementById('cad-senha').value;
-        const tel = document.getElementById('cad-tel').value.trim();
-        const role = document.getElementById('cad-role').value;
-        if (!nome || !email || !senha || !tel) {
-          U.toast('Preencha todos os campos.', 'err');
-          return;
-        }
-        if (senha.length < 6) {
-          U.toast('A senha deve ter pelo menos 6 caracteres.', 'err');
-          return;
-        }
-        try {
-          const cred = await createUserWithEmailAndPassword(auth, email, senha);
-          await setDoc(doc(db,'users', cred.user.uid), {
-            nome, email, telefone: tel, role, criadoEm: serverTimestamp()
-          });
-          // Se for cliente, cria também na coleção clientes
-          if (role === 'cliente') {
-            await setDoc(doc(db,'clientes', cred.user.uid), {
-              nome, email, tel, totalGasto:0, sessoes:0, ultimaVisita:null, criadoEm: serverTimestamp()
-            });
-          }
-          // Se for funcionário, cria na coleção funcionarios
-          if (role === 'funcionario') {
-            await setDoc(doc(db,'funcionarios', cred.user.uid), {
-              nome, email, tel, comissao:30, criadoEm: serverTimestamp()
-            });
-          }
-          U.toast('Usuário criado com sucesso!');
-          App.Modals.fechar('m-cadastro');
-          // Recarrega listas
-          await cacheClientes();
-          await cacheFuncs();
-          App.Clientes.render();
-          App.Funcionarios.render();
-        } catch(e) {
-          let msg = 'Erro ao criar conta.';
-          if (e.code === 'auth/email-already-in-use') msg = 'Este e-mail já está cadastrado.';
-          U.toast(msg, 'err');
-        }
+    function renderCal() {
+      const m = state.mes, y = m.getFullYear(), mo = m.getMonth();
+      const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+      $("cal-titulo").textContent = meses[mo] + " " + y;
+      $("cal-dow").innerHTML = ["D","S","T","Q","Q","S","S"].map(d => `<div class="cal-dow">${d}</div>`).join("");
+      const first = new Date(y, mo, 1).getDay();
+      const days = new Date(y, mo + 1, 0).getDate();
+      let html = "";
+      for (let i = 0; i < first; i++) html += "<div></div>";
+      for (let d = 1; d <= days; d++) {
+        const ds = y + "-" + String(mo + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+        const oc = C.ocupacaoDia(ds, state.turmas, state.ags);
+        let cls = "cal-day";
+        if (ds === state.selDia) cls += " sel";
+        if (oc.cheio) cls += " cheio";
+        else if (oc.pct >= 0.5) cls += " medio";
+        else if (oc.ocup) cls += " leve";
+        html += `<button class="${cls}" data-d="${ds}">${d}<small>${oc.ocup}/${oc.cap || "–"}</small></button>`;
       }
-    };
-
-    // ============================================================
-    // MODALS
-    // ============================================================
-    App.Modals = {
-      abrir: (id) => {
-        const modal = document.getElementById(id);
-        if (modal) modal.classList.add('on');
-      },
-      fechar: (id) => {
-        const modal = document.getElementById(id);
-        if (modal) modal.classList.remove('on');
-      }
-    };
-    // Adiciona evento para fechar modal ao clicar fora
-    document.querySelectorAll('.modal-bg').forEach(m => {
-      m.addEventListener('click', e => {
-        if (e.target === m) m.classList.remove('on');
-      });
-    });
-
-    // ============================================================
-    // NAV
-    // ============================================================
-    App.Nav = {
-      ir: (tela, btn) => {
-        document.querySelectorAll('.tela').forEach(t => t.classList.remove('on'));
-        document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('on'));
-        document.getElementById('t-'+tela).classList.add('on');
-        if (btn) btn.classList.add('on');
-        document.querySelector('.scroll').scrollTop = 0;
-        // Carrega dados conforme a tela
-        const loaders = {
-          dashboard: App.Dashboard.carregar,
-          agenda: App.Agenda.carregar,
-          experimentais: App.Experimentais.carregar,
-          'horarios-disp': App.Vagas.carregar,
-          turmas: App.Turmas.render,
-          clientes: App.Clientes.render,
-          funcionarios: App.Funcionarios.render,
-          financeiro: App.Financeiro.carregar,
-          fechamento: App.Fechamento.carregar,
-          relatorios: () => {},
-          lembretes: App.Lembretes.carregar,
-          config: App.Config.carregar
-        };
-        if (loaders[tela]) loaders[tela]();
-      },
-      openSidebar: () => {
-        document.getElementById('sidebar').classList.add('open');
-        document.getElementById('sb-overlay').style.display = 'block';
-      },
-      closeSidebar: () => {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('sb-overlay').style.display = 'none';
-      }
-    };
-
-    // ============================================================
-    // DASHBOARD
-    // ============================================================
-    App.Dashboard = {
-      carregar: async () => {
-        // Faturamento de hoje
-        const hoje = U.hoje();
-        const snapHoje = await getDocs(query(collection(db,'atendimentos'), where('dataStr','==', hoje)));
-        let totalHoje = 0;
-        snapHoje.forEach(d => totalHoje += Number(d.data().valor||0));
-        document.getElementById('s-hoje').textContent = U.fmt(totalHoje);
-        document.getElementById('s-hoje-n').textContent = snapHoje.size + ' atendimentos';
-
-        // Faturamento do mês
-        const iniMes = U.iniMes();
-        const snapMes = await getDocs(query(collection(db,'atendimentos'), where('dataStr','>=', iniMes)));
-        let totalMes = 0;
-        snapMes.forEach(d => totalMes += Number(d.data().valor||0));
-        document.getElementById('s-mes').textContent = U.fmt(totalMes);
-
-        // Agendamentos hoje
-        const snapAg = await getDocs(query(collection(db,'agendamentos'), where('data','==', hoje)));
-        const agHoje = snapAg.docs.filter(d => d.data().status !== 'cancelado');
-        document.getElementById('s-agnd').textContent = agHoje.length;
-        document.getElementById('s-agnd-n').textContent = agHoje.length + ' agendamentos';
-
-        // Lucro líquido (simples: 70% do faturamento)
-        document.getElementById('s-lucro').textContent = U.fmt(totalMes * 0.7);
-
-        // Agenda de hoje
-        const el = document.getElementById('d-agenda');
-        if (agHoje.length === 0) {
-          el.innerHTML = '<div class="empty"><p>Nenhum agendamento hoje</p></div>';
-        } else {
-          el.innerHTML = agHoje.slice(0,5).map(d => {
-            const a = d.data();
-            return `<div class="slot s-${a.status}">
-              <div class="slot-hora">${a.hora}</div>
-              <div class="slot-body"><div class="slot-nome">${a.clienteNome}</div><div class="slot-det">${a.servico} · ${a.profissional||'—'}</div></div>
-              ${U.badgeStatus(a.status)}
-            </div>`;
-          }).join('');
-        }
-
-        // Comissões do mês
-        const elCom = document.getElementById('d-comissoes');
-        const funcs = S.funcs.length ? S.funcs : S.PROFS;
-        let html = '';
-        for (const f of funcs) {
-          const snapF = await getDocs(query(collection(db,'atendimentos'), where('profissional','==', f.nome), where('dataStr','>=', iniMes)));
-          let total = 0;
-          snapF.forEach(d => total += Number(d.data().valor||0));
-          const comissao = f.comissao || S.getComissao(f.nome);
-          const valor = total * (comissao/100);
-          html += `<div class="lem-item"><span>${f.nome}</span><span>${U.fmt(valor)}</span></div>`;
-        }
-        elCom.innerHTML = html || '<div class="empty"><p>Sem dados</p></div>';
-      }
-    };
-
-    // ============================================================
-    // AGENDA
-    // ============================================================
-    App.Agenda = {
-      setFiltro: (filtro, btn) => {
-        S.filtroAgenda = filtro;
-        document.querySelectorAll('#t-agenda .tab').forEach(b => b.classList.remove('on'));
-        if (btn) btn.classList.add('on');
-        document.getElementById('agenda-titulo').textContent =
-          {hoje:'Hoje', semana:'Esta semana', mes:'Este mês', todos:'Todos'}[filtro];
-        App.Agenda.carregar();
-      },
-      carregar: async () => {
-        const el = document.getElementById('lista-agenda');
-        el.innerHTML = '<div class="loading"><div class="spin"></div></div>';
-        try {
-          let q = collection(db,'agendamentos');
-          const lim = S.filtroAgenda === 'hoje' ? U.hoje() :
-                      S.filtroAgenda === 'semana' ? U.iniSem() :
-                      S.filtroAgenda === 'mes' ? U.iniMes() : null;
-          let lista = [];
-          if (lim) {
-            const snap = await getDocs(query(q, where('data','>=',lim)));
-            lista = snap.docs.map(d=>({id:d.id,...d.data()}));
-          } else {
-            const snap = await getDocs(q);
-            lista = snap.docs.map(d=>({id:d.id,...d.data()}));
-          }
-          // Filtra pelo dia selecionado no calendário
-          lista = lista.filter(a => a.data === S.agendaDataSel);
-          lista.sort((a,b) => a.hora > b.hora ? 1 : -1);
-
-          if (!lista.length) {
-            el.innerHTML = '<div class="empty"><div class="empty-ico">📅</div><p>Nenhum agendamento neste dia</p></div>';
-          } else {
-            el.innerHTML = lista.map(a => `
-              <div class="slot s-${a.status}">
-                <div class="slot-hora">${a.hora}</div>
-                <div class="slot-body">
-                  <div class="slot-nome">${a.clienteNome}</div>
-                  <div class="slot-det">${a.servico} · ${a.profissional||'—'}</div>
-                </div>
-                ${U.badgeStatus(a.status)}
-                <div class="slot-acts">
-                  ${a.status!=='confirmado' ? `<button class="btn btn-xs btn-outline" onclick="App.Agenda.mudarStatus('${a.id}','confirmado')">✔️</button>` : ''}
-                  ${a.status!=='concluido' ? `<button class="btn btn-xs btn-outline" onclick="App.Agenda.mudarStatus('${a.id}','concluido')">🏁</button>` : ''}
-                  ${a.status!=='cancelado' ? `<button class="btn btn-xs btn-outline" onclick="App.Agenda.mudarStatus('${a.id}','cancelado')">✕</button>` : ''}
-                </div>
-              </div>
-            `).join('');
-          }
-          App.Agenda.renderCalendario();
-        } catch(e) {
-          el.innerHTML = `<div class="empty"><p>Erro: ${e.message}</p></div>`;
-        }
-      },
-      renderCalendario: async () => {
-        const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-        document.getElementById('ag-cal-mes').textContent = `${meses[S.agendaMes]} ${S.agendaAno}`;
-        const primeiroDia = new Date(S.agendaAno, S.agendaMes, 1).getDay();
-        const totalDias = new Date(S.agendaAno, S.agendaMes+1, 0).getDate();
-        const hojeStr = U.hoje();
-
-        const snap = await getDocs(query(collection(db,'agendamentos'), where('data','>=', `${S.agendaAno}-${String(S.agendaMes+1).padStart(2,'0')}-01`)));
-        const diasComAgendamento = new Set(snap.docs.map(d=>d.data().data));
-
-        let dowHtml = '';
-        const dow = ['D','S','T','Q','Q','S','S'];
-        dow.forEach(d => dowHtml += `<div class="cal-dow">${d}</div>`);
-        document.getElementById('ag-cal-dow').innerHTML = dowHtml;
-
-        let html = '';
-        for (let i=0; i<primeiroDia; i++) html += '<div></div>';
-        for (let d=1; d<=totalDias; d++) {
-          const mm = String(S.agendaMes+1).padStart(2,'0'), dd = String(d).padStart(2,'0');
-          const dataStr = `${S.agendaAno}-${mm}-${dd}`;
-          const diaSemana = new Date(S.agendaAno, S.agendaMes, d).getDay();
-          const fechado = diaSemana === 0;
-          const passado = dataStr < hojeStr;
-          const sel = dataStr === S.agendaDataSel;
-          const temAg = diasComAgendamento.has(dataStr);
-          html += `<div class="cal-day ${fechado?'off':''} ${passado?'past':''} ${sel?'sel':''}" onclick="App.Agenda.selecionarDia('${dataStr}', this)">
-            ${d}
-            ${temAg ? '<div class="dot"></div>' : ''}
-          </div>`;
-        }
-        document.getElementById('ag-cal-grid').innerHTML = html;
-      },
-      selecionarDia: (dataStr, el) => {
-        S.agendaDataSel = dataStr;
-        document.querySelectorAll('#ag-cal-grid .cal-day').forEach(d => d.classList.remove('sel'));
-        el.classList.add('sel');
-        App.Agenda.carregar();
-      },
-      anteriorMes: () => {
-        S.agendaMes--;
-        if (S.agendaMes < 0) { S.agendaMes = 11; S.agendaAno--; }
-        App.Agenda.renderCalendario();
-      },
-      proximoMes: () => {
-        S.agendaMes++;
-        if (S.agendaMes > 11) { S.agendaMes = 0; S.agendaAno++; }
-        App.Agenda.renderCalendario();
-      },
-      mudarStatus: async (id, status) => {
-        try {
-          await updateDoc(doc(db,'agendamentos',id), {status, atualizadoEm: serverTimestamp()});
-          U.toast(`Status atualizado para ${status}.`);
-          App.Agenda.carregar();
-          App.Dashboard.carregar();
-          if (App.Experimentais) App.Experimentais.carregar();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      },
-      salvar: async () => {
-        const cliente = document.getElementById('ag-cliente').value.trim();
-        const servico = document.getElementById('ag-servico').value.trim();
-        const data = document.getElementById('ag-data').value;
-        const hora = document.getElementById('ag-hora').value;
-        const profissional = document.getElementById('ag-prof').value;
-        const status = document.getElementById('ag-status').value;
-        if (!cliente || !servico || !data || !hora) {
-          U.toast('Preencha todos os campos obrigatórios.', 'err');
-          return;
-        }
-        try {
-          await addDoc(collection(db,'agendamentos'), {
-            clienteNome: cliente,
-            servico,
-            data,
-            hora,
-            profissional: profissional || '',
-            status: status || 'pendente',
-            criadoEm: serverTimestamp()
-          });
-          U.toast('Agendamento criado!');
-          App.Modals.fechar('m-agendamento');
-          App.Agenda.carregar();
-          App.Dashboard.carregar();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      }
-    };
-
-    // ============================================================
-    // VAGAS (Horários Disponíveis)
-    // ============================================================
-    App.Vagas = {
-      carregar: async () => {
-        const el = document.getElementById('lista-vagas');
-        el.innerHTML = '<div class="loading"><div class="spin"></div></div>';
-        try {
-          const hoje = U.hoje();
-          const snap = await getDocs(query(collection(db,'agendamentos'), where('data','==', hoje)));
-          const agendamentos = snap.docs.map(d=>d.data()).filter(a=>a.status!=='cancelado');
-          const profs = S.PROFS.map(p => p.nome);
-          const horarios = ['08:00','09:00','10:00','11:00','14:00','15:00','16:00','17:00','18:00'];
-          let html = '';
-          for (const prof of profs) {
-            const ocupados = agendamentos.filter(a => a.profissional === prof).map(a => a.hora);
-            const livres = horarios.filter(h => !ocupados.includes(h));
-            const total = horarios.length;
-            const ocupadosCount = ocupados.length;
-            let badgeClass = 'vb-livre';
-            let badgeText = `${livres.length} vagas`;
-            if (ocupadosCount >= total * 0.7) { badgeClass = 'vb-quase'; badgeText = 'Quase cheio'; }
-            if (ocupadosCount === total) { badgeClass = 'vb-lotado'; badgeText = 'Lotado'; }
-            html += `
-              <div class="vaga-card">
-                <div class="vaga-badge ${badgeClass}">${livres.length}<span>vagas</span></div>
-                <div class="vaga-info">
-                  <div class="vaga-hora">${prof}</div>
-                  <div class="vaga-prof">${livres.join(', ')}</div>
-                </div>
-                <span style="font-size:11px;color:var(--n-400);">${badgeText}</span>
-              </div>
-            `;
-          }
-          el.innerHTML = html || '<div class="empty"><p>Nenhum horário disponível hoje</p></div>';
-        } catch(e) {
-          el.innerHTML = `<div class="empty"><p>Erro: ${e.message}</p></div>`;
-        }
-      },
-      gerarWhatsApp: () => {
-        const hoje = U.hoje();
-        const msg = `📋 *Horários disponíveis hoje (${U.dataBR(hoje)})*\n\n` +
-                    `Consulte a lista de vagas e agende pelo WhatsApp.\n` +
-                    `Para mais detalhes, acesse o painel.`;
-        document.getElementById('wa-msg').value = msg;
-        App.Modals.abrir('m-whatsapp');
-      },
-      copiarMsg: () => {
-        const textarea = document.getElementById('wa-msg');
-        textarea.select();
-        navigator.clipboard.writeText(textarea.value).then(() => {
-          U.toast('Mensagem copiada!');
-          App.Modals.fechar('m-whatsapp');
-        }).catch(() => {
-          // fallback
-          document.execCommand('copy');
-          U.toast('Mensagem copiada!');
-          App.Modals.fechar('m-whatsapp');
-        });
-      }
-    };
-
-    // ============================================================
-    // TURMAS
-    // ============================================================
-    App.Turmas = {
-      render: async () => {
-        const el = document.getElementById('lista-turmas');
-        el.innerHTML = '<div class="loading"><div class="spin"></div></div>';
-        try {
-          await cacheTurmas();
-          const turmas = S.turmas;
-          if (!turmas.length) {
-            el.innerHTML = '<div class="empty"><p>Nenhuma turma criada ainda.</p></div>';
-            return;
-          }
-          let html = '';
-          for (const t of turmas) {
-            const alunos = t.alunos || [];
-            const vagas = t.vagas || 10;
-            const ocupacao = Math.round((alunos.length / vagas) * 100);
-            let pgClass = 'pg-green';
-            if (ocupacao > 80) pgClass = 'pg-orange';
-            if (ocupacao >= 100) pgClass = 'pg-red';
-            html += `
-              <div class="turma-card">
-                <div class="turma-head">
-                  <div><div class="title">${t.nome}</div><div class="sub">${t.dia} · ${t.horario} · ${t.instrutor||'Instrutor'}</div></div>
-                  <div style="margin-left:auto;color:rgba(255,255,255,0.7);font-size:13px;">${alunos.length}/${vagas}</div>
-                </div>
-                <div class="turma-body">
-                  <div class="progress-bar"><div class="progress-fill ${pgClass}" style="width:${Math.min(ocupacao,100)}%"></div></div>
-                  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
-                    ${alunos.map(a => `<span class="aluno-chip">${a} <button onclick="App.Turmas.removerAluno('${t.id}','${a}')">✕</button></span>`).join('')}
-                  </div>
-                  <button class="btn btn-sm btn-outline" style="margin-top:10px;" onclick="App.Turmas.abrirInscricao('${t.id}')">+ Inscrever aluno</button>
-                  <button class="btn btn-sm btn-danger" style="margin-top:10px;margin-left:8px;" onclick="App.Turmas.excluir('${t.id}')">Excluir turma</button>
-                </div>
-              </div>
-            `;
-          }
-          el.innerHTML = html;
-        } catch(e) {
-          el.innerHTML = `<div class="empty"><p>Erro: ${e.message}</p></div>`;
-        }
-      },
-      abrirModalNova: () => {
-        document.getElementById('turma-nome').value = '';
-        document.getElementById('turma-dia').value = 'Segunda';
-        document.getElementById('turma-horario').value = '08:00';
-        document.getElementById('turma-vagas').value = 10;
-        document.getElementById('turma-instrutor').value = 'Michele';
-        App.Modals.abrir('m-turma');
-      },
-      salvar: async () => {
-        const nome = document.getElementById('turma-nome').value.trim();
-        const dia = document.getElementById('turma-dia').value;
-        const horario = document.getElementById('turma-horario').value;
-        const vagas = parseInt(document.getElementById('turma-vagas').value) || 10;
-        const instrutor = document.getElementById('turma-instrutor').value.trim();
-        if (!nome) { U.toast('Nome da turma é obrigatório.', 'err'); return; }
-        try {
-          await addDoc(collection(db,'turmas'), {
-            nome, dia, horario, vagas, instrutor, alunos: [],
-            ativo: true,
-            criadoEm: serverTimestamp()
-          });
-          U.toast('Turma criada!');
-          App.Modals.fechar('m-turma');
-          App.Turmas.render();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      },
-      abrirInscricao: (turmaId) => {
-        const select = document.getElementById('insc-turma');
-        // Preenche com as turmas existentes
-        select.innerHTML = '<option value="">Selecione</option>';
-        S.turmas.forEach(t => {
-          select.innerHTML += `<option value="${t.id}">${t.nome}</option>`;
-        });
-        select.value = turmaId;
-        document.getElementById('insc-aluno').value = '';
-        App.Modals.abrir('m-inscrever');
-      },
-      inscrever: async () => {
-        const turmaId = document.getElementById('insc-turma').value;
-        const aluno = document.getElementById('insc-aluno').value.trim();
-        if (!turmaId || !aluno) { U.toast('Selecione turma e digite o nome do aluno.', 'err'); return; }
-        try {
-          const ref = doc(db,'turmas', turmaId);
-          const snap = await getDoc(ref);
-          const data = snap.data();
-          const alunos = data.alunos || [];
-          if (alunos.length >= (data.vagas || 10)) {
-            U.toast('Turma lotada!', 'err');
-            return;
-          }
-          if (alunos.includes(aluno)) {
-            U.toast('Aluno já inscrito.', 'err');
-            return;
-          }
-          await updateDoc(ref, { alunos: arrayUnion(aluno) });
-          U.toast('Aluno inscrito!');
-          App.Modals.fechar('m-inscrever');
-          App.Turmas.render();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      },
-      removerAluno: async (turmaId, aluno) => {
-        if (!confirm(`Remover ${aluno} da turma?`)) return;
-        try {
-          await updateDoc(doc(db,'turmas', turmaId), { alunos: arrayRemove(aluno) });
-          U.toast('Aluno removido.');
-          App.Turmas.render();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      },
-      excluir: async (id) => {
-        if (!confirm('Excluir esta turma permanentemente?')) return;
-        try {
-          await deleteDoc(doc(db,'turmas',id));
-          U.toast('Turma excluída.');
-          App.Turmas.render();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      }
-    };
-
-    // ============================================================
-    // CLIENTES
-    // ============================================================
-    App.Clientes = {
-      render: async () => {
-        const tbody = document.getElementById('tbody-clientes');
-        try {
-          await cacheClientes();
-          const clientes = S.clientes;
-          if (!clientes.length) {
-            tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><p>Nenhum cliente cadastrado.</p></div></td></tr>';
-            return;
-          }
-          let html = '';
-          for (const c of clientes) {
-            html += `
-              <tr>
-                <td><strong>${c.nome}</strong></td>
-                <td>${c.tel || c.email || '—'}</td>
-                <td>${c.ultimaVisita ? U.dataBR(c.ultimaVisita) : '—'}</td>
-                <td>${U.fmt(c.totalGasto||0)}</td>
-                <td>${c.sessoes||0}</td>
-                <td><span class="badge badge-success">Ativo</span></td>
-                <td><button class="btn btn-xs btn-outline" onclick="App.Clientes.verPerfil('${c.id}')">Ver</button></td>
-              </tr>
-            `;
-          }
-          tbody.innerHTML = html;
-        } catch(e) {
-          tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><p>Erro: ${e.message}</p></div></td></tr>`;
-        }
-      },
-      filtrar: () => {
-        // Implementar busca simples
-        const termo = document.getElementById('busca-cli').value.toLowerCase();
-        const rows = document.querySelectorAll('#tbody-clientes tr');
-        rows.forEach(row => {
-          const text = row.textContent.toLowerCase();
-          row.style.display = text.includes(termo) ? '' : 'none';
-        });
-      },
-      salvar: async () => {
-        const nome = document.getElementById('cli-nome').value.trim();
-        const email = document.getElementById('cli-email').value.trim();
-        const tel = document.getElementById('cli-tel').value.trim();
-        if (!nome) { U.toast('Nome é obrigatório.', 'err'); return; }
-        try {
-          await addDoc(collection(db,'clientes'), {
-            nome, email, tel, totalGasto:0, sessoes:0, ultimaVisita:null, criadoEm: serverTimestamp()
-          });
-          U.toast('Cliente adicionado!');
-          App.Modals.fechar('m-cliente');
-          App.Clientes.render();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      },
-      verPerfil: async (id) => {
-        // Navega para perfil (simples)
-        const snap = await getDoc(doc(db,'clientes',id));
-        const data = snap.data();
-        if (!data) { U.toast('Cliente não encontrado.', 'err'); return; }
-        const body = document.getElementById('perfil-body');
-        body.innerHTML = `
-          <div class="glass">
-            <h3>${data.nome}</h3>
-            <p>📧 ${data.email||'—'}</p>
-            <p>📞 ${data.tel||'—'}</p>
-            <p>💰 Total gasto: ${U.fmt(data.totalGasto||0)}</p>
-            <p>📊 Sessões: ${data.sessoes||0}</p>
+      $("cal-grid").innerHTML = html;
+      $("cal-grid").querySelectorAll("[data-d]").forEach(b => b.onclick = () => { state.selDia = b.dataset.d; renderCal(); renderDia(); });
+      renderDia();
+    }
+    function renderDia() {
+      const oc = C.ocupacaoDia(state.selDia, state.turmas, state.ags);
+      $("dia-titulo").textContent = S.dataBR(state.selDia) + " · " + C.diaNome(state.selDia);
+      const lista = state.ags.filter(a => a.data === state.selDia).sort((a, b) => C.hora(a).localeCompare(C.hora(b)));
+      let html = `<p style="font-size:13px;color:var(--muted)">${oc.ocup} ocupadas de ${oc.cap || 0} vagas ${oc.cheio ? "· CHEIO" : ""}</p>`;
+      html += lista.length ? lista.map(a => `
+        <div class="row">
+          <div><strong>${C.hora(a)} · ${C.nome(a)}</strong><div style="font-size:12px;color:var(--muted)">${a.servico || "Pilates"} · ${a.instrutor || a.profissional || ""}</div></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="badge b-${a.status}">${a.status}</span>
+            ${a.status !== "confirmado" ? `<button class="btn btn-sm btn-gold" data-ok="${a.id}">Confirmar</button>` : ""}
+            ${C.tel(a) ? `<a class="btn btn-sm btn-ghost" target="_blank" href="${S.waTo(C.tel(a), S.msgs.confirmar(C.nome(a), C.quando(a)))}">WPP</a>` : ""}
+            ${a.status !== "cancelado" ? `<button class="btn btn-sm btn-danger" data-no="${a.id}">Cancelar</button>` : ""}
           </div>
-        `;
-        App.Nav.ir('perfil-cliente', null);
-      }
+        </div>`).join("") : "<p>Nenhum agendamento neste dia.</p>";
+      $("dia-lista").innerHTML = html;
+      $("dia-lista").querySelectorAll("[data-ok]").forEach(b => b.onclick = () => updateDoc(doc(db, "agendamentos", b.dataset.ok), { status: "confirmado" }));
+      $("dia-lista").querySelectorAll("[data-no]").forEach(b => b.onclick = () => updateDoc(doc(db, "agendamentos", b.dataset.no), { status: "cancelado" }));
+    }
+    $("cal-prev").onclick = () => { state.mes.setMonth(state.mes.getMonth() - 1); renderCal(); };
+    $("cal-next").onclick = () => { state.mes.setMonth(state.mes.getMonth() + 1); renderCal(); };
+
+    function renderTurmas() {
+      $("lista-turmas").innerHTML = "<h3>Grade semanal</h3>" + S.diasOrdem.map(dia => {
+        const ts = state.turmas.filter(t => t.dia === dia);
+        if (!ts.length) return "";
+        return `<h4 style="margin:16px 0 8px;color:var(--brown)">${dia}</h4>` + ts.map(t => {
+          const L = S.lotacao(t);
+          const pct = Math.round((L.ocupados / Math.max(1, L.vagas)) * 100);
+          return `<div class="row"><div style="flex:1"><strong>${t.horario} · ${t.nome}</strong><div style="font-size:12px;color:var(--muted)">${t.instrutor} · ${L.livres} vagas livres</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:8px"><i style="width:${pct}%"></i></div></div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : '<span class="badge b-confirmado">' + L.ocupados + "/" + L.vagas + "</span>"}</div>`;
+        }).join("");
+      }).join("");
+    }
+
+    function renderClientes() {
+      const q = ($("cli-busca").value || "").toLowerCase();
+      const lista = mergeClientes().filter(c => (c.nome || "").toLowerCase().includes(q) || String(c.telefone || c.tel || "").includes(q));
+      $("cli-lista").innerHTML = lista.length ? lista.map(c => {
+        const st = C.statsCliente(c, state.ags);
+        return `<div class="row cli-item" data-id="${c.id}" style="cursor:pointer"><div><strong>${c.nome || "—"}</strong><div style="font-size:12px;color:var(--muted)">${c.telefone || c.tel || "sem WhatsApp"} · ${st.aulas} aulas</div></div>${st.bonus ? '<span class="badge b-bonus">5+ aulas</span>' : st.inativo ? '<span class="badge b-inativo">Inativa</span>' : ""}</div>`;
+      }).join("") : "<p>Nenhuma aluna ainda.</p>";
+      $("cli-lista").querySelectorAll(".cli-item").forEach(el => el.onclick = () => showCli(el.dataset.id));
+    }
+    $("cli-busca").oninput = renderClientes;
+
+    function showCli(id) {
+      const c = mergeClientes().find(x => x.id === id);
+      if (!c) return;
+      state.cli = c;
+      const st = C.statsCliente(c, state.ags);
+      const tel = c.telefone || c.tel || "";
+      const hist = st.lista.slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      $("cli-detalhe").innerHTML = `
+        <h3>${c.nome}</h3>
+        <p style="font-size:13px;color:var(--muted)">${tel || "sem telefone"} · ${c.email || ""}</p>
+        <p style="margin:10px 0">${st.aulas} aulas · última ${st.last ? S.dataBR(st.last) : "—"} ${st.dias != null ? "(" + st.dias + " dias)" : ""} ${st.bonus ? '<span class="badge b-bonus">Bônus fidelidade</span>' : ""}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          ${tel ? `<a class="btn btn-sm btn-gold" target="_blank" href="${S.waTo(tel, S.msgs.lembrete(c.nome, "no horário combinado"))}">Lembrete</a>` : ""}
+          ${tel && st.inativo ? `<a class="btn btn-sm btn-brown" target="_blank" href="${S.waTo(tel, S.msgs.retorno(c.nome, st.dias))}">Chamar retorno</a>` : ""}
+          ${tel && st.bonus ? `<a class="btn btn-sm btn-gold" target="_blank" href="${S.waTo(tel, S.msgs.bonus(c.nome, st.aulas))}">Parabéns 5 aulas</a>` : ""}
+          ${tel ? `<a class="btn btn-sm btn-ghost" target="_blank" href="${S.waTo(tel, S.msgs.cadastro(c.nome))}">Boas-vindas</a>` : ""}
+        </div>
+        <h4 style="color:var(--brown)">Histórico</h4>
+        ${hist.length ? hist.map(a => `<div class="row"><div>${S.dataBR(a.data)} · ${C.hora(a)}<div style="font-size:12px;color:var(--muted)">${a.servico || "Pilates"}</div></div><span class="badge b-${a.status}">${a.status}</span></div>`).join("") : "<p>Sem histórico.</p>"}
+      `;
+    }
+
+    $("nc-btn").onclick = async () => {
+      const nome = $("nc-nome").value.trim(), tel = $("nc-tel").value.trim(), email = $("nc-email").value.trim(), obs = $("nc-obs").value.trim();
+      if (!nome || !tel) { C.toast("Nome e WhatsApp são obrigatórios."); return; }
+      await addDoc(collection(db, "clientes"), { nome, telefone: tel, tel, email, obs, origem: "presencial", ativo: true, criadoEm: serverTimestamp() });
+      $("nc-nome").value = $("nc-tel").value = $("nc-email").value = $("nc-obs").value = "";
+      C.toast("Aluna cadastrada na base.");
+      if (tel) window.open(S.waTo(tel, S.msgs.cadastro(nome)), "_blank");
     };
 
-    // ============================================================
-    // FUNCIONÁRIOS
-    // ============================================================
-    App.Funcionarios = {
-      render: async () => {
-        const el = document.getElementById('lista-funcs');
-        try {
-          await cacheFuncs();
-          const funcs = S.funcs;
-          if (!funcs.length) {
-            el.innerHTML = '<div class="empty"><p>Nenhuma funcionária cadastrada.</p></div>';
-            return;
-          }
-          let html = '';
-          for (const f of funcs) {
-            html += `
-              <div class="vaga-card">
-                <div class="vaga-badge vb-livre" style="${f.foto||window.STUDIO.fotoDe(f.nome)?`background-image:url('${f.foto||window.STUDIO.fotoDe(f.nome)}');background-size:cover;background-position:top;color:transparent;`:''}">${(f.nome||'?').charAt(0)}</div>
-                <div class="vaga-info">
-                  <div class="vaga-hora">${f.nome}</div>
-                  <div class="vaga-prof">📧 ${f.email||'—'} · 💰 ${f.comissao||30}% comissão</div>
-                </div>
-                <button class="btn btn-xs btn-danger" onclick="App.Funcionarios.excluir('${f.id}')">✕</button>
-              </div>
-            `;
-          }
-          el.innerHTML = html;
-        } catch(e) {
-          el.innerHTML = `<div class="empty"><p>Erro: ${e.message}</p></div>`;
-        }
-      },
-      salvar: async () => {
-        const nome = document.getElementById('func-nome').value.trim();
-        const email = document.getElementById('func-email').value.trim();
-        const tel = document.getElementById('func-tel').value.trim();
-        const comissao = parseInt(document.getElementById('func-comissao').value) || 30;
-        if (!nome) { U.toast('Nome é obrigatório.', 'err'); return; }
-        try {
-          await addDoc(collection(db,'funcionarios'), {
-            nome, email, tel, comissao, criadoEm: serverTimestamp()
-          });
-          U.toast('Funcionária adicionada!');
-          App.Modals.fechar('m-funcionario');
-          App.Funcionarios.render();
-          popularDataLists();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      },
-      excluir: async (id) => {
-        if (!confirm('Excluir esta funcionária?')) return;
-        try {
-          await deleteDoc(doc(db,'funcionarios',id));
-          U.toast('Funcionária excluída.');
-          App.Funcionarios.render();
-          popularDataLists();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      }
+    function renderLeads() {
+      const lista = state.ags.filter(a => a.tipo === "experimental" || a.servico === "Aula experimental").sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      $("lista-leads").innerHTML = lista.length ? lista.map(a => `
+        <div class="row">
+          <div><strong>${C.nome(a)}</strong><div style="font-size:12px;color:var(--muted)">${C.quando(a)} · ${C.tel(a) || ""}</div></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="badge b-${a.status}">${a.status}</span>
+            ${C.tel(a) ? `<a class="btn btn-sm btn-gold" target="_blank" href="${S.waTo(C.tel(a), S.msgs.experimental(C.nome(a), C.quando(a)))}">Confirmar WPP</a>` : ""}
+            ${a.status === "pendente" ? `<button class="btn btn-sm btn-brown" data-ok="${a.id}">Confirmar</button>` : ""}
+          </div>
+        </div>`).join("") : "<p>Nenhum pedido experimental.</p>";
+      $("lista-leads").querySelectorAll("[data-ok]").forEach(b => b.onclick = () => updateDoc(doc(db, "agendamentos", b.dataset.ok), { status: "confirmado" }));
+    }
+
+    function renderRetornos() {
+      const lista = mergeClientes().map(c => ({ c, st: C.statsCliente(c, state.ags) })).filter(x => x.st.inativo);
+      $("lista-retornos").innerHTML = lista.length ? lista.map(({ c, st }) => `
+        <div class="row">
+          <div><strong>${c.nome}</strong><div style="font-size:12px;color:var(--muted)">${st.dias} dias sem agendar · última ${S.dataBR(st.last)}</div></div>
+          ${(c.telefone || c.tel) ? `<a class="btn btn-sm btn-brown" target="_blank" href="${S.waTo(c.telefone || c.tel, S.msgs.retorno(c.nome, st.dias))}">WhatsApp pronto</a>` : "<span class='badge b-inativo'>sem número</span>"}
+        </div>`).join("") : "<p>Ninguém sumido no momento. Ótimo.</p>";
+    }
+
+    $("btnNovoAg").onclick = () => {
+      $("ag-cli").innerHTML = mergeClientes().map(c => `<option value="${c.id}">${c.nome}</option>`).join("");
+      $("ag-turma").innerHTML = state.turmas.map(t => `<option value="${t.id}">${t.dia} ${t.horario} · ${t.instrutor}</option>`).join("");
+      $("ag-data").value = state.selDia;
+      $("m-ag").classList.remove("hidden");
+      $("m-ag").style.display = "flex";
+    };
+    $("ag-fechar").onclick = () => { $("m-ag").classList.add("hidden"); $("m-ag").style.display = "none"; };
+    $("ag-salvar").onclick = async () => {
+      const cli = mergeClientes().find(c => c.id === $("ag-cli").value);
+      const turma = state.turmas.find(t => t.id === $("ag-turma").value);
+      if (!cli || !turma || !$("ag-data").value) { $("ag-err").textContent = "Preencha aluna, turma e data."; return; }
+      await addDoc(collection(db, "agendamentos"), B.payload({
+        nome: cli.nome, tel: cli.telefone || cli.tel, clienteId: cli.id,
+        servico: turma.nome || "Pilates", tipo: "aula", origem: "admin",
+        data: $("ag-data").value, hora: turma.horario, instrutor: turma.instrutor,
+        turmaId: turma.id, turmaNome: turma.nome, status: $("ag-status").value
+      }));
+      $("ag-fechar").click();
+      C.toast("Agendamento lançado.");
     };
 
-    // ============================================================
-    // FINANCEIRO
-    // ============================================================
-    App.Financeiro = {
-      setFiltro: (filtro, btn) => {
-        S.filtroFin = filtro;
-        document.querySelectorAll('#t-financeiro .tab').forEach(b => b.classList.remove('on'));
-        if (btn) btn.classList.add('on');
-        App.Financeiro.carregar();
-      },
-      carregar: async () => {
-        const tbody = document.getElementById('tbody-fin');
-        tbody.innerHTML = '<tr><td colspan="8"><div class="loading"><div class="spin"></div></div></td></tr>';
-        try {
-          const ini = S.filtroFin === 'mes' ? U.iniMes() :
-                      S.filtroFin === 'semana' ? U.iniSem() : '2000-01-01';
-          const snap = await getDocs(query(collection(db,'atendimentos'), where('dataStr','>=', ini)));
-          const lista = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => a.dataStr > b.dataStr ? -1 : 1);
-          let totalBruto = 0, totalComm = 0;
-          let html = '';
-          for (const a of lista) {
-            const comissao = S.getComissao(a.profissional) || 30;
-            const valorComissao = (a.valor || 0) * (comissao / 100);
-            totalBruto += a.valor || 0;
-            totalComm += valorComissao;
-            html += `
-              <tr>
-                <td>${U.dataBR(a.dataStr)}</td>
-                <td>${a.clienteNome}</td>
-                <td>${a.servico}</td>
-                <td>${U.fmt(a.valor)}</td>
-                <td><span class="tp ${U.classPag(a.pagamento)}">${a.pagamento||'—'}</span></td>
-                <td>${a.profissional||'—'}</td>
-                <td>${U.fmt(valorComissao)}</td>
-                <td>${U.fmt((a.valor||0) - valorComissao)}</td>
-              </tr>
-            `;
-          }
-          document.getElementById('fin-bruto').textContent = U.fmt(totalBruto);
-          document.getElementById('fin-comm').textContent = U.fmt(totalComm);
-          document.getElementById('fin-lucro').textContent = U.fmt(totalBruto - totalComm);
-          tbody.innerHTML = html || '<tr><td colspan="8"><div class="empty"><p>Nenhum atendimento registrado.</p></div></td></tr>';
-        } catch(e) {
-          tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><p>Erro: ${e.message}</p></div></td></tr>`;
-        }
-      },
-      salvarAtendimento: async () => {
-        const cliente = document.getElementById('at-cliente').value.trim();
-        const servico = document.getElementById('at-servico').value.trim();
-        const data = document.getElementById('at-data').value;
-        const valor = parseFloat(document.getElementById('at-valor').value) || 0;
-        const pagamento = document.getElementById('at-pagamento').value;
-        const profissional = document.getElementById('at-prof').value;
-        if (!cliente || !servico || !data || !valor) {
-          U.toast('Preencha todos os campos obrigatórios.', 'err');
-          return;
-        }
-        try {
-          await addDoc(collection(db,'atendimentos'), {
-            clienteNome: cliente,
-            servico,
-            dataStr: data,
-            valor,
-            pagamento,
-            profissional: profissional || '',
-            criadoEm: serverTimestamp()
-          });
-          // Atualiza total gasto do cliente
-          const snap = await getDocs(query(collection(db,'clientes'), where('nome','==', cliente)));
-          if (!snap.empty) {
-            const docRef = snap.docs[0].ref;
-            await updateDoc(docRef, {
-              totalGasto: increment(valor),
-              sessoes: increment(1),
-              ultimaVisita: data
-            });
-          }
-          U.toast('Atendimento registrado!');
-          App.Modals.fechar('m-atendimento');
-          App.Financeiro.carregar();
-          App.Dashboard.carregar();
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      }
-    };
-
-    // ============================================================
-    // FECHAMENTO
-    // ============================================================
-    App.Fechamento = {
-      carregar: async () => {
-        const hoje = U.hoje();
-        document.getElementById('fcx-data').textContent = U.dataBR(hoje);
-        try {
-          const snap = await getDocs(query(collection(db,'atendimentos'), where('dataStr','==', hoje)));
-          const lista = snap.docs.map(d => d.data());
-          let total = 0, qtd = 0;
-          const pagamentos = {};
-          lista.forEach(a => {
-            total += a.valor || 0;
-            qtd++;
-            const p = a.pagamento || 'Outros';
-            pagamentos[p] = (pagamentos[p]||0) + (a.valor||0);
-          });
-          const grid = document.getElementById('fcx-grid');
-          grid.innerHTML = `
-            <div class="stat"><span class="icon">💰</span><div class="stat-label">Total</div><div class="stat-value">${U.fmt(total)}</div><div class="stat-hint">${qtd} atendimentos</div></div>
-            <div class="stat"><span class="icon">💳</span><div class="stat-label">Pix</div><div class="stat-value">${U.fmt(pagamentos.Pix||0)}</div></div>
-            <div class="stat"><span class="icon">💳</span><div class="stat-label">Crédito</div><div class="stat-value">${U.fmt(pagamentos.Crédito||0)}</div></div>
-            <div class="stat"><span class="icon">💵</span><div class="stat-label">Dinheiro</div><div class="stat-value">${U.fmt(pagamentos.Dinheiro||0)}</div></div>
-          `;
-          const tbody = document.getElementById('tbody-fcx');
-          if (!lista.length) {
-            tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><p>Nenhum atendimento hoje.</p></div></td></tr>';
-          } else {
-            tbody.innerHTML = lista.map(a => `
-              <tr><td>${a.clienteNome}</td><td>${a.servico}</td><td>${a.profissional||'—'}</td><td><span class="tp ${U.classPag(a.pagamento)}">${a.pagamento||'—'}</span></td><td>${U.fmt(a.valor)}</td></tr>
-            `).join('');
-          }
-        } catch(e) {
-          U.toast('Erro: '+e.message,'err');
-        }
-      }
-    };
-
-    // ============================================================
-    // LEMBRETES
-    // ============================================================
-    App.Lembretes = {
-      carregar: async () => {
-        try {
-          // Clientes inativos (30+ dias)
-          const hoje = new Date();
-          const limite = new Date();
-          limite.setDate(limite.getDate() - 30);
-          const snapCli = await getDocs(collection(db,'clientes'));
-          let inativos = 0;
-          const listInativos = [];
-          snapCli.forEach(d => {
-            const data = d.data();
-            if (data.ultimaVisita) {
-              const ultima = new Date(data.ultimaVisita);
-              if (ultima < limite) { inativos++; listInativos.push(data.nome); }
-            }
-          });
-          document.getElementById('lem-inativos').innerHTML = inativos ? 
-            `<div class="lem-item">${listInativos.join(', ')}</div>` :
-            '<div class="empty"><p>Nenhum cliente inativo.</p></div>';
-
-          // Agendamentos pendentes hoje
-          const hojeStr = U.hoje();
-          const snapAg = await getDocs(query(collection(db,'agendamentos'), where('data','==', hojeStr), where('status','==','pendente')));
-          const pendentes = snapAg.docs.map(d => d.data().clienteNome);
-          document.getElementById('lem-pendentes').innerHTML = pendentes.length ?
-            `<div class="lem-item">${pendentes.join(', ')}</div>` :
-            '<div class="empty"><p>Nenhum pendente hoje.</p></div>';
-
-          // Turmas quase cheias
-          await cacheTurmas();
-          const quaseCheias = S.turmas.filter(t => {
-            const vagas = t.vagas || 10;
-            const alunos = t.alunos ? t.alunos.length : 0;
-            return (vagas - alunos) <= 1 && alunos < vagas;
-          });
-          document.getElementById('lem-turmas').innerHTML = quaseCheias.length ?
-            quaseCheias.map(t => `<div class="lem-item">${t.nome} - ${t.alunos?.length||0}/${t.vagas||10}</div>`).join('') :
-            '<div class="empty"><p>Todas as turmas com vagas suficientes.</p></div>';
-
-          document.getElementById('badge-lem').textContent = pendentes.length + inativos + quaseCheias.length;
-        } catch(e) {
-          U.toast('Erro ao carregar lembretes: '+e.message,'err');
-        }
-      }
-    };
-
-    App.Experimentais = {
-      carregar: async () => {
-        const el = document.getElementById('lista-experimentais');
-        if (!el) return;
-        el.innerHTML = '<div class="loading"><div class="spin"></div></div>';
-        try {
-          const snap = await getDocs(collection(db,'agendamentos'));
-          const lista = snap.docs.map(d => ({id:d.id, ...d.data()}))
-            .filter(a => a.tipo === 'experimental' || a.servico === 'Aula experimental')
-            .sort((a,b) => String(b.data||'').localeCompare(String(a.data||'')));
-          const pend = lista.filter(a => a.status === 'pendente').length;
-          const badge = document.getElementById('badge-exp');
-          if (badge) badge.textContent = pend;
-          if (!lista.length) {
-            el.innerHTML = '<div class="empty"><p>Nenhum pedido de aula experimental ainda.</p></div>';
-            return;
-          }
-          el.innerHTML = lista.map(a => `
-            <div class="slot s-${a.status||'pendente'}">
-              <div class="slot-hora">${a.hora||'—'}</div>
-              <div class="slot-body">
-                <div class="slot-nome">${a.clienteNome||'—'}</div>
-                <div class="slot-det">${U.dataBR(a.data)} · ${a.turmaNome||a.servico} · ${a.profissional||''} ${a.tel? '· '+a.tel:''}</div>
-              </div>
-              ${U.badgeStatus(a.status)}
-              <div class="slot-acts">
-                ${a.status!=='confirmado' && a.status!=='cancelado' ? `<button class="btn btn-xs btn-outline" onclick="App.Agenda.mudarStatus('${a.id}','confirmado')">Confirmar</button>` : ''}
-                ${a.status!=='cancelado' ? `<button class="btn btn-xs btn-outline" onclick="App.Agenda.mudarStatus('${a.id}','cancelado')">Recusar</button>` : ''}
-              </div>
-            </div>
-          `).join('');
-        } catch(e) {
-          el.innerHTML = `<div class="empty"><p>Erro: ${e.message}</p></div>`;
-        }
-      }
-    };
-
-    // ============================================================
-    // CONFIG
-    // ============================================================
-    App.Config = {
-      carregar: async () => {
-        let abre = '08:00', fecha = '19:00';
-        try {
-          const snap = await getDoc(doc(db,'sys_config','horarios'));
-          if (snap.exists()) {
-            abre = snap.data().abre || abre;
-            fecha = snap.data().fecha || fecha;
-          }
-        } catch(e) {}
-        document.getElementById('config-hr').innerHTML = `
-          <div class="campo"><label>Horário de abertura</label><input type="time" id="cfg-abre" value="${abre}"></div>
-          <div class="campo"><label>Horário de fechamento</label><input type="time" id="cfg-fecha" value="${fecha}"></div>
-        `;
-      },
-      salvarHorarios: async () => {
-        const abre = document.getElementById('cfg-abre').value;
-        const fecha = document.getElementById('cfg-fecha').value;
-        try {
-          await setDoc(doc(db,'sys_config','horarios'), { abre, fecha, atualizadoEm: serverTimestamp() });
-          U.toast(`Horários salvos: ${abre} - ${fecha}`);
-        } catch(e) {
-          U.toast('Erro ao salvar: '+e.message,'err');
-        }
-      }
-    };
-
-    // ============================================================
-    // RELATÓRIOS
-    // ============================================================
-    App.Relatorios = {
-      gerar: async () => {
-        const ini = document.getElementById('rel-ini').value;
-        const fim = document.getElementById('rel-fim').value;
-        if (!ini || !fim) { U.toast('Selecione um período.', 'err'); return; }
-        const el = document.getElementById('rel-resultado');
-        el.innerHTML = '<div class="loading"><div class="spin"></div></div>';
-        try {
-          const snap = await getDocs(query(collection(db,'atendimentos'), where('dataStr','>=', ini), where('dataStr','<=', fim)));
-          const lista = snap.docs.map(d => d.data());
-          let total = 0, qtd = 0;
-          lista.forEach(a => { total += a.valor||0; qtd++; });
-          el.innerHTML = `
-            <div class="glass">
-              <div class="stats" style="grid-template-columns:repeat(3,1fr);">
-                <div class="stat"><span class="icon">📅</span><div class="stat-label">Período</div><div class="stat-value">${U.dataBR(ini)} a ${U.dataBR(fim)}</div></div>
-                <div class="stat"><span class="icon">💰</span><div class="stat-label">Total</div><div class="stat-value">${U.fmt(total)}</div><div class="stat-hint">${qtd} atendimentos</div></div>
-                <div class="stat"><span class="icon">📊</span><div class="stat-label">Média</div><div class="stat-value">${U.fmt(qtd?total/qtd:0)}</div></div>
-              </div>
-              <div class="table-wrap">
-                <table><thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Valor</th></tr></thead>
-                <tbody>${lista.map(a => `<tr><td>${U.dataBR(a.dataStr)}</td><td>${a.clienteNome}</td><td>${a.servico}</td><td>${U.fmt(a.valor)}</td></tr>`).join('')}</tbody>
-              </table>
-            </div>
-          `;
-        } catch(e) {
-          el.innerHTML = `<div class="empty"><p>Erro: ${e.message}</p></div>`;
-        }
-      }
-    };
-
-    // ============================================================
-    // AUTH OBSERVER (inicialização)
-    // ============================================================
+    let live = false;
     onAuthStateChanged(auth, async user => {
       if (!user) {
-        S.user=null; S.role=null; S.nome='';
-        document.getElementById('login-wrap').style.display='';
-        document.getElementById('app').classList.remove('on');
-        const btn=document.getElementById('l-btn');
-        btn.disabled=false; btn.textContent='Entrar';
+        live = false;
+        $("login-wrap").classList.remove("hide");
+        $("app").classList.remove("on");
         return;
       }
-      S.user=user;
+      let data = {};
+      try {
+        const us = await getDoc(doc(db, "users", user.uid));
+        if (us.exists()) data = us.data();
+      } catch (e) {}
+      if (!S.isEquipe(user, data)) {
+        $("login-wrap").classList.remove("hide");
+        $("app").classList.remove("on");
+        $("l-err").innerHTML = "Esta conta é de aluna. Use <a href=\"cliente.html\">Minha área</a> ou libere o painel com o código 196.";
+        $("primeiro-box").classList.remove("hidden");
+        $("p-email").value = user.email || "";
+        return;
+      }
+      try { await gravarAdmin(user, { nome: data.nome, telefone: data.telefone || data.tel, role: data.role }); } catch (e) {}
       await seed();
-      const snap = await getDoc(doc(db,'users',user.uid));
-      S.role = snap.exists() ? (snap.data().role||'cliente') : 'cliente';
-      S.nome = snap.exists() ? (snap.data().nome||user.email) : user.email;
-
-      if (S.role === 'cliente') {
-        window.location.href = 'cliente.html';
-        return;
-      }
-
-      document.getElementById('sb-nome').textContent = S.nome;
-      document.getElementById('sb-role').textContent = S.role === 'admin' ? 'Administradora' : S.role==='funcionario' ? 'Funcionária' : 'Cliente';
-      const av=document.getElementById('sb-av');
-      av.textContent = U.iniciais(S.nome);
-
-      document.getElementById('nav-admin').style.display = '';
-      document.getElementById('top-acts').style.display = S.role==='admin' ? '' : 'none';
-      document.getElementById('login-wrap').style.display = 'none';
-      document.getElementById('app').classList.add('on');
-
-      await Promise.all([cacheClientes(), cacheFuncs(), cacheTurmas()]);
-      popularDataLists();
-
-      // Carrega dados iniciais
-      S.agendaDataSel = U.hoje();
-      App.Agenda.carregar();
-      App.Dashboard.carregar();
-      App.Vagas.carregar();
-      App.Turmas.render();
-      App.Clientes.render();
-      App.Funcionarios.render();
-      App.Financeiro.carregar();
-      App.Fechamento.carregar();
-      App.Lembretes.carregar();
-      App.Experimentais.carregar();
-      App.Config.carregar();
-
-      console.log('✅ Admin carregado com sucesso!');
+      $("sb-nome").textContent = data.nome || user.email;
+      $("login-wrap").classList.add("hide");
+      $("app").classList.add("on");
+      if (live) return;
+      live = true;
+      onSnapshot(collection(db, "turmas"), snap => {
+        state.turmas = S.gradeVisivel(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        renderDash(); renderTurmas();
+      });
+      onSnapshot(collection(db, "agendamentos"), snap => {
+        state.ags = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderDash(); renderCal(); renderLeads(); renderRetornos(); renderClientes();
+      });
+      onSnapshot(collection(db, "clientes"), snap => {
+        state.clientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderClientes(); renderRetornos(); renderDash();
+      });
     });
-
-    // ============================================================
-    // INICIALIZAÇÃO GLOBAL (para chamadas inline)
-    // ============================================================
-    console.log('✅ Admin.js carregado.');
   </script>
 </body>
 </html>

@@ -2,281 +2,233 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-  <meta name="theme-color" content="#1A3D2B">
-  <title>Michele Seixas · Minha Área</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:wght@600;700&family=DM+Sans:opsz,wght@9..40,400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#3E2723">
+  <title>Minha área · Studio de Pilates M. S.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html,body { min-height:100%; font-family:'DM Sans',sans-serif; background:#0D2118; color:#1a1a1a; }
-    :root { --g-800:#1A3D2B; --g-600:#2D6A4F; --gold:#C9A84C; --gold-dark:#8C6A1A; --n-400:#9E9C97; --radius:16px; }
-    #login-wrap {
-      position:fixed; inset:0; z-index:20;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      padding:24px 16px;
-      background:linear-gradient(160deg,#0D2118 0%,#1A3D2B 55%,#235239 100%);
-    }
-    .login-card {
-      background:#143326;
-      border:1px solid rgba(201,168,76,.4);
-      border-radius:24px;
-      width:100%; max-width:420px;
-      padding:32px 28px 24px;
-      box-shadow:0 24px 60px rgba(0,0,0,.35);
-    }
-    .login-card h1 { font-family:'Cormorant Garamond',serif; color:#fff; text-align:center; font-size:28px; }
-    .login-card p.sub { text-align:center; color:#E8D5A0; font-size:12px; letter-spacing:.16em; text-transform:uppercase; margin:6px 0 22px; }
-    .campo { margin-bottom:14px; }
-    .campo label { display:block; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#E8D5A0; margin-bottom:5px; }
-    .campo input,.campo select { width:100%; padding:12px 14px; background:#fff; border:1.5px solid #d8d4cc; border-radius:12px; color:#1a1a1a; }
-    .login-credit { margin-top:18px; text-align:center; font-size:12px; color:rgba(255,255,255,.55); }
-    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:12px 24px; border-radius:12px; font-weight:600; border:none; cursor:pointer; }
-    .btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#fff; width:100%; }
-    .btn-danger { background:#FEF2F2; color:#b91c1c; padding:6px 10px; font-size:11px; }
-    .login-err { color:#fca5a5; font-size:12px; min-height:18px; margin:4px 0 10px; }
-    #app { display:none; height:100vh; flex-direction:column; position:relative; z-index:5; background:#f5f2ed; }
-    #app.on { display:flex; }
-    .topbar { padding:14px 20px; background:rgba(255,255,255,.7); backdrop-filter:blur(16px); display:flex; justify-content:space-between; align-items:center; }
-    .topbar h2 { font-family:'Cormorant Garamond',serif; color:var(--g-800); font-size:18px; }
-    .scroll { flex:1; overflow:auto; padding:18px 18px 90px; max-width:640px; margin:0 auto; width:100%; }
-    .tela { display:none; } .tela.on { display:block; }
-    .glass { background:rgba(255,255,255,.72); border-radius:20px; padding:18px; margin-bottom:14px; box-shadow:0 8px 32px rgba(0,0,0,.06); }
-    .card-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--n-400); margin-bottom:12px; }
-    .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,.92); display:flex; border-top:1px solid rgba(0,0,0,.06); }
-    .bn-btn { flex:1; padding:10px 4px; background:none; border:none; color:var(--n-400); font-size:10px; font-weight:600; }
-    .bn-btn.on { color:var(--g-600); }
-    .bn-btn .ico { display:block; font-size:18px; }
-    .slot { display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,.05); }
-    .slot:last-child { border-bottom:none; }
-    .badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:99px; }
-    .b-pendente { background:#FFFBEB; color:#8C6A1A; }
-    .b-confirmado { background:#D8F3DC; color:#155724; }
-    .b-cancelado { background:#FEF2F2; color:#b91c1c; }
-    .turma { display:flex; gap:10px; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,.05); }
-    .toast { position:fixed; bottom:80px; right:16px; background:#0D2118; color:#86EFAC; padding:12px 16px; border-radius:12px; z-index:50; }
-    a { color:var(--gold); }
+    .app.on { display: block; }
+    .cli-nav { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--line); display: flex; z-index: 20; }
+    .cli-nav button { flex: 1; border: 0; background: none; padding: 12px 6px; font-size: 11px; font-weight: 600; color: var(--muted); }
+    .cli-nav button.on { color: var(--brown); }
+    .hero-cli { background: var(--brown); color: #fff; border: 0; }
+    .hero-cli h3 { color: #fff; margin: 0 0 6px; }
+    .prog { height: 8px; background: rgba(255,255,255,.2); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+    .prog i { display: block; height: 100%; background: var(--gold); }
   </style>
 </head>
 <body>
-  <div id="login-wrap">
-    <div class="login-card">
-      <img src="imagem/logo-transparente.png" alt="Michele Seixas" style="height:88px;width:88px;margin:0 auto 12px;border-radius:50%;object-fit:cover;display:block;border:1px solid rgba(201,168,76,.45);background:#0a0a0a;">
-      <h1 style="font-family:Cinzel,serif;letter-spacing:.16em;text-transform:uppercase;font-size:18px;">Michele Seixas</h1>
-      <p class="sub">Minha área</p>
-      <div class="campo"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com"></div>
-      <div class="campo"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••••"></div>
-      <div class="login-err" id="l-err"></div>
-      <button class="btn btn-gold" id="l-btn">Entrar</button>
-      <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.7);margin-top:16px">
-        Sem conta? Não precisa. <a href="index.html#experimental">Agende a experimental no site</a>
+  <div id="login-wrap" class="auth-page">
+    <div class="auth-card">
+      <img class="logo" src="imagem/logo-ms.png" alt="">
+      <h1>Minha área</h1>
+      <p class="sub">Acompanhe aulas, horários e progresso</p>
+      <div id="box-login">
+        <div class="campo"><label>E-mail</label><input id="l-email" type="email" placeholder="seu@email.com"></div>
+        <div class="campo"><label>Senha</label><input id="l-senha" type="password"></div>
+        <p class="err" id="l-err"></p>
+        <button class="btn btn-brown btn-full" id="l-btn">Entrar</button>
+        <p class="switch">Primeiro acesso? <a href="#" id="go-cad">Criar conta</a></p>
+        <p class="switch"><a href="index.html#experimental">Agendar experimental sem cadastro</a></p>
       </div>
-      <p class="login-credit">Desenvolvido por Leonardo Seixas</p>
+      <div id="box-cad" class="hidden">
+        <div class="campo"><label>Nome</label><input id="c-nome"></div>
+        <div class="campo"><label>E-mail</label><input id="c-email" type="email"></div>
+        <div class="campo"><label>WhatsApp</label><input id="c-tel" inputmode="tel" placeholder="(19) 99999-9999"></div>
+        <div class="campo"><label>Senha</label><input id="c-senha" type="password" placeholder="mínimo 6 caracteres"></div>
+        <p class="err" id="c-err"></p>
+        <button class="btn btn-brown btn-full" id="c-btn">Criar minha conta</button>
+        <p class="switch">Já tem conta? <a href="#" id="go-login">Entrar</a></p>
+      </div>
     </div>
   </div>
 
-  <div id="app">
-    <div class="topbar">
+  <div id="app" class="app">
+    <div class="top">
       <div>
-        <h2 style="font-family:Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;font-size:15px;">Michele Seixas</h2>
-        <div style="font-size:11px;color:var(--n-400);" id="tb-nome"></div>
+        <h2>Olá, <span id="tb-nome">—</span></h2>
+        <div style="font-size:12px;color:var(--muted)">Studio de Pilates M. S.</div>
       </div>
-      <button class="btn" style="background:transparent;color:#b91c1c;" id="btnSair">Sair</button>
+      <button class="btn btn-ghost btn-sm" id="btnSair">Sair</button>
     </div>
-    <div class="scroll">
+    <div class="scroll" style="padding-bottom:96px;max-width:720px;margin:0 auto">
       <div id="t-dash" class="tela on">
-        <div class="glass" style="background:linear-gradient(135deg,#1A3D2B,#2D6A4F);color:#fff;">
-          <div style="opacity:.75;font-size:12px;">Olá</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:26px;" id="d-nome">—</div>
-          <div style="font-size:13px;opacity:.9;margin-top:6px;" id="d-proximo">Carregando...</div>
+        <div class="card hero-cli">
+          <h3>Próxima aula</h3>
+          <p id="d-proximo" style="margin:0;opacity:.9">Carregando...</p>
+          <div style="margin-top:14px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.7">Fidelidade · 5 aulas</div>
+          <div class="prog"><i id="p-bar" style="width:0%"></i></div>
+          <p id="p-txt" style="font-size:13px;margin:8px 0 0;opacity:.9"></p>
         </div>
-        <div class="glass">
-          <div class="card-title">Como usar</div>
-          <p style="font-size:14px;color:#5C5A57;line-height:1.6;">Escolha uma turma com vaga e solicite a aula experimental. O estúdio confirma pelo WhatsApp.</p>
+        <div class="kpis">
+          <div class="kpi"><b id="p-total">0</b><span>Aulas</span></div>
+          <div class="kpi"><b id="p-ok">0</b><span>Confirmadas</span></div>
+          <div class="kpi"><b id="p-pend">0</b><span>Pendentes</span></div>
+          <div class="kpi"><b id="p-falta">5</b><span>Faltam p/ bônus</span></div>
         </div>
       </div>
       <div id="t-turmas" class="tela">
-        <div class="glass">
-          <div class="card-title">Turmas da semana</div>
+        <div class="card">
+          <h3>Agendar aula</h3>
+          <p style="font-size:13px;color:var(--muted)">Só horários com vaga. Escolha a turma e a data.</p>
           <div id="lista-turmas"></div>
         </div>
-        <div class="glass" id="bloco-confirmar" style="display:none;">
-          <div class="card-title">Confirmar experimental</div>
-          <div id="resumo-ag" style="font-size:14px;margin-bottom:12px;"></div>
-          <button class="btn btn-gold" id="btnConfirmar">Confirmar pedido</button>
+        <div class="card hidden" id="bloco-confirmar">
+          <h3>Confirmar</h3>
+          <div id="resumo-ag" style="margin-bottom:10px"></div>
+          <div class="campo"><label>Data disponível</label><select id="sel-data"></select></div>
+          <button class="btn btn-brown btn-full" id="btnConfirmar">Confirmar agendamento</button>
         </div>
       </div>
       <div id="t-meus" class="tela">
-        <div class="glass">
-          <div class="card-title">Meus pedidos</div>
+        <div class="card">
+          <h3>Minhas aulas</h3>
           <div id="meus-lista"></div>
         </div>
       </div>
     </div>
-    <nav class="bottom-nav">
-      <button class="bn-btn on" data-tela="dash"><span class="ico">🏠</span>Início</button>
-      <button class="bn-btn" data-tela="turmas"><span class="ico">🧘</span>Turmas</button>
-      <button class="bn-btn" data-tela="meus"><span class="ico">📋</span>Pedidos</button>
+    <nav class="cli-nav">
+      <button class="on" data-tela="dash">Início</button>
+      <button data-tela="turmas">Agendar</button>
+      <button data-tela="meus">Histórico</button>
     </nav>
   </div>
 
   <script src="config.js"></script>
-  <script type="importmap">
-    { "imports": {
-      "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
-      "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
-    }}
-  </script>
+  <script src="js/booking.js"></script>
+  <script src="js/clinic.js"></script>
+  <script type="importmap">{ "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+  }}</script>
   <script type="module">
     import { initializeApp } from "firebase/app";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, query, where, serverTimestamp } from "firebase/firestore";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, query, where, onSnapshot, serverTimestamp } from "firebase/firestore";
 
-    const ST = window.STUDIO;
-    const app = initializeApp(ST.firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const ST = window.STUDIO, C = window.Clinic, B = window.StudioBooking;
+    const auth = getAuth(initializeApp(ST.firebaseConfig));
+    const db = getFirestore();
+    const state = { nome: "", tel: "", clienteId: "", turmas: [], sel: null, aulas: [] };
+    const $ = id => document.getElementById(id);
 
-    const state = { user: null, nome: "", clienteId: "", turmas: [], sel: null };
-
-    function toast(msg) {
-      const el = document.createElement("div");
-      el.className = "toast";
-      el.textContent = msg;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3200);
-    }
     function ir(tela) {
       document.querySelectorAll(".tela").forEach(t => t.classList.remove("on"));
-      document.querySelectorAll(".bn-btn").forEach(b => b.classList.toggle("on", b.dataset.tela === tela));
-      document.getElementById("t-" + tela).classList.add("on");
+      document.querySelectorAll(".cli-nav button").forEach(b => b.classList.toggle("on", b.dataset.tela === tela));
+      $("t-" + tela).classList.add("on");
       if (tela === "turmas") renderTurmas();
-      if (tela === "meus") renderMeus();
-      if (tela === "dash") renderDash();
+      if (tela === "meus" || tela === "dash") renderAulas();
     }
+    document.querySelectorAll(".cli-nav button").forEach(b => b.onclick = () => ir(b.dataset.tela));
+    $("btnSair").onclick = () => signOut(auth);
+    $("go-cad").onclick = e => { e.preventDefault(); $("box-login").classList.add("hidden"); $("box-cad").classList.remove("hidden"); };
+    $("go-login").onclick = e => { e.preventDefault(); $("box-cad").classList.add("hidden"); $("box-login").classList.remove("hidden"); };
 
-    document.querySelectorAll(".bn-btn").forEach(b => b.addEventListener("click", () => ir(b.dataset.tela)));
-    document.getElementById("btnSair").onclick = () => signOut(auth);
-    document.getElementById("l-btn").onclick = async () => {
-      const err = document.getElementById("l-err");
-      const btn = document.getElementById("l-btn");
-      err.textContent = "";
-      btn.disabled = true;
+    $("l-btn").onclick = async () => {
+      $("l-err").textContent = "";
+      try { await signInWithEmailAndPassword(auth, $("l-email").value.trim(), $("l-senha").value); }
+      catch { $("l-err").textContent = "E-mail ou senha incorretos."; }
+    };
+    $("c-btn").onclick = async () => {
+      const nome = $("c-nome").value.trim(), email = $("c-email").value.trim(), tel = $("c-tel").value.trim(), senha = $("c-senha").value;
+      $("c-err").textContent = "";
+      if (!nome || !email || !tel || !senha) { $("c-err").textContent = "Preencha todos os campos."; return; }
+      if (senha.length < 6) { $("c-err").textContent = "Senha com no mínimo 6 caracteres."; return; }
       try {
-        await signInWithEmailAndPassword(auth, document.getElementById("l-email").value.trim(), document.getElementById("l-senha").value);
-      } catch {
-        err.textContent = "E-mail ou senha incorretos.";
-        btn.disabled = false;
+        const cred = await createUserWithEmailAndPassword(auth, email, senha);
+        await setDoc(doc(db, "users", cred.user.uid), { uid: cred.user.uid, nome, name: nome, email, telefone: tel, phone: tel, role: "cliente", criadoEm: serverTimestamp() });
+        await setDoc(doc(db, "clientes", cred.user.uid), { nome, email, tel, telefone: tel, ativo: true, origem: "site", criadoEm: serverTimestamp() });
+      } catch (e) {
+        $("c-err").textContent = e.code === "auth/email-already-in-use" ? "Este e-mail já tem conta." : "Não foi possível criar a conta.";
       }
     };
 
     async function loadTurmas() {
       try {
         const snap = await getDocs(collection(db, "turmas"));
-        state.turmas = ST.gradeVisivel(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        state.turmas = ST.gradeVisivel(snap.docs.map(d => ({ id: d.id, ...d.data() }))).filter(t => !ST.lotacao(t).cheia);
       } catch {
-        state.turmas = ST.gradeVisivel([]);
+        state.turmas = ST.gradeVisivel([]).filter(t => !ST.lotacao(t).cheia);
       }
     }
-
-    async function renderDash() {
-      document.getElementById("d-nome").textContent = state.nome;
-      const snap = await getDocs(query(collection(db, "agendamentos"), where("clienteId", "==", state.clienteId || "__none__")));
-      const futuros = snap.docs.map(d => d.data()).filter(a => a.status !== "cancelado" && a.data >= new Date().toISOString().slice(0,10));
-      futuros.sort((a,b) => a.data.localeCompare(b.data));
-      document.getElementById("d-proximo").textContent = futuros[0]
-        ? `Próxima: ${futuros[0].servico} · ${ST.dataBR(futuros[0].data)} às ${futuros[0].hora}`
-        : "Nenhuma aula marcada. Escolha uma turma para experimentar.";
-    }
-
     function renderTurmas() {
-      const el = document.getElementById("lista-turmas");
+      const el = $("lista-turmas");
+      if (!state.turmas.length) { el.innerHTML = "<p>Nenhuma turma com vaga agora.</p>"; return; }
       el.innerHTML = state.turmas.map(t => {
         const L = ST.lotacao(t);
-        return `<div class="turma">
-          <div style="flex:1"><strong>${t.dia} · ${t.horario}</strong><div style="font-size:12px;color:var(--n-400)">${t.nome || "Pilates"} · ${t.instrutor || ""} · ${L.livres} vagas</div></div>
-          <button class="btn btn-gold" style="width:auto;padding:8px 12px;font-size:12px" ${L.cheia ? "disabled" : ""} data-id="${t.id}">Experimentar</button>
-        </div>`;
+        return `<div class="row"><div><strong>${t.dia} · ${t.horario}</strong><div style="font-size:12px;color:var(--muted)">${t.nome} · ${t.instrutor} · ${L.livres} vagas</div></div><button class="btn btn-sm btn-brown" data-id="${t.id}">Escolher</button></div>`;
       }).join("");
-      el.querySelectorAll("button[data-id]").forEach(btn => {
-        btn.onclick = () => {
-          state.sel = state.turmas.find(t => t.id === btn.dataset.id);
-          const data = ST.proximaData(state.sel.dia);
-          document.getElementById("resumo-ag").innerHTML = `<strong>Aula experimental</strong><br>${state.sel.dia} ${ST.dataBR(data)} às ${state.sel.horario}<br>${state.sel.instrutor}`;
-          document.getElementById("bloco-confirmar").style.display = "";
-        };
+      el.querySelectorAll("[data-id]").forEach(btn => btn.onclick = () => {
+        state.sel = state.turmas.find(t => t.id === btn.dataset.id);
+        $("sel-data").innerHTML = B.proximasDatas(state.sel.dia, 6).map(d => `<option value="${d}">${state.sel.dia} · ${ST.dataBR(d)}</option>`).join("");
+        $("resumo-ag").innerHTML = `<strong>${state.sel.nome}</strong><br>${state.sel.horario} · ${state.sel.instrutor}`;
+        $("bloco-confirmar").classList.remove("hidden");
       });
     }
-
-    document.getElementById("btnConfirmar").onclick = async () => {
+    $("btnConfirmar").onclick = async () => {
       if (!state.sel) return;
-      const data = ST.proximaData(state.sel.dia);
-      await addDoc(collection(db, "agendamentos"), {
-        nome: state.nome,
-        clienteNome: state.nome,
-        clienteId: state.clienteId || "",
-        telefone: state.tel || "",
-        tel: state.tel || "",
-        servico: "Aula experimental",
-        tipo: "experimental",
-        origem: "area-cliente",
-        data, hora: state.sel.horario, horario: state.sel.horario,
-        profissional: state.sel.instrutor || "",
-        instrutor: state.sel.instrutor || "",
-        turmaId: state.sel.id,
-        turmaNome: state.sel.nome || "Pilates",
-        status: "pendente",
-        criadoEm: serverTimestamp()
-      });
-      const msg = `Olá! Sou ${state.nome} e pedi uma aula experimental.\n📅 ${state.sel.dia} ${ST.dataBR(data)} às ${state.sel.horario}\n👩‍⚕️ ${state.sel.instrutor || ""}`;
-      window.open(ST.wa(msg), "_blank");
-      toast("Pedido enviado. Confirme no WhatsApp.");
-      document.getElementById("bloco-confirmar").style.display = "none";
+      const data = $("sel-data").value || ST.proximaData(state.sel.dia);
+      await addDoc(collection(db, "agendamentos"), B.payload({
+        nome: state.nome, tel: state.tel, clienteId: state.clienteId,
+        servico: "Aula de Pilates", tipo: "aula", origem: "area-cliente",
+        data, hora: state.sel.horario, instrutor: state.sel.instrutor,
+        turmaId: state.sel.id, turmaNome: state.sel.nome, status: "pendente"
+      }));
+      C.toast("Pedido enviado. A Michele confirma no WhatsApp.");
+      $("bloco-confirmar").classList.add("hidden");
       ir("meus");
     };
 
-    async function renderMeus() {
-      const el = document.getElementById("meus-lista");
-      const snap = await getDocs(query(collection(db, "agendamentos"), where("clienteId", "==", state.clienteId || "__none__")));
-      const lista = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => String(b.data).localeCompare(String(a.data)));
-      if (!lista.length) { el.innerHTML = "<p style='color:var(--n-400)'>Nenhum pedido ainda.</p>"; return; }
-      el.innerHTML = lista.map(a => `
-        <div class="slot">
-          <div style="flex:1">
-            <strong>${a.servico}</strong>
-            <div style="font-size:12px;color:var(--n-400)">${ST.dataBR(a.data)} · ${a.hora} · ${a.profissional || ""}</div>
+    function renderAulas() {
+      const lista = state.aulas.slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      const hoje = C.hoje();
+      const ativos = lista.filter(C.ativo);
+      const futuros = ativos.filter(a => a.data >= hoje).sort((a, b) => a.data.localeCompare(b.data));
+      const n = ativos.length;
+      $("tb-nome").textContent = state.nome.split(" ")[0];
+      $("d-proximo").textContent = futuros[0] ? (C.quando(futuros[0]) + " · " + (futuros[0].instrutor || futuros[0].profissional || "")) : "Nenhuma aula marcada. Toque em Agendar.";
+      $("p-total").textContent = n;
+      $("p-ok").textContent = lista.filter(a => a.status === "confirmado" || a.status === "concluido").length;
+      $("p-pend").textContent = lista.filter(a => a.status === "pendente").length;
+      $("p-falta").textContent = Math.max(0, 5 - n);
+      $("p-bar").style.width = Math.min(100, (n / 5) * 100) + "%";
+      $("p-txt").textContent = n >= 5 ? "Você desbloqueou o carinho de fidelidade da casa." : ("Faltam " + Math.max(0, 5 - n) + " aulas para o bônus de fidelidade.");
+      const el = $("meus-lista");
+      el.innerHTML = lista.length ? lista.map(a => `
+        <div class="row">
+          <div><strong>${a.servico || "Pilates"}</strong><div style="font-size:12px;color:var(--muted)">${C.quando(a)} · ${a.instrutor || a.profissional || ""}</div></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="badge b-${a.status}">${a.status}</span>
+            ${C.ativo(a) && a.data >= hoje ? `<button class="btn btn-sm btn-danger" data-cancel="${a.id}">Cancelar</button>` : ""}
           </div>
-          <span class="badge b-${a.status || "pendente"}">${a.status || "pendente"}</span>
-          ${a.status !== "cancelado" ? `<button class="btn btn-danger" data-cancel="${a.id}">Cancelar</button>` : ""}
-        </div>`).join("");
-      el.querySelectorAll("[data-cancel]").forEach(btn => {
-        btn.onclick = async () => {
-          if (!confirm("Cancelar este pedido?")) return;
-          await updateDoc(doc(db, "agendamentos", btn.dataset.cancel), { status: "cancelado" });
-          renderMeus();
-        };
+        </div>`).join("") : "<p style='color:var(--muted)'>Nenhum agendamento ainda.</p>";
+      el.querySelectorAll("[data-cancel]").forEach(b => b.onclick = async () => {
+        if (!confirm("Cancelar esta aula?")) return;
+        await updateDoc(doc(db, "agendamentos", b.dataset.cancel), { status: "cancelado" });
       });
     }
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async user => {
       if (!user) {
-        document.getElementById("login-wrap").style.display = "";
-        document.getElementById("app").classList.remove("on");
-        document.getElementById("l-btn").disabled = false;
+        $("login-wrap").classList.remove("hide");
+        $("app").classList.remove("on");
         return;
       }
       const snap = await getDoc(doc(db, "users", user.uid));
-      const role = snap.exists() ? (snap.data().role || "cliente") : "cliente";
-      if (role !== "cliente") { location.href = "admin.html"; return; }
-      state.user = user;
-      state.nome = snap.exists() ? (snap.data().nome || user.email) : user.email;
-      state.tel = snap.exists() ? (snap.data().telefone || "") : "";
-      const csnap = await getDocs(query(collection(db, "clientes"), where("email", "==", user.email)));
-      state.clienteId = csnap.docs[0] ? csnap.docs[0].id : user.uid;
-      document.getElementById("tb-nome").textContent = state.nome;
-      document.getElementById("login-wrap").style.display = "none";
-      document.getElementById("app").classList.add("on");
+      const data = snap.exists() ? snap.data() : {};
+      if (ST.isEquipe(user, data)) { location.replace("admin.html"); return; }
+      state.nome = data.nome || data.name || user.email;
+      state.tel = data.telefone || data.phone || "";
+      state.clienteId = user.uid;
+      $("login-wrap").classList.add("hide");
+      $("app").classList.add("on");
       await loadTurmas();
+      onSnapshot(query(collection(db, "agendamentos"), where("clienteId", "==", user.uid)), qs => {
+        state.aulas = qs.docs.map(x => ({ id: x.id, ...x.data() }));
+        renderAulas();
+      });
       ir("dash");
     });
   </script>

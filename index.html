@@ -48,6 +48,7 @@
         <a href="#horarios" class="hover:opacity-70">Horários</a>
         <a href="#instrutores" class="hover:opacity-70">Instrutores</a>
         <a href="#contato" class="hover:opacity-70">Contato</a>
+        <a href="cliente.html" class="hover:opacity-70">Minha área</a>
       </nav>
       <div class="flex items-center gap-2">
         <a href="#" id="btnWhatsHeader" target="_blank" class="hidden sm:inline-flex items-center rounded-full bg-brown text-white text-xs font-semibold tracking-wide px-4 py-2.5 hover:-translate-y-0.5 hover:shadow-lg transition">Agende sua Aula</a>
@@ -66,7 +67,7 @@
         <div class="text-white max-w-2xl">
           <p class="text-[11px] tracking-[0.32em] uppercase mb-4 text-white/80">Vargem Grande do Sul</p>
           <h1 class="font-serif text-4xl sm:text-6xl leading-[1.05] tracking-[0.04em]">STUDIO DE<br>PILATES M. S.</h1>
-          <p class="mt-5 text-base sm:text-lg text-white/90 max-w-xl">Um espaço para cuidar de você através do movimento. Públicos específicos • patologias • prevenção.</p>
+          <p class="mt-5 text-base sm:text-lg text-white/90 max-w-xl">Um espaço para cuidar de você através do movimento • Patologias • Prevenção.</p>
           <div class="mt-8 flex flex-wrap gap-3">
             <a href="#experimental" class="inline-flex items-center justify-center rounded-full bg-brown text-white px-6 py-3 text-sm font-semibold hover:-translate-y-0.5 hover:shadow-xl transition">Agende sua Aula Experimental</a>
             <a href="#horarios" class="inline-flex items-center justify-center rounded-full border border-white/50 text-white px-6 py-3 text-sm font-medium hover:bg-white/10 transition">Ver horários</a>
@@ -75,9 +76,10 @@
         <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-ig p-5 text-white">
           <div class="flex items-center justify-between text-[11px] tracking-[0.18em] uppercase mb-3">
             <span>Próximas turmas</span>
-            <span class="text-white/70">Ao vivo</span>
+            <span style="color:#D4AF37;font-weight:700;">Ao vivo</span>
           </div>
           <div id="heroTurmas" class="space-y-3 text-sm"></div>
+          <a href="#horarios" class="inline-block mt-4 text-xs tracking-[0.14em] uppercase" style="color:#D4AF37;">Ver todos os horários →</a>
         </div>
       </div>
     </div>
@@ -87,10 +89,9 @@
     <div class="max-w-6xl mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center">
       <img src="imagem/estudio-ambiente.jpg" alt="Estúdio de Pilates ambiente clínico" class="w-full h-[460px] object-cover rounded-ig shadow-xl">
       <div>
-        <p class="text-[11px] tracking-[0.28em] uppercase text-brown/70 mb-3">Metodologia</p>
-        <h2 class="font-serif text-4xl text-brown mb-5">Muito além do exercício</h2>
-        <p class="text-ink/80 leading-7 mb-4">O Studio de Pilates M. S. nasce da transição da Michele Seixas para o cuidado 100% pelo movimento. Aqui o Pilates não é só treino: é método, escuta e prevenção.</p>
-        <p class="text-ink/80 leading-7 mb-4">Atendemos públicos específicos, trabalhamos com segurança em patologias e construímos força para o dia a dia — em qualquer idade ou nível de condicionamento.</p>
+        <p class="text-[11px] tracking-[0.28em] uppercase text-brown/70 mb-3">O estúdio</p>
+        <h2 class="font-serif text-4xl text-brown mb-5">Nossa Essência</h2>
+        <p class="text-ink/80 leading-7 mb-4">O Studio de Pilates M. S. é a materialização de uma trajetória dedicada ao cuidado com o corpo. Michele Seixas traz para o Pilates uma bagagem sólida em reabilitação e estética, unindo a precisão técnica do movimento a um olhar clínico e acolhedor. Aqui, o Pilates não é apenas um treino: é um método de escuta e prevenção. Atendemos públicos específicos, trabalhamos com segurança em patologias e construímos força para o dia a dia — em qualquer idade ou nível de condicionamento.</p>
         <p class="font-serif italic text-xl text-brown">Pilates para quem quer se sentir melhor, com acompanhamento de verdade.</p>
       </div>
     </div>
@@ -199,7 +200,7 @@
       <div class="flex flex-wrap justify-center gap-3">
         <a href="#" id="btnWaContato" target="_blank" class="rounded-full bg-[#25D366] text-white px-6 py-3 font-semibold"><i class="fab fa-whatsapp"></i> WhatsApp</a>
         <a id="btnIg" target="_blank" class="rounded-full bg-brown text-white px-6 py-3 font-semibold"><i class="fab fa-instagram"></i> Instagram</a>
-        <a href="#experimental" class="rounded-full border border-brown text-brown px-6 py-3 font-semibold">Aula experimental</a>
+        <a href="cliente.html" class="rounded-full border border-brown text-brown px-6 py-3 font-semibold">Minha área</a>
       </div>
       <p class="mt-8 text-sm text-ink/60 space-y-2">
         <a id="btnTel" class="block text-brown font-semibold" href="tel:+5519992908985">(19) 99290-8985</a>
@@ -224,6 +225,7 @@
         <a href="#sobre" class="block hover:text-white">Sobre</a>
         <a href="#horarios" class="block hover:text-white">Horários</a>
         <a href="#experimental" class="block hover:text-white">Aula experimental</a>
+        <a href="cliente.html" class="block hover:text-white">Minha área</a>
         <a href="admin.html" class="block hover:text-white">Acesso da equipe</a>
       </div>
       <div class="text-sm text-white/80 space-y-2">
@@ -246,6 +248,7 @@
   <div class="toasts" id="toasts"></div>
 
   <script src="config.js"></script>
+  <script src="js/booking.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -367,14 +370,11 @@
       btn.disabled = true;
       btn.textContent = "Enviando...";
       try {
-        await db.collection("agendamentos").add({
-          nome: nome, clienteNome: nome, telefone: tel, tel: tel,
-          servico: "Aula experimental", tipo: "experimental", origem: "site",
-          data: data, hora: turma.horario, horario: turma.horario,
-          profissional: turma.instrutor || "", instrutor: turma.instrutor || "",
-          turmaId: turma.id, turmaNome: turma.nome || "Pilates",
-          status: "pendente", criadoEm: new Date()
-        });
+        await db.collection("agendamentos").add(window.StudioBooking.payload({
+          nome: nome, tel: tel, servico: "Aula experimental", tipo: "experimental", origem: "site",
+          data: data, hora: turma.horario, instrutor: turma.instrutor || "",
+          turmaId: turma.id, turmaNome: turma.nome || "Pilates", status: "pendente"
+        }));
       } catch (ex) { console.warn(ex); }
       const msg = "Olá! Quero agendar uma *aula experimental* de Pilates no Studio de Pilates M. S.\n\n👤 Nome: " + nome + "\n📱 WhatsApp: " + tel + "\n🧘 Turma: " + (turma.nome || "Pilates") + "\n📅 " + turma.dia + " " + S.dataBR(data) + " às " + turma.horario + "\n👩‍⚕️ Instrutora: " + (turma.instrutor || "—");
       window.open(S.wa(msg), "_blank");

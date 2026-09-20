@@ -12,7 +12,7 @@ section[id], header { scroll-margin-top: 88px; }
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(62, 39, 35, 0.72);
+  background: linear-gradient(90deg, rgba(62, 39, 35, 0.88) 0%, rgba(62, 39, 35, 0.55) 55%, rgba(62, 39, 35, 0.28) 100%);
 }
 
 #navLinks.open { display: flex; }
