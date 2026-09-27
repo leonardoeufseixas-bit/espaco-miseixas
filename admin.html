@@ -27,7 +27,7 @@
         <button data-tela="agenda">Calendário</button>
         <button data-tela="turmas">Turmas e vagas</button>
         <button data-tela="clientes">Alunas</button>
-        <button data-tela="leads">Experimentais</button>
+        <button data-tela="leads">Pedidos <span id="nav-pedidos" class="badge b-bonus hidden" style="margin-left:4px">0</span></button>
         <button data-tela="retornos">Retornos</button>
       </nav>
       <div class="sb-foot" id="sb-nome">—</div>
@@ -45,7 +45,7 @@
         <div id="t-dash" class="tela on">
           <div class="kpis">
             <div class="kpi"><b id="k-hoje">0</b><span>Aulas hoje</span></div>
-            <div class="kpi"><b id="k-exp">0</b><span>Experimentais</span></div>
+            <div class="kpi"><b id="k-exp">0</b><span>Pedidos aguardando</span></div>
             <div class="kpi"><b id="k-inativos">0</b><span>Sem treinar 21+ dias</span></div>
             <div class="kpi"><b id="k-bonus">0</b><span>Bônus 5 aulas</span></div>
           </div>
@@ -93,7 +93,7 @@
                 <div class="campo"><label>Tipo</label>
                   <select id="nt-tipo">
                     <option value="semanal">Toda semana (turma fixa)</option>
-                    <option value="avulsa">Só numa data (aula extra / encaixe)</option>
+                    <option value="avulsa">Só numa data específica</option>
                   </select>
                 </div>
                 <div class="campo" id="nt-dia-box"><label>Dia da semana</label>
@@ -127,6 +127,12 @@
                 <input class="search" id="cli-busca" placeholder="Buscar nome ou telefone">
                 <div id="cli-lista"></div>
               </div>
+              <details class="card" style="border-style:dashed">
+                <summary style="cursor:pointer;font-weight:600;color:var(--muted);font-size:13px">Manutenção · limpar dados de teste</summary>
+                <p style="font-size:13px;color:var(--muted);margin:12px 0">Apaga todas as alunas, agendamentos e pedidos de teste e deixa só a aluna <strong>Teste</strong>. Turmas e horários continuam. Use apenas antes de começar a usar de verdade.</p>
+                <div class="campo"><label>Digite LIMPAR para confirmar</label><input id="lp-conf" autocomplete="off"></div>
+                <button class="btn btn-danger btn-full" id="lp-btn">Limpar dados de teste</button>
+              </details>
             </div>
             <div class="card" id="cli-detalhe">
               <h3>Ficha da aluna</h3>
@@ -137,7 +143,12 @@
 
         <div id="t-leads" class="tela">
           <div class="card">
-            <h3>Pedidos de aula experimental</h3>
+            <h3>Pedidos de horário das alunas</h3>
+            <p style="font-size:13px;color:var(--muted);margin-top:-4px">Confirme se tiver o horário, ou sugira outro com mensagem pronta no WhatsApp da aluna.</p>
+            <div id="lista-pedidos"></div>
+          </div>
+          <div class="card">
+            <h3>Aulas experimentais</h3>
             <div id="lista-leads"></div>
           </div>
         </div>
@@ -160,8 +171,8 @@
       <div class="campo"><label>Turma</label><select id="ag-turma"></select></div>
       <div class="campo"><label>Data</label><input id="ag-data" type="date"></div>
       <div id="ag-encaixe" class="hidden" style="background:var(--off);border:1px solid var(--line);border-radius:16px;padding:12px 12px 2px;margin-bottom:12px">
-        <p style="font-size:12px;color:var(--muted);margin:0 0 10px">Cria um horário extra nessa data e já coloca a aluna nele. O site mostra esse horário na hora.</p>
-        <div class="campo"><label>Horário do encaixe</label><input id="ag-hora" type="time" step="900" value="15:00"></div>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 10px">Cria esse horário só nessa data e já coloca a aluna nele.</p>
+        <div class="campo"><label>Horário</label><input id="ag-hora" type="time" step="900" value="15:00"></div>
         <div class="campo"><label>Instrutora</label><select id="ag-inst"></select></div>
         <div class="campo"><label>Vagas nesse horário</label><input id="ag-vagas" type="number" min="1" max="20" value="1"></div>
       </div>
@@ -252,20 +263,24 @@
       }
     }
 
+    /* Só alunas cadastradas (conta no site ou cadastro na recepção), sem repetir a mesma pessoa */
     function mergeClientes() {
-      const map = new Map();
-      state.clientes.forEach(c => map.set(c.id, Object.assign({}, c)));
-      state.ags.forEach(a => {
-        const id = a.clienteId || a.clientId || ("n-" + C.nome(a) + C.tel(a));
-        if (!map.has(id)) map.set(id, { id, nome: C.nome(a), telefone: C.tel(a), email: a.email || "", origem: "agenda" });
+      const vistos = new Map();
+      state.clientes.filter(c => c.ativo !== false && c.nome).forEach(c => {
+        const tel = String(c.telefone || c.tel || "").replace(/\D/g, "").slice(-8);
+        const chave = tel || String(c.nome).trim().toLowerCase();
+        const atual = vistos.get(chave);
+        if (!atual || (!atual.email && c.email)) vistos.set(chave, Object.assign({}, c));
       });
-      return Array.from(map.values());
+      return Array.from(vistos.values());
     }
 
     function renderDash() {
       const hoje = C.hoje();
       const hojeAgs = state.ags.filter(a => a.data === hoje && C.ativo(a));
-      const exp = state.ags.filter(a => (a.tipo === "experimental" || a.servico === "Aula experimental") && a.status === "pendente");
+      const exp = state.ags.filter(a => (a.tipo === "experimental" || a.servico === "Aula experimental" || C.ehPedido(a)) && a.status === "pendente");
+      $("nav-pedidos").textContent = exp.length;
+      $("nav-pedidos").classList.toggle("hidden", !exp.length);
       const base = mergeClientes();
       const inativos = base.filter(c => C.statsCliente(c, state.ags).inativo);
       const bonus = base.filter(c => C.statsCliente(c, state.ags).bonus);
@@ -313,7 +328,7 @@
     function renderDia() {
       const oc = C.ocupacaoDia(state.selDia, state.turmas, state.ags);
       $("dia-titulo").textContent = S.dataBR(state.selDia) + " · " + C.diaNome(state.selDia);
-      const lista = state.ags.filter(a => a.data === state.selDia).sort((a, b) => C.hora(a).localeCompare(C.hora(b)));
+      const lista = state.ags.filter(a => a.data === state.selDia && !C.ehPedido(a)).sort((a, b) => C.hora(a).localeCompare(C.hora(b)));
       let html = `<p style="font-size:13px;color:var(--muted)">${oc.ocup} ocupadas de ${oc.cap || 0} vagas ${oc.cheio ? "· CHEIO" : ""}</p>`;
       html += lista.length ? lista.map(a => `
         <div class="row">
@@ -340,7 +355,7 @@
         return `<h4 style="margin:16px 0 8px;color:var(--brown)">${dia}</h4>` + ts.map(t => {
           const L = lot(t);
           const pct = Math.round((L.ocupados / Math.max(1, L.vagas)) * 100);
-          const tag = t.data ? `<span class="badge b-bonus" style="margin-left:6px">Extra ${S.dataBR(t.data).slice(0, 5)}</span>` : "";
+          const tag = t.data ? `<span class="badge b-concluido" style="margin-left:6px">só em ${S.dataBR(t.data).slice(0, 5)}</span>` : "";
           const acoes = real.length ? `<div style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted)">Vagas <input type="number" min="1" max="20" value="${L.vagas}" data-vagas="${t.id}" style="width:62px;padding:5px 8px;border:1px solid var(--line);border-radius:10px"><button class="btn btn-sm btn-danger" data-del="${t.id}">Remover</button></div>` : "";
           return `<div class="row"><div style="flex:1"><strong>${t.horario} · ${t.nome}</strong>${tag}<div style="font-size:12px;color:var(--muted)">${t.instrutor || "—"} · ${t.data ? "dia" : "próxima"} ${S.dataBR(L.data).slice(0, 5)} · ${L.livres} vagas livres</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:8px"><i style="width:${pct}%"></i></div>${acoes}</div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : '<span class="badge b-confirmado">' + L.ocupados + "/" + L.vagas + "</span>"}</div>`;
         }).join("");
@@ -379,7 +394,7 @@
       const igual = state.turmas.find(t => t.horario === hora && t.dia === diaFinal && (avulsa ? t.data === data : !t.data) && !/^padrao-/.test(t.id));
       if (igual) return igual;
       const novo = {
-        nome: nome || (avulsa ? "Aula extra" : (hora < "12:00" ? "Pilates manhã" : hora < "18:00" ? "Pilates tarde" : "Pilates noite")),
+        nome: nome || (hora < "12:00" ? "Pilates manhã" : hora < "18:00" ? "Pilates tarde" : "Pilates noite"),
         dia: diaFinal, horario: hora, instrutor, vagas: Number(vagas) || (avulsa ? 1 : 8),
         alunos: [], ativo: true, criadoEm: serverTimestamp()
       };
@@ -433,8 +448,15 @@
           ${tel ? `<a class="btn btn-sm btn-ghost" target="_blank" href="${S.waTo(tel, S.msgs.cadastro(c.nome))}">Boas-vindas</a>` : ""}
         </div>
         <h4 style="color:var(--brown)">Histórico</h4>
-        ${hist.length ? hist.map(a => `<div class="row"><div>${S.dataBR(a.data)} · ${C.hora(a)}<div style="font-size:12px;color:var(--muted)">${a.servico || "Pilates"}</div></div><span class="badge b-${a.status}">${a.status}</span></div>`).join("") : "<p>Sem histórico.</p>"}
+        ${hist.length ? hist.map(a => `<div class="row"><div>${S.dataBR(a.data)} · ${C.hora(a)}<div style="font-size:12px;color:var(--muted)">${C.ehPedido(a) ? "Pedido de horário" : (a.turmaNome || a.servico || "Pilates")}</div></div><span class="badge b-${a.status}">${a.status}</span></div>`).join("") : "<p>Sem histórico.</p>"}
+        <button class="btn btn-sm btn-danger" id="cli-remover" style="margin-top:14px">Remover da base</button>
       `;
+      $("cli-remover").onclick = async () => {
+        if (!confirm("Remover " + c.nome + " da base de alunas? O histórico de aulas continua salvo.")) return;
+        await updateDoc(doc(db, "clientes", c.id), { ativo: false });
+        $("cli-detalhe").innerHTML = "<h3>Ficha da aluna</h3><p style='color:var(--muted)'>Aluna removida.</p>";
+        C.toast("Aluna removida da base.");
+      };
     }
 
     $("nc-btn").onclick = async () => {
@@ -447,18 +469,106 @@
     };
 
     function renderLeads() {
+      const pedidos = state.ags.filter(C.ehPedido)
+        .sort((a, b) => (a.status === "pendente" ? 0 : 1) - (b.status === "pendente" ? 0 : 1) || String(a.data).localeCompare(String(b.data)));
+      const rotulo = { pendente: "aguardando", confirmado: "confirmado", sugerido: "outro horário sugerido", cancelado: "cancelado" };
+      $("lista-pedidos").innerHTML = pedidos.length ? pedidos.map(a => `
+        <div class="row">
+          <div><strong>${C.nome(a)}</strong><div style="font-size:12px;color:var(--muted)">Quer ${C.diaNome(a.data)}, ${C.quando(a)}${a.obs ? " · " + a.obs : ""}${a.sugestao ? " · sugerido: " + a.sugestao : ""}</div></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+            <span class="badge b-${a.status}">${rotulo[a.status] || a.status}</span>
+            ${a.status === "pendente" || a.status === "sugerido" ? `<button class="btn btn-sm btn-brown" data-pok="${a.id}">Tenho o horário</button><button class="btn btn-sm btn-ghost" data-psug="${a.id}">Sugerir outro</button>` : ""}
+          </div>
+        </div>`).join("") : "<p style='color:var(--muted)'>Nenhum pedido de horário.</p>";
+      $("lista-pedidos").querySelectorAll("[data-pok]").forEach(b => b.onclick = () => confirmarPedido(state.ags.find(a => a.id === b.dataset.pok), b));
+      $("lista-pedidos").querySelectorAll("[data-psug]").forEach(b => b.onclick = () => sugerirOutro(state.ags.find(a => a.id === b.dataset.psug)));
+
+      const cadastrados = mergeClientes().map(c => String(c.telefone || c.tel || "").replace(/\D/g, "").slice(-8));
       const lista = state.ags.filter(a => a.tipo === "experimental" || a.servico === "Aula experimental").sort((a, b) => String(b.data).localeCompare(String(a.data)));
-      $("lista-leads").innerHTML = lista.length ? lista.map(a => `
+      $("lista-leads").innerHTML = lista.length ? lista.map(a => {
+        const jaCad = cadastrados.includes(String(C.tel(a)).replace(/\D/g, "").slice(-8));
+        return `
         <div class="row">
           <div><strong>${C.nome(a)}</strong><div style="font-size:12px;color:var(--muted)">${C.quando(a)} · ${C.tel(a) || ""}</div></div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
             <span class="badge b-${a.status}">${a.status}</span>
             ${C.tel(a) ? `<a class="btn btn-sm btn-gold" target="_blank" href="${S.waTo(C.tel(a), S.msgs.experimental(C.nome(a), C.quando(a)))}">Confirmar WPP</a>` : ""}
             ${a.status === "pendente" ? `<button class="btn btn-sm btn-brown" data-ok="${a.id}">Confirmar</button>` : ""}
+            ${jaCad ? "" : `<button class="btn btn-sm btn-ghost" data-cad="${a.id}">Cadastrar aluna</button>`}
           </div>
-        </div>`).join("") : "<p>Nenhum pedido experimental.</p>";
+        </div>`;
+      }).join("") : "<p style='color:var(--muted)'>Nenhum pedido experimental.</p>";
       $("lista-leads").querySelectorAll("[data-ok]").forEach(b => b.onclick = () => updateDoc(doc(db, "agendamentos", b.dataset.ok), { status: "confirmado" }));
+      $("lista-leads").querySelectorAll("[data-cad]").forEach(b => b.onclick = async () => {
+        const a = state.ags.find(x => x.id === b.dataset.cad);
+        if (!a) return;
+        await addDoc(collection(db, "clientes"), { nome: C.nome(a), telefone: C.tel(a), tel: C.tel(a), email: "", obs: "Veio pela aula experimental", origem: "experimental", ativo: true, criadoEm: serverTimestamp() });
+        C.toast(C.nome(a) + " agora está na base de alunas.");
+      });
     }
+
+    async function confirmarPedido(a, btn) {
+      if (!a) return;
+      btn.disabled = true;
+      try {
+        let turma = state.turmas.find(t => !/^padrao-/.test(t.id) && S.turmaNaData(t, a.data) && t.horario === C.hora(a));
+        if (turma) {
+          const L = S.lotacao(turma, C.agendadosTurma(turma, a.data, state.ags));
+          if (L.cheia && !confirm("Esse horário já está cheio nessa data. Confirmar mesmo assim?")) return;
+        } else {
+          turma = await criarHorario({ tipo: "avulsa", data: a.data, hora: C.hora(a), instrutor: S.instrutoras[0].nome, vagas: 1 });
+        }
+        await updateDoc(doc(db, "agendamentos", a.id), {
+          tipo: "aula", servico: "Aula de Pilates", status: "confirmado",
+          turmaId: turma.id, turmaNome: turma.nome, instrutor: turma.instrutor, profissional: turma.instrutor, instructor: turma.instrutor
+        });
+        C.toast("Horário confirmado. Já está na agenda.");
+        if (C.tel(a)) window.open(S.waTo(C.tel(a), S.msgs.confirmar(C.nome(a), C.quando(a))), "_blank");
+      } catch (e) {
+        C.toast("Não foi possível confirmar: " + (e.message || "tente de novo"));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function sugerirOutro(a) {
+      if (!a) return;
+      const sugestao = prompt("Qual dia e horário você quer sugerir para " + C.nome(a) + "?\nEx.: quinta 02/10 às 16h", "");
+      if (sugestao === null) return;
+      await updateDoc(doc(db, "agendamentos", a.id), { status: "sugerido", sugestao: sugestao.trim() });
+      if (C.tel(a)) window.open(S.waTo(C.tel(a), S.msgs.semHorario(C.nome(a), C.diaNome(a.data) + ", " + C.quando(a), sugestao.trim())), "_blank");
+      else C.toast("Essa aluna não tem WhatsApp cadastrado.");
+    }
+
+    $("lp-btn").onclick = async () => {
+      if ($("lp-conf").value.trim().toUpperCase() !== "LIMPAR") { C.toast("Digite LIMPAR para confirmar."); return; }
+      if (!confirm("Tem certeza? Isso apaga alunas, agendamentos e pedidos de teste.")) return;
+      $("lp-btn").disabled = true;
+      $("lp-btn").textContent = "Limpando...";
+      try {
+        const meu = auth.currentUser && auth.currentUser.uid;
+        const alvos = [];
+        for (const nome of ["agendamentos", "appointments", "ocupacao", "clientes"]) {
+          const snap = await getDocs(collection(db, nome));
+          snap.docs.forEach(d => alvos.push(d.ref));
+        }
+        const users = await getDocs(collection(db, "users"));
+        users.docs.forEach(d => { if (d.id !== meu && S.normalizeRole(d.data().role) === "cliente") alvos.push(d.ref); });
+        for (let i = 0; i < alvos.length; i += 400) {
+          const batch = writeBatch(db);
+          alvos.slice(i, i + 400).forEach(r => batch.delete(r));
+          await batch.commit();
+        }
+        await addDoc(collection(db, "clientes"), { nome: "Teste", telefone: "(19) 99999-9999", tel: "(19) 99999-9999", email: "", obs: "Aluna de teste", origem: "teste", ativo: true, criadoEm: serverTimestamp() });
+        $("lp-conf").value = "";
+        C.toast("Base limpa. Ficou só a aluna Teste.");
+      } catch (e) {
+        C.toast("Não foi possível limpar tudo: " + (e.code || e.message));
+      } finally {
+        $("lp-btn").disabled = false;
+        $("lp-btn").textContent = "Limpar dados de teste";
+      }
+    };
 
     function renderRetornos() {
       const lista = mergeClientes().map(c => ({ c, st: C.statsCliente(c, state.ags) })).filter(x => x.st.inativo);
@@ -475,7 +585,7 @@
       $("ag-turma").innerHTML = doDia.map(t => {
         const L = S.lotacao(t, C.agendadosTurma(t, data, state.ags));
         return `<option value="${t.id}">${t.horario} · ${t.instrutor || ""} · ${L.cheia ? "cheia" : L.livres + " vagas"}</option>`;
-      }).join("") + `<option value="__encaixe">+ Encaixe em horário novo</option>`;
+      }).join("") + `<option value="__encaixe">+ Outro horário nessa data</option>`;
       if (!doDia.length) $("ag-turma").value = "__encaixe";
       $("ag-encaixe").classList.toggle("hidden", $("ag-turma").value !== "__encaixe");
     }
@@ -502,8 +612,8 @@
         let turma;
         if ($("ag-turma").value === "__encaixe") {
           const hora = $("ag-hora").value;
-          if (!hora) throw new Error("Informe o horário do encaixe.");
-          turma = await criarHorario({ tipo: "avulsa", data, hora, instrutor: $("ag-inst").value, vagas: $("ag-vagas").value, nome: "Encaixe" });
+          if (!hora) throw new Error("Informe o horário.");
+          turma = await criarHorario({ tipo: "avulsa", data, hora, instrutor: $("ag-inst").value, vagas: $("ag-vagas").value });
         } else {
           turma = state.turmas.find(t => t.id === $("ag-turma").value);
           if (!turma) throw new Error("Escolha a turma.");

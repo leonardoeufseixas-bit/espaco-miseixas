@@ -118,9 +118,15 @@
         </div>
         <div class="card pedir">
           <h3>Não encontrou um horário?</h3>
-          <p style="font-size:13px;color:var(--muted);margin:0 0 10px">Conte sua preferência e a Michele vê um encaixe para você.</p>
-          <div class="campo"><label>Dia e horário que prefere</label><input id="pref" placeholder="Ex.: terça à tarde, depois das 15h"></div>
-          <a class="btn btn-brown btn-full" id="btn-pedir" target="_blank" rel="noopener">Pedir horário no WhatsApp</a>
+          <p style="font-size:13px;color:var(--muted);margin:0 0 10px">Peça o dia e horário que você quer. Se tiver, a Michele confirma; se não, ela te sugere outro.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="campo"><label>Dia</label><input id="pd-data" type="date"></div>
+            <div class="campo"><label>Horário</label><input id="pd-hora" type="time" step="900"></div>
+          </div>
+          <div class="campo"><label>Observação (opcional)</label><input id="pd-obs" maxlength="120" placeholder="Ex.: se não der, pode ser depois das 17h"></div>
+          <button class="btn btn-brown btn-full" id="pd-btn">Pedir este horário</button>
+          <p style="text-align:center;margin:10px 0 0;font-size:13px"><a id="btn-pedir" target="_blank" rel="noopener" style="color:var(--brown);font-weight:600">ou fale direto no WhatsApp</a></p>
+          <div id="meus-pedidos" style="margin-top:14px"></div>
         </div>
       </div>
 
@@ -225,6 +231,7 @@
     $("go-cad").onclick = e => { e.preventDefault(); $("box-login").classList.add("hidden"); $("box-cad").classList.remove("hidden"); };
     $("go-login").onclick = e => { e.preventDefault(); $("box-cad").classList.add("hidden"); $("box-login").classList.remove("hidden"); };
     $("dash-wpp").href = ST.waInfo();
+    $("pd-data").min = C.hoje();
 
     $("l-btn").onclick = async () => {
       $("l-err").textContent = "";
@@ -344,8 +351,54 @@
     }
 
     $("btn-pedir").onclick = () => {
-      $("btn-pedir").href = ST.wa(ST.msgs.pedirHorario(state.nome, $("pref").value.trim()));
+      const d = $("pd-data").value, h = $("pd-hora").value;
+      const pref = [d ? C.diaNome(d) + " " + ST.dataBR(d) : "", h ? "às " + h : "", $("pd-obs").value.trim()].filter(Boolean).join(" ");
+      $("btn-pedir").href = ST.wa(ST.msgs.pedirHorario(state.nome, pref));
     };
+
+    $("pd-btn").onclick = async () => {
+      const data = $("pd-data").value, hora = $("pd-hora").value, obs = $("pd-obs").value.trim();
+      if (!data || !hora) { C.toast("Escolha o dia e o horário."); return; }
+      if (data < C.hoje()) { C.toast("Escolha uma data a partir de hoje."); return; }
+      if (C.diaNome(data) === "Domingo") { C.toast("O estúdio atende de segunda a sábado."); return; }
+      const livre = slotsDoDia(data).find(s => s.t.horario === hora && !s.L.cheia && !s.minha);
+      if (livre && confirm(`Esse horário está livre! Quer agendar direto ${livre.t.nome} às ${hora}?`)) {
+        agendar(livre.t, data, $("pd-btn"));
+        return;
+      }
+      $("pd-btn").disabled = true;
+      try {
+        await addDoc(collection(db, "agendamentos"), B.payload({
+          nome: state.nome, tel: state.tel, clienteId: state.uid,
+          servico: "Pedido de horário", tipo: "pedido", origem: "area-cliente",
+          data, hora, obs, status: "pendente"
+        }));
+        $("pd-data").value = $("pd-hora").value = $("pd-obs").value = "";
+        C.toast("Pedido enviado. A Michele te responde pelo WhatsApp.");
+      } catch (e) {
+        C.toast("Não foi possível enviar. Tente de novo.");
+      } finally {
+        $("pd-btn").disabled = false;
+      }
+    };
+
+    function renderPedidos() {
+      const lista = state.aulas.filter(a => C.ehPedido(a) && a.status !== "cancelado" && a.data >= C.hoje())
+        .sort((a, b) => (a.data + C.hora(a)).localeCompare(b.data + C.hora(b)));
+      $("meus-pedidos").innerHTML = lista.length ? `<h4 style="color:var(--brown);margin:0 0 6px">Meus pedidos</h4>` + lista.map(a => `
+        <div class="row">
+          <div><strong>${C.diaNome(a.data)}, ${ST.dataBR(a.data)} · ${C.hora(a)}</strong>
+            <div style="font-size:12px;color:var(--muted)">${a.status === "sugerido" ? "A Michele sugeriu: " + (a.sugestao || "outro horário, veja no WhatsApp") : "A Michele vai te responder"}</div></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="badge b-${a.status}">${a.status === "sugerido" ? "outro horário" : "aguardando"}</span>
+            <button class="btn btn-sm btn-danger" data-pcancel="${a.id}">Cancelar</button>
+          </div>
+        </div>`).join("") : "";
+      $("meus-pedidos").querySelectorAll("[data-pcancel]").forEach(b => b.onclick = async () => {
+        if (!confirm("Cancelar este pedido?")) return;
+        await updateDoc(doc(db, "agendamentos", b.dataset.pcancel), { status: "cancelado" });
+      });
+    }
 
     function linhaAula(a, podeCancelar) {
       const rotulo = { pendente: "aguardando", confirmado: "confirmada", cancelado: "cancelada", concluido: "concluída" }[a.status] || a.status;
@@ -362,13 +415,14 @@
       const hoje = C.hoje();
       const ativos = state.aulas.filter(C.ativo);
       const futuros = ativos.filter(a => a.data >= hoje).sort((a, b) => (a.data + C.hora(a)).localeCompare(b.data + C.hora(b)));
-      const hist = state.aulas.filter(a => !futuros.includes(a)).sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      const hist = state.aulas.filter(a => !C.ehPedido(a) && !futuros.includes(a)).sort((a, b) => String(b.data).localeCompare(String(a.data)));
       const n = ativos.filter(a => a.data <= hoje || a.status === "confirmado" || a.status === "concluido").length;
       $("tb-nome").textContent = (state.nome || "").split(" ")[0];
       $("d-proximo").textContent = futuros[0] ? `${C.diaNome(futuros[0].data)}, ${ST.dataBR(futuros[0].data)} às ${C.hora(futuros[0])} · ${futuros[0].instrutor || ""}` : "Nenhuma aula marcada. Toque em Agendar aula.";
       $("p-total").textContent = ativos.length;
-      $("p-ok").textContent = state.aulas.filter(a => a.status === "confirmado" || a.status === "concluido").length;
+      $("p-ok").textContent = ativos.filter(a => a.status === "confirmado" || a.status === "concluido").length;
       $("p-pend").textContent = state.aulas.filter(a => a.status === "pendente").length;
+      renderPedidos();
       $("p-falta").textContent = Math.max(0, 5 - n);
       $("p-bar").style.width = Math.min(100, (n / 5) * 100) + "%";
       $("p-txt").textContent = n >= 5 ? "Você desbloqueou o carinho de fidelidade da casa." : ("Faltam " + Math.max(0, 5 - n) + " aulas para o bônus de fidelidade.");

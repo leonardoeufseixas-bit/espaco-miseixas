@@ -32,10 +32,12 @@ window.Clinic = {
   nome: function (a) { return a.clienteNome || a.clientName || a.nome || "—"; },
   tel: function (a) { return a.telefone || a.tel || a.phone || ""; },
   hora: function (a) { return a.hora || a.time || a.horario || ""; },
+  /* Pedido de horário ainda não é aula: não ocupa vaga nem conta no histórico */
   ativo: function (a) {
     const s = String(a.status || "pendente");
-    return s !== "cancelado" && s !== "cancelled";
+    return a.tipo !== "pedido" && s !== "cancelado" && s !== "cancelled";
   },
+  ehPedido: function (a) { return a.tipo === "pedido"; },
   quando: function (a) {
     return window.STUDIO.dataBR(a.data) + " às " + (this.hora(a) || "—");
   },

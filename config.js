@@ -76,13 +76,16 @@ window.STUDIO = {
     { nome: "Pilates manhã", dia: "Sexta", horario: "07:00", vagas: 8, instrutor: "Lilian", alunos: [] },
     { nome: "Pilates sábado", dia: "Sábado", horario: "09:00", vagas: 8, instrutor: "Michele", alunos: [] }
   ],
-  /* t.data preenchida = aula avulsa/encaixe só naquela data; sem data = toda semana */
+  /* t.data preenchida = aula só naquela data; sem data = toda semana */
   normalizeTurma: function (t, i) {
     const alunos = t.alunos || t.alunas || [];
     const data = this.dataStr(t.data || "");
+    const hora = t.horario || t.hora || t.horarioInicio || "";
+    let nome = t.nome || t.turma || "";
+    if (!nome || /encaixe|extra/i.test(nome)) nome = !hora ? "Pilates" : hora < "12:00" ? "Pilates manhã" : hora < "18:00" ? "Pilates tarde" : "Pilates noite";
     return Object.assign({}, t, {
       id: t.id || ("t-" + i),
-      nome: t.nome || t.turma || (data ? "Aula extra" : "Pilates"),
+      nome: nome,
       data: data,
       avulsa: !!data,
       dia: this.normalizeDia(t.dia || t.diaSemana || t.day || t.weekday) || (data ? this.diaDaData(data) : ""),
@@ -217,8 +220,13 @@ window.STUDIO = {
     experimental: function (nome, quando) {
       return "Olá, " + nome + "! Recebemos seu pedido de *aula experimental* para " + quando + ". Confirmamos presença por aqui. Até breve no Studio M. S.!";
     },
+    semHorario: function (nome, quando, sugestao) {
+      return "Oi, " + nome + "! Recebi seu pedido para *" + quando + "*. Infelizmente esse horário não temos disponível." +
+        (sugestao ? "\n\nPodemos agendar *" + sugestao + "*?" : "\n\nPosso te sugerir outro dia ou horário?") +
+        " Se ficar bom pra você, me confirma aqui que já deixo reservado.";
+    },
     pedirHorario: function (nome, pref) {
-      return "Olá! Sou " + (nome || "aluna do estúdio") + " e não encontrei um horário que encaixe na minha rotina." +
+      return "Olá! Sou " + (nome || "aluna do estúdio") + " e não encontrei um horário que combine com a minha rotina." +
         (pref ? "\n\nMinha preferência: *" + pref + "*" : "") +
         "\n\nTeria algum horário específico disponível para mim?";
     },

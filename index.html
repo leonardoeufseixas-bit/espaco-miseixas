@@ -59,7 +59,7 @@
 
   <section id="home" class="relative min-h-[100svh] flex items-center pt-[76px]">
     <div class="hero-media">
-      <img class="hero-foto" src="https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FDesign%20sem%20nome.jpg?alt=media&token=ede6c3fb-1aa5-44d4-b179-72b022b5a408" alt="Ambiente e aulas no Studio de Pilates M. S." fetchpriority="high">
+      <img class="hero-foto" src="https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2Fnovo%2FDesign%20sem%20nome%20(2).jpg?alt=media&token=09bb2423-c336-4da4-81e6-44852e6e71ce" alt="Ambiente e aulas no Studio de Pilates M. S." fetchpriority="high">
       <div class="hero-overlay"></div>
     </div>
     <div class="relative z-10 max-w-6xl mx-auto px-4 py-16 w-full">
@@ -314,8 +314,7 @@
           const foto = S.fotoDe(t.instrutor);
           const avatar = foto ? '<img class="turma-av" src="' + foto + '" alt="">' : "";
           const selo = L.cheia ? "Lotada" : (L.livres === 1 ? "Última vaga" : L.livres + " vagas");
-          const extra = t.data ? ' <em class="turma-extra">Extra</em>' : "";
-          return '<div class="turma-row' + (t.data ? " is-extra" : "") + '"><div class="turma-hora">' + t.horario + '</div><div class="turma-meta"><strong>' + (t.nome || "Pilates") + extra + '</strong><span class="turma-prof">' + avatar + " " + (t.instrutor || "Instrutora") + '</span></div><span class="turma-vagas ' + cls + '" title="Próxima aula ' + S.dataBR(L.data) + '">' + selo + ' · ' + S.dataBR(L.data).slice(0, 5) + '</span><button class="btn-exp" ' + (L.cheia ? "disabled" : "") + ' data-id="' + t.id + '">' + (L.cheia ? "Lotada" : "Experimentar") + '</button></div>';
+          return '<div class="turma-row"><div class="turma-hora">' + t.horario + '</div><div class="turma-meta"><strong>' + (t.nome || "Pilates") + '</strong><span class="turma-prof">' + avatar + " " + (t.instrutor || "Instrutora") + '</span></div><span class="turma-vagas ' + cls + '" title="Próxima aula ' + S.dataBR(L.data) + '">' + selo + ' · ' + S.dataBR(L.data).slice(0, 5) + '</span><button class="btn-exp" ' + (L.cheia ? "disabled" : "") + ' data-id="' + t.id + '">' + (L.cheia ? "Lotada" : "Experimentar") + '</button></div>';
         }).join("") : '<p class="text-sm text-ink/50">Sem turma neste dia.</p>';
         return '<div class="dia-col"><h3>' + dia + "</h3>" + rows + "</div>";
       }).join("");

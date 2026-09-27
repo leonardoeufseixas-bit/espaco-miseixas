@@ -99,6 +99,7 @@ a { color: var(--brown); }
 .b-confirmado { background: #F3EAD3; color: var(--brown); }
 .b-cancelado { background: #FEF2F2; color: #b91c1c; }
 .b-concluido { background: var(--soft); color: var(--muted); }
+.b-sugerido { background: #EEF2F7; color: #3b4a5c; }
 .b-cheio { background: #F8E6E2; color: var(--full); }
 .b-bonus { background: #D4AF37; color: var(--brown); }
 .b-inativo { background: #eee; color: #666; }
