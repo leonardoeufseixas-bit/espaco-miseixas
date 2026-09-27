@@ -84,7 +84,31 @@
         </div>
 
         <div id="t-turmas" class="tela">
-          <div class="card" id="lista-turmas"></div>
+          <div class="grid-2">
+            <div class="card" id="lista-turmas"></div>
+            <div>
+              <div class="card">
+                <h3>Adicionar horário</h3>
+                <p style="font-size:13px;color:var(--muted);margin-top:-4px">Aparece na hora no site e na Minha área das alunas.</p>
+                <div class="campo"><label>Tipo</label>
+                  <select id="nt-tipo">
+                    <option value="semanal">Toda semana (turma fixa)</option>
+                    <option value="avulsa">Só numa data (aula extra / encaixe)</option>
+                  </select>
+                </div>
+                <div class="campo" id="nt-dia-box"><label>Dia da semana</label>
+                  <select id="nt-dia"></select>
+                </div>
+                <div class="campo hidden" id="nt-data-box"><label>Data</label><input id="nt-data" type="date"></div>
+                <div class="campo"><label>Horário</label><input id="nt-hora" type="time" step="900" value="10:30"></div>
+                <div class="campo"><label>Instrutora</label><select id="nt-inst"></select></div>
+                <div class="campo"><label>Vagas</label><input id="nt-vagas" type="number" min="1" max="20" value="8"></div>
+                <div class="campo"><label>Nome (opcional)</label><input id="nt-nome" placeholder="Pilates manhã, Reabilitação..."></div>
+                <p class="err" id="nt-err"></p>
+                <button class="btn btn-brown btn-full" id="nt-btn">Salvar horário</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div id="t-clientes" class="tela">
@@ -135,6 +159,12 @@
       <div class="campo"><label>Aluna</label><select id="ag-cli"></select></div>
       <div class="campo"><label>Turma</label><select id="ag-turma"></select></div>
       <div class="campo"><label>Data</label><input id="ag-data" type="date"></div>
+      <div id="ag-encaixe" class="hidden" style="background:var(--off);border:1px solid var(--line);border-radius:16px;padding:12px 12px 2px;margin-bottom:12px">
+        <p style="font-size:12px;color:var(--muted);margin:0 0 10px">Cria um horário extra nessa data e já coloca a aluna nele. O site mostra esse horário na hora.</p>
+        <div class="campo"><label>Horário do encaixe</label><input id="ag-hora" type="time" step="900" value="15:00"></div>
+        <div class="campo"><label>Instrutora</label><select id="ag-inst"></select></div>
+        <div class="campo"><label>Vagas nesse horário</label><input id="ag-vagas" type="number" min="1" max="20" value="1"></div>
+      </div>
       <div class="campo"><label>Status</label>
         <select id="ag-status"><option value="pendente">Pendente</option><option value="confirmado">Confirmado</option></select>
       </div>
@@ -253,7 +283,7 @@
       }).join("") || "<p>Sem turmas.</p>";
     }
     function lot(t) {
-      const data = S.proximaData(t.dia);
+      const data = S.dataTurma(t);
       return Object.assign(S.lotacao(t, C.agendadosTurma(t, data, state.ags)), { data });
     }
 
@@ -303,16 +333,74 @@
     $("cal-next").onclick = () => { state.mes.setMonth(state.mes.getMonth() + 1); renderCal(); };
 
     function renderTurmas() {
-      $("lista-turmas").innerHTML = "<h3>Grade semanal</h3>" + S.diasOrdem.map(dia => {
+      const real = state.turmas.filter(t => !/^padrao-/.test(t.id));
+      $("lista-turmas").innerHTML = "<h3>Grade e horários</h3>" + S.diasOrdem.map(dia => {
         const ts = state.turmas.filter(t => t.dia === dia);
         if (!ts.length) return "";
         return `<h4 style="margin:16px 0 8px;color:var(--brown)">${dia}</h4>` + ts.map(t => {
           const L = lot(t);
           const pct = Math.round((L.ocupados / Math.max(1, L.vagas)) * 100);
-          return `<div class="row"><div style="flex:1"><strong>${t.horario} · ${t.nome}</strong><div style="font-size:12px;color:var(--muted)">${t.instrutor} · próxima ${S.dataBR(L.data).slice(0, 5)} · ${L.livres} vagas livres</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:8px"><i style="width:${pct}%"></i></div></div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : '<span class="badge b-confirmado">' + L.ocupados + "/" + L.vagas + "</span>"}</div>`;
+          const tag = t.data ? `<span class="badge b-bonus" style="margin-left:6px">Extra ${S.dataBR(t.data).slice(0, 5)}</span>` : "";
+          const acoes = real.length ? `<div style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted)">Vagas <input type="number" min="1" max="20" value="${L.vagas}" data-vagas="${t.id}" style="width:62px;padding:5px 8px;border:1px solid var(--line);border-radius:10px"><button class="btn btn-sm btn-danger" data-del="${t.id}">Remover</button></div>` : "";
+          return `<div class="row"><div style="flex:1"><strong>${t.horario} · ${t.nome}</strong>${tag}<div style="font-size:12px;color:var(--muted)">${t.instrutor || "—"} · ${t.data ? "dia" : "próxima"} ${S.dataBR(L.data).slice(0, 5)} · ${L.livres} vagas livres</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:8px"><i style="width:${pct}%"></i></div>${acoes}</div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : '<span class="badge b-confirmado">' + L.ocupados + "/" + L.vagas + "</span>"}</div>`;
         }).join("");
       }).join("");
+      $("lista-turmas").querySelectorAll("[data-vagas]").forEach(inp => inp.onchange = async () => {
+        const v = Math.max(1, Math.min(20, Number(inp.value) || 1));
+        await updateDoc(doc(db, "turmas", inp.dataset.vagas), { vagas: v });
+        C.toast("Vagas atualizadas.");
+      });
+      $("lista-turmas").querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
+        const t = state.turmas.find(x => x.id === b.dataset.del);
+        if (!t || !confirm(`Remover ${t.dia} ${t.horario}${t.data ? " (" + S.dataBR(t.data) + ")" : ""} da grade? Os agendamentos já feitos continuam no histórico.`)) return;
+        await updateDoc(doc(db, "turmas", t.id), { ativo: false });
+        C.toast("Horário removido do site.");
+      });
     }
+
+    function opcoesInstrutoras() {
+      return S.instrutoras.map(i => `<option value="${i.nome}">${i.nome}</option>`).join("");
+    }
+    $("nt-dia").innerHTML = S.diasOrdem.map(d => `<option>${d}</option>`).join("");
+    $("nt-inst").innerHTML = opcoesInstrutoras();
+    $("ag-inst").innerHTML = opcoesInstrutoras();
+    $("nt-tipo").onchange = () => {
+      const av = $("nt-tipo").value === "avulsa";
+      $("nt-dia-box").classList.toggle("hidden", av);
+      $("nt-data-box").classList.toggle("hidden", !av);
+      $("nt-vagas").value = av ? 1 : 8;
+      if (av && !$("nt-data").value) $("nt-data").value = C.hoje();
+    };
+
+    async function criarHorario({ tipo, dia, data, hora, instrutor, vagas, nome }) {
+      const avulsa = tipo === "avulsa";
+      const diaFinal = avulsa ? S.diaDaData(data) : dia;
+      if (S.diasOrdem.indexOf(diaFinal) === -1) throw new Error("O estúdio atende de segunda a sábado.");
+      const igual = state.turmas.find(t => t.horario === hora && t.dia === diaFinal && (avulsa ? t.data === data : !t.data) && !/^padrao-/.test(t.id));
+      if (igual) return igual;
+      const novo = {
+        nome: nome || (avulsa ? "Aula extra" : (hora < "12:00" ? "Pilates manhã" : hora < "18:00" ? "Pilates tarde" : "Pilates noite")),
+        dia: diaFinal, horario: hora, instrutor, vagas: Number(vagas) || (avulsa ? 1 : 8),
+        alunos: [], ativo: true, criadoEm: serverTimestamp()
+      };
+      if (avulsa) novo.data = data;
+      const ref = await addDoc(collection(db, "turmas"), novo);
+      return Object.assign({ id: ref.id }, novo);
+    }
+
+    $("nt-btn").onclick = async () => {
+      $("nt-err").textContent = "";
+      const tipo = $("nt-tipo").value, hora = $("nt-hora").value, data = $("nt-data").value;
+      if (!hora) { $("nt-err").textContent = "Informe o horário."; return; }
+      if (tipo === "avulsa" && (!data || data < C.hoje())) { $("nt-err").textContent = "Escolha uma data de hoje em diante."; return; }
+      try {
+        await criarHorario({ tipo, dia: $("nt-dia").value, data, hora, instrutor: $("nt-inst").value, vagas: $("nt-vagas").value, nome: $("nt-nome").value.trim() });
+        $("nt-nome").value = "";
+        C.toast("Horário publicado no site.");
+      } catch (e) {
+        $("nt-err").textContent = e.message || "Não foi possível salvar.";
+      }
+    };
 
     function renderClientes() {
       const q = ($("cli-busca").value || "").toLowerCase();
@@ -334,7 +422,9 @@
       const hist = st.lista.slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
       $("cli-detalhe").innerHTML = `
         <h3>${c.nome}</h3>
-        <p style="font-size:13px;color:var(--muted)">${tel || "sem telefone"} · ${c.email || ""}</p>
+        <p style="font-size:13px;color:var(--muted)">${tel || "sem telefone"} · ${c.email || ""}${c.nascimento ? " · nasc. " + S.dataBR(c.nascimento) : ""}</p>
+        ${c.objetivo ? `<p style="font-size:13px;margin:6px 0"><strong>Objetivo:</strong> ${c.objetivo}</p>` : ""}
+        ${c.saude || c.obs ? `<p style="font-size:13px;margin:6px 0;background:#FFF8E7;border-radius:12px;padding:8px 10px"><strong>Saúde / observações:</strong> ${[c.saude, c.obs].filter(Boolean).join(" · ")}</p>` : ""}
         <p style="margin:10px 0">${st.aulas} aulas · última ${st.last ? S.dataBR(st.last) : "—"} ${st.dias != null ? "(" + st.dias + " dias)" : ""} ${st.bonus ? '<span class="badge b-bonus">Bônus fidelidade</span>' : ""}</p>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
           ${tel ? `<a class="btn btn-sm btn-gold" target="_blank" href="${S.waTo(tel, S.msgs.lembrete(c.nome, "no horário combinado"))}">Lembrete</a>` : ""}
@@ -379,30 +469,64 @@
         </div>`).join("") : "<p>Ninguém sumido no momento. Ótimo.</p>";
     }
 
+    function opcoesTurmaNaData() {
+      const data = $("ag-data").value;
+      const doDia = state.turmas.filter(t => data && S.turmaNaData(t, data));
+      $("ag-turma").innerHTML = doDia.map(t => {
+        const L = S.lotacao(t, C.agendadosTurma(t, data, state.ags));
+        return `<option value="${t.id}">${t.horario} · ${t.instrutor || ""} · ${L.cheia ? "cheia" : L.livres + " vagas"}</option>`;
+      }).join("") + `<option value="__encaixe">+ Encaixe em horário novo</option>`;
+      if (!doDia.length) $("ag-turma").value = "__encaixe";
+      $("ag-encaixe").classList.toggle("hidden", $("ag-turma").value !== "__encaixe");
+    }
+    $("ag-data").onchange = opcoesTurmaNaData;
+    $("ag-turma").onchange = () => $("ag-encaixe").classList.toggle("hidden", $("ag-turma").value !== "__encaixe");
+
     $("btnNovoAg").onclick = () => {
-      $("ag-cli").innerHTML = mergeClientes().map(c => `<option value="${c.id}">${c.nome}</option>`).join("");
-      $("ag-turma").innerHTML = state.turmas.map(t => `<option value="${t.id}">${t.dia} ${t.horario} · ${t.instrutor}</option>`).join("");
-      $("ag-data").value = state.selDia;
+      const clis = mergeClientes().sort((a, b) => String(a.nome).localeCompare(String(b.nome)));
+      $("ag-cli").innerHTML = clis.length ? clis.map(c => `<option value="${c.id}">${c.nome}</option>`).join("") : `<option value="">Cadastre a aluna na aba Alunas primeiro</option>`;
+      $("ag-data").value = state.selDia < C.hoje() ? C.hoje() : state.selDia;
+      $("ag-err").textContent = "";
+      opcoesTurmaNaData();
       $("m-ag").classList.remove("hidden");
       $("m-ag").style.display = "flex";
     };
     $("ag-fechar").onclick = () => { $("m-ag").classList.add("hidden"); $("m-ag").style.display = "none"; };
     $("ag-salvar").onclick = async () => {
       const cli = mergeClientes().find(c => c.id === $("ag-cli").value);
-      const turma = state.turmas.find(t => t.id === $("ag-turma").value);
-      if (!cli || !turma || !$("ag-data").value) { $("ag-err").textContent = "Preencha aluna, turma e data."; return; }
-      if (C.diaNome($("ag-data").value) !== turma.dia) { $("ag-err").textContent = "Essa turma é de " + turma.dia + ". Escolha uma data nesse dia."; return; }
-      const L = S.lotacao(turma, C.agendadosTurma(turma, $("ag-data").value, state.ags));
-      if (L.cheia && !confirm("Essa turma já está cheia nessa data. Lançar mesmo assim (encaixe)?")) return;
+      const data = $("ag-data").value;
+      if (!cli || !data) { $("ag-err").textContent = "Escolha a aluna e a data."; return; }
       $("ag-err").textContent = "";
-      await addDoc(collection(db, "agendamentos"), B.payload({
-        nome: cli.nome, tel: cli.telefone || cli.tel, clienteId: cli.id,
-        servico: turma.nome || "Pilates", tipo: "aula", origem: "admin",
-        data: $("ag-data").value, hora: turma.horario, instrutor: turma.instrutor,
-        turmaId: turma.id, turmaNome: turma.nome, status: $("ag-status").value
-      }));
-      $("ag-fechar").click();
-      C.toast("Agendamento lançado.");
+      $("ag-salvar").disabled = true;
+      try {
+        let turma;
+        if ($("ag-turma").value === "__encaixe") {
+          const hora = $("ag-hora").value;
+          if (!hora) throw new Error("Informe o horário do encaixe.");
+          turma = await criarHorario({ tipo: "avulsa", data, hora, instrutor: $("ag-inst").value, vagas: $("ag-vagas").value, nome: "Encaixe" });
+        } else {
+          turma = state.turmas.find(t => t.id === $("ag-turma").value);
+          if (!turma) throw new Error("Escolha a turma.");
+          const L = S.lotacao(turma, C.agendadosTurma(turma, data, state.ags));
+          if (L.cheia && !confirm("Essa turma já está cheia nessa data. Lançar mesmo assim?")) return;
+        }
+        await addDoc(collection(db, "agendamentos"), B.payload({
+          nome: cli.nome, tel: cli.telefone || cli.tel, clienteId: cli.id,
+          servico: turma.nome || "Pilates", tipo: "aula", origem: "admin",
+          data, hora: turma.horario, instrutor: turma.instrutor,
+          turmaId: turma.id, turmaNome: turma.nome, status: $("ag-status").value
+        }));
+        $("ag-fechar").click();
+        C.toast("Agendamento lançado. Já aparece no site.");
+        const tel = cli.telefone || cli.tel;
+        if (tel && confirm("Enviar a confirmação para " + cli.nome + " no WhatsApp?")) {
+          window.open(S.waTo(tel, S.msgs.confirmar(cli.nome, S.dataBR(data) + " às " + turma.horario)), "_blank");
+        }
+      } catch (e) {
+        $("ag-err").textContent = e.message || "Não foi possível salvar.";
+      } finally {
+        $("ag-salvar").disabled = false;
+      }
     };
 
     let live = false;
@@ -430,7 +554,7 @@
         renderDash(); renderTurmas(); agendarSync();
       });
       onSnapshot(collection(db, "agendamentos"), snap => {
-        state.ags = snap.docs.map(d => C.normalizarAg({ id: d.id, ...d.data() }));
+        state.ags = snap.docs.map(d => C.normalizarAg(C.limpar({ id: d.id, ...d.data() })));
         renderDash(); renderCal(); renderLeads(); renderRetornos(); renderClientes(); agendarSync();
       });
       onSnapshot(query(collection(db, "ocupacao"), where("data", ">=", C.hoje())), snap => {
@@ -439,7 +563,7 @@
         agendarSync();
       }, e => console.warn("ocupacao", e));
       onSnapshot(collection(db, "clientes"), snap => {
-        state.clientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        state.clientes = snap.docs.map(d => C.limpar({ id: d.id, ...d.data() }));
         renderClientes(); renderRetornos(); renderDash();
       });
     });

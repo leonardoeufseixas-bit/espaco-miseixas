@@ -1,5 +1,14 @@
 window.Clinic = {
   hoje: function () { return window.STUDIO.iso(new Date()); },
+  /* Campos preenchidos por alunas viram HTML no painel: neutraliza tags */
+  limpar: function (obj) {
+    const out = {};
+    Object.keys(obj || {}).forEach(function (k) {
+      const v = obj[k];
+      out[k] = typeof v === "string" ? v.replace(/</g, "&lt;").replace(/>/g, "&gt;") : v;
+    });
+    return out;
+  },
   normalizarAg: function (a) {
     const S = window.STUDIO;
     return Object.assign({}, a, {
@@ -9,7 +18,8 @@ window.Clinic = {
     });
   },
   mesmaTurma: function (a, t) {
-    if (a.turmaId && a.turmaId === t.id) return true;
+    if (t.data && a.data !== t.data) return false;
+    if (a.turmaId && !/^padrao-/.test(a.turmaId)) return a.turmaId === t.id;
     const S = window.STUDIO;
     return !!a.data && this.diaNome(a.data) === S.normalizeDia(t.dia) && this.hora(a) === t.horario;
   },
@@ -34,8 +44,8 @@ window.Clinic = {
     return ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][d.getDay()];
   },
   ocupacaoDia: function (dataStr, turmas, ags) {
-    const dia = this.diaNome(dataStr);
-    const doDia = (turmas || []).filter(function (t) { return t.dia === dia; });
+    const S = window.STUDIO;
+    const doDia = (turmas || []).filter(function (t) { return S.turmaNaData(t, dataStr); });
     const cap = doDia.reduce(function (s, t) { return s + Number(t.vagas || 8); }, 0);
     const fixas = doDia.reduce(function (s, t) { return s + (t.alunos || []).length; }, 0);
     const ocup = fixas + (ags || []).filter(function (a) { return a.data === dataStr && window.Clinic.ativo(a); }).length;

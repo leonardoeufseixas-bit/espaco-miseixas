@@ -122,6 +122,18 @@ section[id], header { scroll-margin-top: 88px; }
   padding: 3px 8px;
   width: fit-content;
 }
+.turma-extra {
+  font-style: normal;
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: #D4AF37;
+  color: #3E2723;
+  border-radius: 999px;
+  padding: 2px 7px;
+  margin-left: 4px;
+  vertical-align: 1px;
+}
 .turma-vagas.quase { background: #efe6d8; }
 .turma-vagas.cheia { background: #eee; color: #888; }
 .btn-exp {
@@ -190,15 +202,10 @@ section[id], header { scroll-margin-top: 88px; }
   .grade-dias { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .galeria { grid-auto-rows: 170px; }
 }
-/* Abaixo de 1024px a foto (4 imagens lado a lado) aparece inteira no topo, sem corte */
 @media (max-width: 1023px) {
-  #home { min-height: auto; display: block; }
-  .hero-media {
-    position: relative;
-    aspect-ratio: 16 / 9;
+  .hero-overlay {
+    background: linear-gradient(180deg, rgba(62, 39, 35, 0.35) 0%, rgba(62, 39, 35, 0.6) 45%, rgba(62, 39, 35, 0.88) 100%);
   }
-  .hero-overlay { background: linear-gradient(0deg, rgba(62, 39, 35, 0.55) 0%, rgba(62, 39, 35, 0) 45%); }
-  #home > .relative { padding-top: 28px; padding-bottom: 40px; }
 }
 @media (max-width: 768px) {
   #navLinks.open { display: flex !important; }

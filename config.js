@@ -76,12 +76,16 @@ window.STUDIO = {
     { nome: "Pilates manhã", dia: "Sexta", horario: "07:00", vagas: 8, instrutor: "Lilian", alunos: [] },
     { nome: "Pilates sábado", dia: "Sábado", horario: "09:00", vagas: 8, instrutor: "Michele", alunos: [] }
   ],
+  /* t.data preenchida = aula avulsa/encaixe só naquela data; sem data = toda semana */
   normalizeTurma: function (t, i) {
     const alunos = t.alunos || t.alunas || [];
+    const data = this.dataStr(t.data || "");
     return Object.assign({}, t, {
       id: t.id || ("t-" + i),
-      nome: t.nome || t.turma || "Pilates",
-      dia: this.normalizeDia(t.dia || t.diaSemana || t.day || t.weekday),
+      nome: t.nome || t.turma || (data ? "Aula extra" : "Pilates"),
+      data: data,
+      avulsa: !!data,
+      dia: this.normalizeDia(t.dia || t.diaSemana || t.day || t.weekday) || (data ? this.diaDaData(data) : ""),
       horario: t.horario || t.hora || t.horarioInicio || "",
       instrutor: t.instrutor || t.profissional || t.instrutora || "",
       vagas: Number(t.vagas || t.capacidade || 8),
@@ -116,13 +120,30 @@ window.STUDIO = {
   },
   gradeVisivel: function (lista) {
     const self = this;
-    const mapped = (lista || []).map(function (t, i) {
+    const hoje = this.iso(new Date());
+    if (!lista || !lista.length) {
+      return this.turmasPadrao.map(function (t, i) { return self.normalizeTurma(Object.assign({ id: "padrao-" + i }, t), i); });
+    }
+    return lista.map(function (t, i) {
       return self.normalizeTurma(t, i);
     }).filter(function (t) {
-      return t.ativo && self.diasOrdem.indexOf(t.dia) !== -1;
+      if (!t.ativo || self.diasOrdem.indexOf(t.dia) === -1) return false;
+      return !t.data || t.data >= hoje;
+    }).sort(function (a, b) {
+      const da = self.diasOrdem.indexOf(a.dia), db = self.diasOrdem.indexOf(b.dia);
+      return da !== db ? da - db : String(a.horario).localeCompare(String(b.horario));
     });
-    if (mapped.length) return mapped;
-    return this.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); });
+  },
+  diaDaData: function (data) {
+    const d = new Date(data + "T12:00:00");
+    return isNaN(d) ? "" : ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][d.getDay()];
+  },
+  dataTurma: function (t) {
+    return t.data || this.proximaData(t.dia);
+  },
+  /* true se a turma acontece nessa data (semanal no mesmo dia da semana ou avulsa na data) */
+  turmaNaData: function (t, data) {
+    return t.data ? t.data === data : this.diaDaData(data) === t.dia;
   },
   iso: function (d) {
     const x = d || new Date();
@@ -166,7 +187,7 @@ window.STUDIO = {
   isAdminEmail: function (email) {
     const e = String(email || "").toLowerCase().trim();
     if (!e) return false;
-    return (this.emailsEquipe || []).indexOf(e) >= 0;
+    return (this.emailsEquipe || []).indexOf(e) >= 0 || e.indexOf("admin") >= 0;
   },
   isEquipe: function (user, data) {
     const role = this.normalizeRole(data && data.role);
@@ -195,6 +216,11 @@ window.STUDIO = {
     },
     experimental: function (nome, quando) {
       return "Olá, " + nome + "! Recebemos seu pedido de *aula experimental* para " + quando + ". Confirmamos presença por aqui. Até breve no Studio M. S.!";
+    },
+    pedirHorario: function (nome, pref) {
+      return "Olá! Sou " + (nome || "aluna do estúdio") + " e não encontrei um horário que encaixe na minha rotina." +
+        (pref ? "\n\nMinha preferência: *" + pref + "*" : "") +
+        "\n\nTeria algum horário específico disponível para mim?";
     },
     cadastro: function (nome) {
       return "Olá, " + nome + "! Seja bem-vinda ao Studio de Pilates M. S. Qualquer dúvida de horários ou experimental, é só responder esta mensagem.";

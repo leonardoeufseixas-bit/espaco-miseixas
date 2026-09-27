@@ -5,38 +5,56 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#3E2723">
   <title>Minha área · Studio de Pilates M. S.</title>
+  <link rel="icon" href="imagem/logo-ms.png">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="app.css">
   <style>
     .app.on { display: block; }
     .cli-nav { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--line); display: flex; z-index: 20; }
-    .cli-nav button { flex: 1; border: 0; background: none; padding: 12px 6px; font-size: 11px; font-weight: 600; color: var(--muted); }
-    .cli-nav button.on { color: var(--brown); }
+    .cli-nav button { flex: 1; border: 0; background: none; padding: 12px 6px 14px; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; letter-spacing: .04em; }
+    .cli-nav button.on { color: var(--brown); box-shadow: inset 0 2px 0 var(--gold); }
     .hero-cli { background: var(--brown); color: #fff; border: 0; }
     .hero-cli h3 { color: #fff; margin: 0 0 6px; }
     .prog { height: 8px; background: rgba(255,255,255,.2); border-radius: 99px; overflow: hidden; margin-top: 10px; }
     .prog i { display: block; height: 100%; background: var(--gold); }
+    .acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .cal-head h3 { margin: 0; }
+    .cal-day.disp { background: #f7f1de; border-color: #ead7a0; font-weight: 600; }
+    .cal-day.lot { background: var(--soft); color: #aaa; }
+    .cal-day.tem-minha::after { content: ""; position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 99px; background: var(--brown); }
+    .legenda { display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; color: var(--muted); margin: 10px 0 0; }
+    .legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; border: 1px solid var(--line); }
+    .slot { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--soft); }
+    .slot:last-child { border-bottom: 0; }
+    .slot b { font-size: 16px; color: var(--brown); }
+    .slot small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .pedir { background: var(--off); border: 1px dashed #d8cfc4; }
+    .perfil-top { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; }
+    .avatar { width: 56px; height: 56px; border-radius: 99px; background: var(--brown); color: #fff; display: flex; align-items: center; justify-content: center; font-family: "Playfair Display", serif; font-size: 22px; }
+    .campo input[readonly] { background: var(--soft); color: var(--muted); }
   </style>
 </head>
 <body>
   <div id="login-wrap" class="auth-page">
     <div class="auth-card">
-      <img class="logo" src="imagem/logo-ms.png" alt="">
+      <img class="logo" src="imagem/logo-ms.png" alt="Studio de Pilates M. S.">
       <h1>Minha área</h1>
       <p class="sub">Alunas e equipe · um só acesso</p>
       <div id="box-login">
-        <div class="campo"><label>E-mail</label><input id="l-email" type="email" placeholder="seu@email.com"></div>
-        <div class="campo"><label>Senha</label><input id="l-senha" type="password"></div>
+        <div class="campo"><label>E-mail</label><input id="l-email" type="email" autocomplete="email" placeholder="seu@email.com"></div>
+        <div class="campo"><label>Senha</label><input id="l-senha" type="password" autocomplete="current-password"></div>
         <p class="err" id="l-err"></p>
         <button class="btn btn-brown btn-full" id="l-btn">Entrar</button>
+        <p class="switch"><a href="#" id="go-reset">Esqueci minha senha</a></p>
         <p class="switch">Primeiro acesso? <a href="#" id="go-cad">Criar conta</a></p>
-        <p class="switch"><a href="index.html#experimental">Agendar experimental sem cadastro</a></p>
+        <p class="switch"><a href="index.html">Voltar ao site</a></p>
       </div>
       <div id="box-cad" class="hidden">
-        <div class="campo"><label>Nome</label><input id="c-nome"></div>
-        <div class="campo"><label>E-mail</label><input id="c-email" type="email"></div>
-        <div class="campo"><label>WhatsApp</label><input id="c-tel" inputmode="tel" placeholder="(19) 99999-9999"></div>
-        <div class="campo"><label>Senha</label><input id="c-senha" type="password" placeholder="mínimo 6 caracteres"></div>
+        <div class="campo"><label>Nome completo</label><input id="c-nome" autocomplete="name"></div>
+        <div class="campo"><label>E-mail</label><input id="c-email" type="email" autocomplete="email"></div>
+        <div class="campo"><label>WhatsApp</label><input id="c-tel" inputmode="tel" autocomplete="tel" placeholder="(19) 99999-9999"></div>
+        <div class="campo"><label>Senha</label><input id="c-senha" type="password" autocomplete="new-password" placeholder="mínimo 6 caracteres"></div>
         <p class="err" id="c-err"></p>
         <button class="btn btn-brown btn-full" id="c-btn">Criar minha conta</button>
         <p class="switch">Já tem conta? <a href="#" id="go-login">Entrar</a></p>
@@ -50,9 +68,10 @@
         <h2>Olá, <span id="tb-nome">—</span></h2>
         <div style="font-size:12px;color:var(--muted)">Studio de Pilates M. S.</div>
       </div>
-      <button class="btn btn-ghost btn-sm" id="btnSair">Sair</button>
+      <a class="btn btn-ghost btn-sm" href="index.html">Site</a>
     </div>
     <div class="scroll" style="padding-bottom:96px;max-width:720px;margin:0 auto">
+
       <div id="t-dash" class="tela on">
         <div class="card hero-cli">
           <h3>Próxima aula</h3>
@@ -64,34 +83,100 @@
         <div class="kpis">
           <div class="kpi"><b id="p-total">0</b><span>Aulas</span></div>
           <div class="kpi"><b id="p-ok">0</b><span>Confirmadas</span></div>
-          <div class="kpi"><b id="p-pend">0</b><span>Pendentes</span></div>
+          <div class="kpi"><b id="p-pend">0</b><span>Aguardando</span></div>
           <div class="kpi"><b id="p-falta">5</b><span>Faltam p/ bônus</span></div>
         </div>
+        <div class="acoes">
+          <button class="btn btn-brown" id="dash-agendar">Agendar aula</button>
+          <a class="btn btn-ghost" id="dash-wpp" target="_blank" rel="noopener">Falar com o estúdio</a>
+        </div>
+        <div class="card hidden" id="dash-perfil" style="margin-top:14px">
+          <h3>Complete seu perfil</h3>
+          <p style="font-size:13px;color:var(--muted);margin:0 0 10px">Data de nascimento e observações de saúde ajudam a Michele a preparar sua aula.</p>
+          <button class="btn btn-gold btn-sm" id="dash-ir-perfil">Completar agora</button>
+        </div>
       </div>
-      <div id="t-turmas" class="tela">
+
+      <div id="t-agendar" class="tela">
         <div class="card">
-          <h3>Agendar aula</h3>
-          <p style="font-size:13px;color:var(--muted)">Só horários com vaga. Escolha a turma e a data.</p>
-          <div id="lista-turmas"></div>
+          <div class="cal-head">
+            <button class="btn btn-ghost btn-sm" id="cal-prev" aria-label="Mês anterior">←</button>
+            <h3 id="cal-titulo">Calendário</h3>
+            <button class="btn btn-ghost btn-sm" id="cal-next" aria-label="Próximo mês">→</button>
+          </div>
+          <div class="cal" id="cal-dow"></div>
+          <div class="cal" id="cal-grid"></div>
+          <div class="legenda">
+            <span><i style="background:#f7f1de;border-color:#ead7a0"></i>Com vaga</span>
+            <span><i style="background:var(--soft)"></i>Lotado</span>
+            <span><i style="background:var(--brown);border-radius:99px"></i>Sua aula</span>
+          </div>
         </div>
-        <div class="card hidden" id="bloco-confirmar">
-          <h3>Confirmar</h3>
-          <div id="resumo-ag" style="margin-bottom:10px"></div>
-          <div class="campo"><label>Data disponível</label><select id="sel-data"></select></div>
-          <button class="btn btn-brown btn-full" id="btnConfirmar">Confirmar agendamento</button>
+        <div class="card" id="dia-card">
+          <h3 id="dia-titulo">Escolha um dia</h3>
+          <div id="dia-slots"><p style="color:var(--muted);font-size:13px">Toque em um dia destacado no calendário para ver os horários.</p></div>
+        </div>
+        <div class="card pedir">
+          <h3>Não encontrou um horário?</h3>
+          <p style="font-size:13px;color:var(--muted);margin:0 0 10px">Conte sua preferência e a Michele vê um encaixe para você.</p>
+          <div class="campo"><label>Dia e horário que prefere</label><input id="pref" placeholder="Ex.: terça à tarde, depois das 15h"></div>
+          <a class="btn btn-brown btn-full" id="btn-pedir" target="_blank" rel="noopener">Pedir horário no WhatsApp</a>
         </div>
       </div>
+
       <div id="t-meus" class="tela">
         <div class="card">
-          <h3>Minhas aulas</h3>
-          <div id="meus-lista"></div>
+          <h3>Próximas aulas</h3>
+          <div id="meus-prox"></div>
+        </div>
+        <div class="card">
+          <h3>Histórico</h3>
+          <div id="meus-hist"></div>
+        </div>
+      </div>
+
+      <div id="t-perfil" class="tela">
+        <div class="card">
+          <div class="perfil-top">
+            <div class="avatar" id="pf-avatar">M</div>
+            <div>
+              <strong id="pf-titulo" style="color:var(--brown)">—</strong>
+              <div style="font-size:12px;color:var(--muted)" id="pf-desde"></div>
+            </div>
+          </div>
+          <div class="campo"><label>Nome completo</label><input id="pf-nome"></div>
+          <div class="campo"><label>WhatsApp</label><input id="pf-tel" inputmode="tel"></div>
+          <div class="campo"><label>E-mail</label><input id="pf-email" readonly></div>
+          <div class="campo"><label>Data de nascimento</label><input id="pf-nasc" type="date"></div>
+          <div class="campo"><label>Objetivo principal</label>
+            <select id="pf-obj">
+              <option value="">Selecione</option>
+              <option>Aliviar dores / reabilitação</option>
+              <option>Postura e flexibilidade</option>
+              <option>Fortalecimento e condicionamento</option>
+              <option>Gestação / pós-parto</option>
+              <option>Prevenção e qualidade de vida</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="campo"><label>Saúde e observações</label><textarea id="pf-saude" placeholder="Lesões, cirurgias, dores, medicamentos ou algo que a instrutora deva saber"></textarea></div>
+          <p class="err" id="pf-err"></p>
+          <button class="btn btn-brown btn-full" id="pf-salvar">Salvar perfil</button>
+        </div>
+        <div class="card">
+          <h3>Conta</h3>
+          <div class="acoes">
+            <button class="btn btn-ghost" id="pf-senha">Trocar senha</button>
+            <button class="btn btn-danger" id="btnSair">Sair</button>
+          </div>
         </div>
       </div>
     </div>
     <nav class="cli-nav">
       <button class="on" data-tela="dash">Início</button>
-      <button data-tela="turmas">Agendar</button>
-      <button data-tela="meus">Histórico</button>
+      <button data-tela="agendar">Agendar</button>
+      <button data-tela="meus">Minhas aulas</button>
+      <button data-tela="perfil">Perfil</button>
     </nav>
   </div>
 
@@ -105,140 +190,235 @@
   }}</script>
   <script type="module">
     import { initializeApp } from "firebase/app";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, query, where, onSnapshot, serverTimestamp, increment } from "firebase/firestore";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "firebase/auth";
+    import { getFirestore, collection, addDoc, getDoc, doc, setDoc, updateDoc, query, where, onSnapshot, serverTimestamp, increment } from "firebase/firestore";
 
     const ST = window.STUDIO, C = window.Clinic, B = window.StudioBooking;
     const auth = getAuth(initializeApp(ST.firebaseConfig));
     const db = getFirestore();
-    const state = { nome: "", tel: "", clienteId: "", turmas: [], sel: null, aulas: [], ocup: {} };
+    const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    const state = { uid: "", nome: "", tel: "", email: "", perfil: {}, turmas: ST.gradeVisivel([]), aulas: [], ocup: {}, mes: new Date(), dia: "" };
+    state.mes.setDate(1);
+    const $ = id => document.getElementById(id);
     const vagas = (t, data) => ST.lotacao(t, state.ocup[ST.ocupacaoId(t.id, data)]);
+
     async function mexerVaga(turmaId, data, delta) {
       if (!turmaId || !data) return;
       try {
         await setDoc(doc(db, "ocupacao", ST.ocupacaoId(turmaId, data)), { turmaId, data, ocupados: increment(delta) }, { merge: true });
       } catch (e) { console.warn("ocupacao", e); }
     }
-    const $ = id => document.getElementById(id);
 
     function ir(tela) {
       document.querySelectorAll(".tela").forEach(t => t.classList.remove("on"));
       document.querySelectorAll(".cli-nav button").forEach(b => b.classList.toggle("on", b.dataset.tela === tela));
       $("t-" + tela).classList.add("on");
-      if (tela === "turmas") renderTurmas();
+      window.scrollTo(0, 0);
+      if (tela === "agendar") renderCal();
       if (tela === "meus" || tela === "dash") renderAulas();
+      if (tela === "perfil") renderPerfil();
     }
     document.querySelectorAll(".cli-nav button").forEach(b => b.onclick = () => ir(b.dataset.tela));
+    $("dash-agendar").onclick = () => ir("agendar");
+    $("dash-ir-perfil").onclick = () => ir("perfil");
     $("btnSair").onclick = () => signOut(auth);
     $("go-cad").onclick = e => { e.preventDefault(); $("box-login").classList.add("hidden"); $("box-cad").classList.remove("hidden"); };
     $("go-login").onclick = e => { e.preventDefault(); $("box-cad").classList.add("hidden"); $("box-login").classList.remove("hidden"); };
+    $("dash-wpp").href = ST.waInfo();
 
     $("l-btn").onclick = async () => {
       $("l-err").textContent = "";
       try { await signInWithEmailAndPassword(auth, $("l-email").value.trim(), $("l-senha").value); }
       catch { $("l-err").textContent = "E-mail ou senha incorretos."; }
     };
+    $("l-senha").addEventListener("keydown", e => { if (e.key === "Enter") $("l-btn").click(); });
+    $("go-reset").onclick = async e => {
+      e.preventDefault();
+      const email = $("l-email").value.trim();
+      if (!email) { $("l-err").textContent = "Digite seu e-mail acima e toque de novo em Esqueci minha senha."; return; }
+      try { await sendPasswordResetEmail(auth, email); $("l-err").textContent = ""; C.toast("Enviamos um link de nova senha para " + email + "."); }
+      catch { $("l-err").textContent = "Não encontramos esse e-mail."; }
+    };
+    $("c-tel").addEventListener("input", function () {
+      const d = this.value.replace(/\D/g, "").slice(0, 11);
+      this.value = d.length > 10 ? "(" + d.slice(0, 2) + ") " + d.slice(2, 7) + "-" + d.slice(7) : d.length > 2 ? "(" + d.slice(0, 2) + ") " + d.slice(2) : d;
+    });
     $("c-btn").onclick = async () => {
       const nome = $("c-nome").value.trim(), email = $("c-email").value.trim(), tel = $("c-tel").value.trim(), senha = $("c-senha").value;
       $("c-err").textContent = "";
       if (!nome || !email || !tel || !senha) { $("c-err").textContent = "Preencha todos os campos."; return; }
       if (senha.length < 6) { $("c-err").textContent = "Senha com no mínimo 6 caracteres."; return; }
+      if (ST.isAdminEmail(email)) { $("c-err").textContent = "Esse e-mail é reservado para a equipe. Use seu e-mail pessoal."; return; }
       try {
         const cred = await createUserWithEmailAndPassword(auth, email, senha);
         await setDoc(doc(db, "users", cred.user.uid), { uid: cred.user.uid, nome, name: nome, email, telefone: tel, phone: tel, role: "cliente", criadoEm: serverTimestamp() });
         await setDoc(doc(db, "clientes", cred.user.uid), { nome, email, tel, telefone: tel, ativo: true, origem: "site", criadoEm: serverTimestamp() });
       } catch (e) {
-        $("c-err").textContent = e.code === "auth/email-already-in-use" ? "Este e-mail já tem conta." : "Não foi possível criar a conta.";
+        $("c-err").textContent = e.code === "auth/email-already-in-use" ? "Este e-mail já tem conta. Use Entrar." : "Não foi possível criar a conta.";
       }
     };
 
-    async function loadTurmas() {
-      try {
-        const snap = await getDocs(collection(db, "turmas"));
-        state.turmas = ST.gradeVisivel(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch {
-        state.turmas = ST.gradeVisivel([]);
+    function slotsDoDia(data) {
+      const agora = new Date();
+      const hhmm = String(agora.getHours()).padStart(2, "0") + ":" + String(agora.getMinutes()).padStart(2, "0");
+      return state.turmas
+        .filter(t => ST.turmaNaData(t, data) && !(data === C.hoje() && t.horario <= hhmm))
+        .map(t => ({ t, L: vagas(t, data), minha: state.aulas.some(a => C.ativo(a) && a.data === data && C.mesmaTurma(a, t)) }))
+        .sort((a, b) => a.t.horario.localeCompare(b.t.horario));
+    }
+
+    function renderCal() {
+      const y = state.mes.getFullYear(), mo = state.mes.getMonth();
+      const hoje = C.hoje();
+      const limite = new Date(); limite.setDate(limite.getDate() + 60);
+      const limiteIso = ST.iso(limite);
+      $("cal-titulo").textContent = MESES[mo] + " " + y;
+      $("cal-dow").innerHTML = ["D","S","T","Q","Q","S","S"].map(d => `<div class="cal-dow">${d}</div>`).join("");
+      const first = new Date(y, mo, 1).getDay();
+      const days = new Date(y, mo + 1, 0).getDate();
+      let html = "";
+      for (let i = 0; i < first; i++) html += "<div></div>";
+      for (let d = 1; d <= days; d++) {
+        const ds = ST.iso(new Date(y, mo, d));
+        let cls = "cal-day", info = "";
+        if (ds < hoje || ds > limiteIso) cls += " off";
+        else {
+          const slots = slotsDoDia(ds);
+          const livres = slots.filter(s => !s.L.cheia).length;
+          if (!slots.length) cls += " off";
+          else if (livres) { cls += " disp"; info = livres + (livres === 1 ? " horário" : " horários"); }
+          else { cls += " lot"; info = "lotado"; }
+          if (slots.some(s => s.minha)) cls += " tem-minha";
+        }
+        if (ds === state.dia) cls += " sel";
+        html += `<button class="${cls}" data-d="${ds}">${d}${info ? `<small>${info}</small>` : ""}</button>`;
       }
-      onSnapshot(query(collection(db, "ocupacao"), where("data", ">=", C.hoje())), qs => {
-        state.ocup = {};
-        qs.docs.forEach(d => { state.ocup[d.id] = Number(d.data().ocupados || 0); });
-        if ($("t-turmas").classList.contains("on")) renderTurmas();
-      }, e => console.warn("ocupacao", e));
+      $("cal-grid").innerHTML = html;
+      $("cal-grid").querySelectorAll("[data-d]").forEach(b => b.onclick = () => { state.dia = b.dataset.d; renderCal(); renderDia(); });
+      const atual = new Date(); atual.setDate(1);
+      $("cal-prev").disabled = y === atual.getFullYear() && mo === atual.getMonth();
+      $("cal-next").disabled = new Date(y, mo + 1, 1) > limite;
+      if (!state.dia) {
+        const primeiro = [...Array(60).keys()].map(i => { const x = new Date(); x.setDate(x.getDate() + i); return ST.iso(x); })
+          .find(ds => slotsDoDia(ds).some(s => !s.L.cheia));
+        if (primeiro && primeiro.slice(0, 7) === ST.iso(new Date(y, mo, 1)).slice(0, 7)) { state.dia = primeiro; renderCal(); renderDia(); }
+      }
     }
-    function datasComVaga(t) {
-      return B.proximasDatas(t.dia, 6).filter(d => !vagas(t, d).cheia);
+    $("cal-prev").onclick = () => { state.mes.setMonth(state.mes.getMonth() - 1); renderCal(); };
+    $("cal-next").onclick = () => { state.mes.setMonth(state.mes.getMonth() + 1); renderCal(); };
+
+    function renderDia() {
+      const ds = state.dia;
+      if (!ds) return;
+      $("dia-titulo").textContent = C.diaNome(ds) + ", " + ST.dataBR(ds);
+      const slots = slotsDoDia(ds);
+      $("dia-slots").innerHTML = slots.length ? slots.map(({ t, L, minha }) => {
+        const vagaTxt = L.cheia ? "Lotado" : L.livres === 1 ? "Última vaga" : L.livres + " vagas";
+        const botao = minha ? `<span class="badge b-confirmado">Você está nessa aula</span>`
+          : L.cheia ? `<span class="badge b-cheio">Lotado</span>`
+          : `<button class="btn btn-sm btn-brown" data-ag="${t.id}">Agendar</button>`;
+        return `<div class="slot"><div><b>${t.horario}</b><small>${t.nome} · ${t.instrutor || "Instrutora"} · ${vagaTxt}</small></div>${botao}</div>`;
+      }).join("") : `<p style="color:var(--muted);font-size:13px">Sem aulas nesse dia.</p>`;
+      $("dia-slots").querySelectorAll("[data-ag]").forEach(b => b.onclick = () => agendar(state.turmas.find(t => t.id === b.dataset.ag), ds, b));
     }
-    function renderTurmas() {
-      const el = $("lista-turmas");
-      const lista = state.turmas.filter(t => datasComVaga(t).length);
-      if (!lista.length) { el.innerHTML = "<p>Nenhuma turma com vaga agora.</p>"; return; }
-      el.innerHTML = lista.map(t => {
-        const prox = datasComVaga(t)[0];
-        const L = vagas(t, prox);
-        return `<div class="row"><div><strong>${t.dia} · ${t.horario}</strong><div style="font-size:12px;color:var(--muted)">${t.nome} · ${t.instrutor} · próxima ${ST.dataBR(prox).slice(0, 5)} com ${L.livres} ${L.livres === 1 ? "vaga" : "vagas"}</div></div><button class="btn btn-sm btn-brown" data-id="${t.id}">Escolher</button></div>`;
-      }).join("");
-      el.querySelectorAll("[data-id]").forEach(btn => btn.onclick = () => {
-        state.sel = state.turmas.find(t => t.id === btn.dataset.id);
-        $("sel-data").innerHTML = datasComVaga(state.sel).map(d => `<option value="${d}">${state.sel.dia} · ${ST.dataBR(d)} · ${vagas(state.sel, d).livres} vagas</option>`).join("");
-        $("resumo-ag").innerHTML = `<strong>${state.sel.nome}</strong><br>${state.sel.horario} · ${state.sel.instrutor}`;
-        $("bloco-confirmar").classList.remove("hidden");
-      });
-    }
-    $("btnConfirmar").onclick = async () => {
-      if (!state.sel) return;
-      const data = $("sel-data").value || ST.proximaData(state.sel.dia);
-      if (vagas(state.sel, data).cheia) { C.toast("Essa data acabou de lotar. Escolha outra."); renderTurmas(); return; }
-      if (state.aulas.some(a => C.ativo(a) && a.data === data && C.mesmaTurma(a, state.sel))) { C.toast("Você já está nessa aula."); return; }
-      $("btnConfirmar").disabled = true;
+
+    async function agendar(t, data, btn) {
+      if (!t) return;
+      if (vagas(t, data).cheia) { C.toast("Esse horário acabou de lotar."); renderCal(); renderDia(); return; }
+      if (!confirm(`Agendar ${t.nome} em ${C.diaNome(data)}, ${ST.dataBR(data)} às ${t.horario}?`)) return;
+      btn.disabled = true;
       try {
         await addDoc(collection(db, "agendamentos"), B.payload({
-          nome: state.nome, tel: state.tel, clienteId: state.clienteId,
+          nome: state.nome, tel: state.tel, clienteId: state.uid,
           servico: "Aula de Pilates", tipo: "aula", origem: "area-cliente",
-          data, hora: state.sel.horario, instrutor: state.sel.instrutor,
-          turmaId: state.sel.id, turmaNome: state.sel.nome, status: "pendente"
+          data, hora: t.horario, instrutor: t.instrutor,
+          turmaId: t.id, turmaNome: t.nome, status: "pendente"
         }));
-        await mexerVaga(state.sel.id, data, 1);
-        C.toast("Pedido enviado. A Michele confirma no WhatsApp.");
-        $("bloco-confirmar").classList.add("hidden");
+        await mexerVaga(t.id, data, 1);
+        C.toast("Pedido enviado. A Michele confirma pelo WhatsApp.");
         ir("meus");
       } catch (e) {
+        btn.disabled = false;
         C.toast("Não foi possível agendar. Tente de novo.");
-      } finally {
-        $("btnConfirmar").disabled = false;
       }
+    }
+
+    $("btn-pedir").onclick = () => {
+      $("btn-pedir").href = ST.wa(ST.msgs.pedirHorario(state.nome, $("pref").value.trim()));
     };
 
+    function linhaAula(a, podeCancelar) {
+      const rotulo = { pendente: "aguardando", confirmado: "confirmada", cancelado: "cancelada", concluido: "concluída" }[a.status] || a.status;
+      return `<div class="row">
+        <div><strong>${C.diaNome(a.data)}, ${ST.dataBR(a.data)} · ${C.hora(a)}</strong><div style="font-size:12px;color:var(--muted)">${a.turmaNome || a.servico || "Pilates"} · ${a.instrutor || a.profissional || ""}</div></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="badge b-${a.status}">${rotulo}</span>
+          ${podeCancelar ? `<button class="btn btn-sm btn-danger" data-cancel="${a.id}">Cancelar</button>` : ""}
+        </div>
+      </div>`;
+    }
+
     function renderAulas() {
-      const lista = state.aulas.slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
       const hoje = C.hoje();
-      const ativos = lista.filter(C.ativo);
-      const futuros = ativos.filter(a => a.data >= hoje).sort((a, b) => a.data.localeCompare(b.data));
-      const n = ativos.length;
-      $("tb-nome").textContent = state.nome.split(" ")[0];
-      $("d-proximo").textContent = futuros[0] ? (C.quando(futuros[0]) + " · " + (futuros[0].instrutor || futuros[0].profissional || "")) : "Nenhuma aula marcada. Toque em Agendar.";
-      $("p-total").textContent = n;
-      $("p-ok").textContent = lista.filter(a => a.status === "confirmado" || a.status === "concluido").length;
-      $("p-pend").textContent = lista.filter(a => a.status === "pendente").length;
+      const ativos = state.aulas.filter(C.ativo);
+      const futuros = ativos.filter(a => a.data >= hoje).sort((a, b) => (a.data + C.hora(a)).localeCompare(b.data + C.hora(b)));
+      const hist = state.aulas.filter(a => !futuros.includes(a)).sort((a, b) => String(b.data).localeCompare(String(a.data)));
+      const n = ativos.filter(a => a.data <= hoje || a.status === "confirmado" || a.status === "concluido").length;
+      $("tb-nome").textContent = (state.nome || "").split(" ")[0];
+      $("d-proximo").textContent = futuros[0] ? `${C.diaNome(futuros[0].data)}, ${ST.dataBR(futuros[0].data)} às ${C.hora(futuros[0])} · ${futuros[0].instrutor || ""}` : "Nenhuma aula marcada. Toque em Agendar aula.";
+      $("p-total").textContent = ativos.length;
+      $("p-ok").textContent = state.aulas.filter(a => a.status === "confirmado" || a.status === "concluido").length;
+      $("p-pend").textContent = state.aulas.filter(a => a.status === "pendente").length;
       $("p-falta").textContent = Math.max(0, 5 - n);
       $("p-bar").style.width = Math.min(100, (n / 5) * 100) + "%";
       $("p-txt").textContent = n >= 5 ? "Você desbloqueou o carinho de fidelidade da casa." : ("Faltam " + Math.max(0, 5 - n) + " aulas para o bônus de fidelidade.");
-      const el = $("meus-lista");
-      el.innerHTML = lista.length ? lista.map(a => `
-        <div class="row">
-          <div><strong>${a.servico || "Pilates"}</strong><div style="font-size:12px;color:var(--muted)">${C.quando(a)} · ${a.instrutor || a.profissional || ""}</div></div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <span class="badge b-${a.status}">${a.status}</span>
-            ${C.ativo(a) && a.data >= hoje ? `<button class="btn btn-sm btn-danger" data-cancel="${a.id}">Cancelar</button>` : ""}
-          </div>
-        </div>`).join("") : "<p style='color:var(--muted)'>Nenhum agendamento ainda.</p>";
-      el.querySelectorAll("[data-cancel]").forEach(b => b.onclick = async () => {
-        if (!confirm("Cancelar esta aula?")) return;
+      $("meus-prox").innerHTML = futuros.length ? futuros.map(a => linhaAula(a, true)).join("") : "<p style='color:var(--muted);font-size:13px'>Nenhuma aula marcada.</p>";
+      $("meus-hist").innerHTML = hist.length ? hist.map(a => linhaAula(a, false)).join("") : "<p style='color:var(--muted);font-size:13px'>Seu histórico aparece aqui.</p>";
+      document.querySelectorAll("[data-cancel]").forEach(b => b.onclick = async () => {
+        if (!confirm("Cancelar esta aula? A vaga volta para outras alunas.")) return;
         const a = state.aulas.find(x => x.id === b.dataset.cancel);
         await updateDoc(doc(db, "agendamentos", b.dataset.cancel), { status: "cancelado" });
         if (a) await mexerVaga(a.turmaId, a.data, -1);
+        C.toast("Aula cancelada.");
       });
+      $("dash-perfil").classList.toggle("hidden", !!(state.perfil.nascimento && (state.perfil.saude || state.perfil.objetivo)));
     }
 
+    function renderPerfil() {
+      const p = state.perfil;
+      $("pf-avatar").textContent = (state.nome || "?").trim().charAt(0).toUpperCase();
+      $("pf-titulo").textContent = state.nome;
+      const desde = p.criadoEm && p.criadoEm.toDate ? p.criadoEm.toDate() : null;
+      $("pf-desde").textContent = desde ? "Aluna desde " + MESES[desde.getMonth()].toLowerCase() + " de " + desde.getFullYear() : "";
+      $("pf-nome").value = state.nome;
+      $("pf-tel").value = state.tel;
+      $("pf-email").value = state.email;
+      $("pf-nasc").value = p.nascimento || "";
+      $("pf-obj").value = p.objetivo || "";
+      $("pf-saude").value = p.saude || "";
+    }
+    $("pf-salvar").onclick = async () => {
+      const nome = $("pf-nome").value.trim(), tel = $("pf-tel").value.trim();
+      $("pf-err").textContent = "";
+      if (!nome || !tel) { $("pf-err").textContent = "Nome e WhatsApp são obrigatórios."; return; }
+      const dados = { nome, name: nome, telefone: tel, phone: tel, nascimento: $("pf-nasc").value, objetivo: $("pf-obj").value, saude: $("pf-saude").value.trim(), atualizadoEm: serverTimestamp() };
+      try {
+        await setDoc(doc(db, "users", state.uid), dados, { merge: true });
+        await setDoc(doc(db, "clientes", state.uid), { nome, telefone: tel, tel, email: state.email, nascimento: dados.nascimento, objetivo: dados.objetivo, saude: dados.saude, ativo: true, atualizadoEm: serverTimestamp() }, { merge: true });
+        Object.assign(state.perfil, dados);
+        state.nome = nome; state.tel = tel;
+        renderPerfil(); renderAulas();
+        C.toast("Perfil salvo.");
+      } catch (e) {
+        $("pf-err").textContent = "Não foi possível salvar. Tente de novo.";
+      }
+    };
+    $("pf-senha").onclick = async () => {
+      try { await sendPasswordResetEmail(auth, state.email); C.toast("Enviamos o link de nova senha para " + state.email + "."); }
+      catch { C.toast("Não foi possível enviar agora."); }
+    };
+
+    let live = false;
     onAuthStateChanged(auth, async user => {
       if (!user) {
         $("login-wrap").classList.remove("hide");
@@ -251,17 +431,30 @@
         if (snap.exists()) data = snap.data();
       } catch (e) { console.warn("users", e); }
       if (ST.isEquipe(user, data)) { location.replace("admin.html"); return; }
-      state.nome = data.nome || data.name || user.email;
+      state.uid = user.uid;
+      state.email = user.email || "";
+      state.perfil = data;
+      state.nome = data.nome || data.name || (user.email || "").split("@")[0];
       state.tel = data.telefone || data.phone || "";
-      state.clienteId = user.uid;
       $("login-wrap").classList.add("hide");
       $("app").classList.add("on");
-      await loadTurmas();
+      ir("dash");
+      if (live) return;
+      live = true;
+      onSnapshot(collection(db, "turmas"), qs => {
+        state.turmas = ST.gradeVisivel(qs.docs.map(d => ({ id: d.id, ...d.data() })));
+        if ($("t-agendar").classList.contains("on")) { renderCal(); renderDia(); }
+      }, e => console.warn("turmas", e));
+      onSnapshot(query(collection(db, "ocupacao"), where("data", ">=", C.hoje())), qs => {
+        state.ocup = {};
+        qs.docs.forEach(d => { state.ocup[d.id] = Number(d.data().ocupados || 0); });
+        if ($("t-agendar").classList.contains("on")) { renderCal(); renderDia(); }
+      }, e => console.warn("ocupacao", e));
       onSnapshot(query(collection(db, "agendamentos"), where("clienteId", "==", user.uid)), qs => {
         state.aulas = qs.docs.map(x => C.normalizarAg({ id: x.id, ...x.data() }));
         renderAulas();
-      });
-      ir("dash");
+        if ($("t-agendar").classList.contains("on")) { renderCal(); renderDia(); }
+      }, e => console.warn("agendamentos", e));
     });
   </script>
 </body>
