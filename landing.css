@@ -2,17 +2,47 @@ html { scroll-behavior: smooth; }
 body { font-family: Montserrat, sans-serif; color: #333; background: #fff; }
 section[id], header { scroll-margin-top: 88px; }
 
-.hero-video {
+#home { background: #3E2723; }
+.hero-media {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+}
+.hero-foto {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(62, 39, 35, 0.88) 0%, rgba(62, 39, 35, 0.55) 55%, rgba(62, 39, 35, 0.28) 100%);
+  background:
+    linear-gradient(90deg, rgba(62, 39, 35, 0.78) 0%, rgba(62, 39, 35, 0.42) 48%, rgba(62, 39, 35, 0.12) 100%),
+    linear-gradient(0deg, rgba(62, 39, 35, 0.45) 0%, rgba(62, 39, 35, 0) 40%);
+}
+
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 210px;
+  gap: 12px;
+}
+.gallery-shot {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #eee;
+}
+.gallery-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.gallery-shot.destaque {
+  grid-column: span 2;
+  grid-row: span 2;
 }
 
 #navLinks.open { display: flex; }
@@ -158,6 +188,17 @@ section[id], header { scroll-margin-top: 88px; }
 
 @media (max-width: 1024px) {
   .grade-dias { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .galeria { grid-auto-rows: 170px; }
+}
+/* Abaixo de 1024px a foto (4 imagens lado a lado) aparece inteira no topo, sem corte */
+@media (max-width: 1023px) {
+  #home { min-height: auto; display: block; }
+  .hero-media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+  }
+  .hero-overlay { background: linear-gradient(0deg, rgba(62, 39, 35, 0.55) 0%, rgba(62, 39, 35, 0) 45%); }
+  #home > .relative { padding-top: 28px; padding-bottom: 40px; }
 }
 @media (max-width: 768px) {
   #navLinks.open { display: flex !important; }
@@ -172,7 +213,12 @@ section[id], header { scroll-margin-top: 88px; }
     width: 100%;
     margin-top: 4px;
   }
-  #home { min-height: auto; }
+  .galeria {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 150px;
+    gap: 10px;
+  }
+  .gallery-shot { border-radius: 20px; }
   .mobile-cta { display: flex; }
   .wa-float { display: none; }
   body { padding-bottom: 100px; }

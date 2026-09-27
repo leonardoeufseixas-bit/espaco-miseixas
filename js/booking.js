@@ -43,7 +43,7 @@ window.StudioBooking = {
     for (let i = 0; i < 28 && out.length < n; i++) {
       const cur = new Date(d);
       cur.setDate(d.getDate() + i);
-      if (cur.getDay() === idx) out.push(cur.toISOString().slice(0, 10));
+      if (cur.getDay() === idx) out.push(S.iso(cur));
     }
     return out;
   }

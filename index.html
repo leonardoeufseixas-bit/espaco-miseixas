@@ -58,10 +58,10 @@
   </header>
 
   <section id="home" class="relative min-h-[100svh] flex items-center pt-[76px]">
-    <video class="hero-video" autoplay muted loop playsinline>
-      <source src="https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FPippit_Wellness_Studio_Golden_Hour.mp4?alt=media&token=ee0c22a1-d895-4b6b-ae5a-c8013d134cdb" type="video/mp4">
-    </video>
-    <div class="hero-overlay"></div>
+    <div class="hero-media">
+      <img class="hero-foto" src="https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FDesign%20sem%20nome.jpg?alt=media&token=ede6c3fb-1aa5-44d4-b179-72b022b5a408" alt="Ambiente e aulas no Studio de Pilates M. S." fetchpriority="high">
+      <div class="hero-overlay"></div>
+    </div>
     <div class="relative z-10 max-w-6xl mx-auto px-4 py-16 w-full">
       <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-10 items-end">
         <div class="text-white max-w-2xl">
@@ -69,7 +69,7 @@
           <h1 class="font-serif text-4xl sm:text-6xl leading-[1.05] tracking-[0.04em]">STUDIO DE<br>PILATES M. S.</h1>
           <p class="mt-5 text-base sm:text-lg text-white/90 max-w-xl">Um espaço para cuidar de você através do movimento • Patologias • Prevenção.</p>
           <div class="mt-8 flex flex-wrap gap-3">
-            <a href="#experimental" class="inline-flex items-center justify-center rounded-full bg-brown text-white px-6 py-3 text-sm font-semibold hover:-translate-y-0.5 hover:shadow-xl transition">Agende sua Aula Experimental</a>
+            <a href="#experimental" class="hero-cta inline-flex items-center justify-center rounded-full bg-white text-brown px-6 py-3 text-sm font-semibold hover:-translate-y-0.5 hover:shadow-xl transition">Agende sua Aula Experimental</a>
             <a href="#horarios" class="inline-flex items-center justify-center rounded-full border border-white/50 text-white px-6 py-3 text-sm font-medium hover:bg-white/10 transition">Ver horários</a>
           </div>
         </div>
@@ -91,7 +91,7 @@
       <div>
         <p class="text-[11px] tracking-[0.28em] uppercase text-brown/70 mb-3">O estúdio</p>
         <h2 class="font-serif text-4xl text-brown mb-5">Nossa Essência</h2>
-        <p class="text-ink/80 leading-7 mb-4">O Studio de Pilates M. S. é a materialização de uma trajetória dedicada ao cuidado com o corpo. Michele Seixas traz para o Pilates uma bagagem sólida em reabilitação e estética, unindo a precisão técnica do movimento a um olhar clínico e acolhedor. Aqui, o Pilates não é apenas um treino: é um método de escuta e prevenção. Atendemos públicos específicos, trabalhamos com segurança em patologias e construímos força para o dia a dia — em qualquer idade ou nível de condicionamento.</p>
+        <p class="text-ink/80 leading-7 mb-4">O Studio de Pilates M. S. é a materialização de uma trajetória dedicada ao cuidado com o corpo. Michele Seixas traz para o Pilates uma bagagem sólida em fisioterapia e reabilitação, unindo a precisão técnica do movimento a um olhar clínico e acolhedor. Aqui, o Pilates não é apenas um treino: é um método de escuta e prevenção. Atendemos públicos específicos, trabalhamos com segurança em patologias e construímos força para o dia a dia — em qualquer idade ou nível de condicionamento.</p>
         <p class="font-serif italic text-xl text-brown">Pilates para quem quer se sentir melhor, com acompanhamento de verdade.</p>
       </div>
     </div>
@@ -135,7 +135,7 @@
         <p class="text-[11px] tracking-[0.28em] uppercase text-brown/70 mb-3">Galeria</p>
         <h2 class="font-serif text-4xl text-brown">Nosso espaço e aulas</h2>
       </div>
-      <div id="studioGallery" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+      <div id="studioGallery" class="galeria"></div>
     </div>
   </section>
 
@@ -225,8 +225,7 @@
         <a href="#sobre" class="block hover:text-white">Sobre</a>
         <a href="#horarios" class="block hover:text-white">Horários</a>
         <a href="#experimental" class="block hover:text-white">Aula experimental</a>
-        <a href="cliente.html" class="block hover:text-white">Minha área</a>
-        <a href="admin.html" class="block hover:text-white">Acesso da equipe</a>
+        <a href="cliente.html" class="block hover:text-white">Minha área · alunas e equipe</a>
       </div>
       <div class="text-sm text-white/80 space-y-2">
         <a href="#" id="btnWaFooter" target="_blank" class="block hover:text-white">(19) 99290-8985</a>
@@ -268,10 +267,8 @@
     document.getElementById("btnIgFooter").href = S.instagram;
 
     document.getElementById("btnMaps").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(S.endereco);
-    document.getElementById("studioGallery").innerHTML = S.fotosEstudio.slice(0, 8).map(function (f, i) {
-      const span = i === 0 ? " md:col-span-2 md:row-span-2" : "";
-      const tall = i === 0 ? " h-48 md:h-full min-h-[220px]" : " h-40 md:h-48";
-      return '<figure class="gallery-shot overflow-hidden rounded-ig bg-white' + span + (f.bw ? " is-bw" : "") + '"><img src="' + f.src + '" alt="' + f.alt + '" class="w-full' + tall + ' object-cover" loading="lazy"></figure>';
+    document.getElementById("studioGallery").innerHTML = S.fotosEstudio.slice(0, 9).map(function (f, i) {
+      return '<figure class="gallery-shot' + (i === 0 ? " destaque" : "") + (f.bw ? " is-bw" : "") + '"><img src="' + f.src + '" alt="' + f.alt + '" loading="lazy"></figure>';
     }).join("");
 
     document.getElementById("teamGrid").innerHTML = S.instrutoras.map(function (p) {
@@ -290,11 +287,19 @@
     });
 
     let turmas = S.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); });
+    let base = S.gradeVisivel([]);
+    let ocupacao = {};
     firebase.initializeApp(S.firebaseConfig);
     const db = firebase.firestore();
 
+    function vagasDe(t) {
+      const data = S.proximaData(t.dia);
+      return Object.assign(S.lotacao(t, ocupacao[S.ocupacaoId(t.id, data)]), { data: data });
+    }
+
     function renderTurmas(lista) {
-      turmas = lista.slice().sort(function (a, b) {
+      if (lista) base = lista;
+      turmas = base.slice().sort(function (a, b) {
         const da = S.diasOrdem.indexOf(a.dia);
         const db_ = S.diasOrdem.indexOf(b.dia);
         if (da !== db_) return da - db_;
@@ -304,11 +309,12 @@
       grade.innerHTML = S.diasOrdem.map(function (dia) {
         const doDia = turmas.filter(function (t) { return S.normalizeDia(t.dia) === dia; });
         const rows = doDia.length ? doDia.map(function (t) {
-          const L = S.lotacao(t);
-          const cls = L.cheia ? "cheia" : (L.livres <= 1 ? "quase" : "");
+          const L = vagasDe(t);
+          const cls = L.cheia ? "cheia" : (L.livres <= 2 ? "quase" : "");
           const foto = S.fotoDe(t.instrutor);
           const avatar = foto ? '<img class="turma-av" src="' + foto + '" alt="">' : "";
-          return '<div class="turma-row"><div class="turma-hora">' + t.horario + '</div><div class="turma-meta"><strong>' + (t.nome || "Pilates") + '</strong><span class="turma-prof">' + avatar + " " + (t.instrutor || "Instrutora") + '</span></div><span class="turma-vagas ' + cls + '">' + L.livres + ' vagas</span><button class="btn-exp" ' + (L.cheia ? "disabled" : "") + ' data-id="' + t.id + '">Experimentar</button></div>';
+          const selo = L.cheia ? "Lotada" : (L.livres === 1 ? "Última vaga" : L.livres + " vagas");
+          return '<div class="turma-row"><div class="turma-hora">' + t.horario + '</div><div class="turma-meta"><strong>' + (t.nome || "Pilates") + '</strong><span class="turma-prof">' + avatar + " " + (t.instrutor || "Instrutora") + '</span></div><span class="turma-vagas ' + cls + '" title="Próxima aula ' + S.dataBR(L.data) + '">' + selo + ' · ' + S.dataBR(L.data).slice(0, 5) + '</span><button class="btn-exp" ' + (L.cheia ? "disabled" : "") + ' data-id="' + t.id + '">' + (L.cheia ? "Lotada" : "Experimentar") + '</button></div>';
         }).join("") : '<p class="text-sm text-ink/50">Sem turma neste dia.</p>';
         return '<div class="dia-col"><h3>' + dia + "</h3>" + rows + "</div>";
       }).join("");
@@ -319,27 +325,34 @@
         });
       });
       const sel = document.getElementById("exTurma");
+      const escolhida = sel.value;
       sel.innerHTML = '<option value="">Selecione a turma</option>' + turmas.map(function (t) {
-        const L = S.lotacao(t);
-        return '<option value="' + t.id + '" ' + (L.cheia ? "disabled" : "") + ">" + t.dia + " · " + t.horario + " · " + (t.instrutor || "") + (L.cheia ? " (lotada)" : "") + "</option>";
+        const L = vagasDe(t);
+        return '<option value="' + t.id + '" ' + (L.cheia ? "disabled" : "") + ">" + t.dia + " " + S.dataBR(L.data).slice(0, 5) + " · " + t.horario + " · " + (t.instrutor || "") + (L.cheia ? " (lotada)" : " · " + L.livres + " vagas") + "</option>";
       }).join("");
-      const hojeIdx = new Date().getDay();
-      const nomes = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-      let proximas = turmas.filter(function (t) { return t.dia === nomes[hojeIdx]; });
-      if (!proximas.length) proximas = turmas.slice(0, 3);
-      document.getElementById("heroTurmas").innerHTML = proximas.slice(0, 3).map(function (t) {
-        const L = S.lotacao(t);
-        return '<div class="flex items-center justify-between gap-3 border-b border-white/10 pb-2"><span>' + t.dia + " · " + t.horario + '</span><span class="text-white/75 text-xs">' + (t.instrutor || "") + " · " + L.livres + " vagas</span></div>";
+      if (escolhida) sel.value = escolhida;
+      const agora = new Date();
+      const hhmm = String(agora.getHours()).padStart(2, "0") + ":" + String(agora.getMinutes()).padStart(2, "0");
+      const hojeIso = S.iso(agora);
+      const proximas = turmas.map(function (t) { return { t: t, L: vagasDe(t) }; })
+        .filter(function (x) { return x.L.data !== hojeIso || x.t.horario > hhmm; })
+        .sort(function (a, b) { return (a.L.data + a.t.horario).localeCompare(b.L.data + b.t.horario); });
+      document.getElementById("heroTurmas").innerHTML = proximas.slice(0, 3).map(function (x) {
+        const vagas = x.L.cheia ? "Lotada" : x.L.livres + (x.L.livres === 1 ? " vaga" : " vagas");
+        return '<div class="flex items-center justify-between gap-3 border-b border-white/10 pb-2"><span>' + x.t.dia + " " + S.dataBR(x.L.data).slice(0, 5) + " · " + x.t.horario + '</span><span class="text-white/75 text-xs">' + (x.t.instrutor || "") + " · " + vagas + "</span></div>";
       }).join("") || "<div>Confira a grade abaixo</div>";
     }
 
-    renderTurmas(S.gradeVisivel([]));
-    db.collection("turmas").get().then(function (snap) {
+    renderTurmas();
+    db.collection("turmas").onSnapshot(function (snap) {
       const lista = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
       renderTurmas(S.gradeVisivel(lista));
-    }).catch(function () {
-      renderTurmas(S.gradeVisivel([]));
-    });
+    }, function () { renderTurmas(); });
+    db.collection("ocupacao").where("data", ">=", S.iso(new Date())).onSnapshot(function (snap) {
+      ocupacao = {};
+      snap.docs.forEach(function (d) { ocupacao[d.id] = Number(d.data().ocupados || 0); });
+      renderTurmas();
+    }, function (e) { console.warn("ocupacao", e); });
 
     document.getElementById("exTel").addEventListener("input", function () {
       const d = this.value.replace(/\D/g, "").slice(0, 11);
@@ -362,11 +375,12 @@
         err.textContent = "Preencha nome, WhatsApp e turma.";
         return;
       }
-      if (S.lotacao(turma).cheia) {
+      const vaga = vagasDe(turma);
+      if (vaga.cheia) {
         err.textContent = "Essa turma está lotada. Escolha outro horário.";
         return;
       }
-      const data = S.proximaData(turma.dia);
+      const data = vaga.data;
       btn.disabled = true;
       btn.textContent = "Enviando...";
       try {
@@ -375,6 +389,9 @@
           data: data, hora: turma.horario, instrutor: turma.instrutor || "",
           turmaId: turma.id, turmaNome: turma.nome || "Pilates", status: "pendente"
         }));
+        await db.collection("ocupacao").doc(S.ocupacaoId(turma.id, data)).set({
+          turmaId: turma.id, data: data, ocupados: firebase.firestore.FieldValue.increment(1)
+        }, { merge: true });
       } catch (ex) { console.warn(ex); }
       const msg = "Olá! Quero agendar uma *aula experimental* de Pilates no Studio de Pilates M. S.\n\n👤 Nome: " + nome + "\n📱 WhatsApp: " + tel + "\n🧘 Turma: " + (turma.nome || "Pilates") + "\n📅 " + turma.dia + " " + S.dataBR(data) + " às " + turma.horario + "\n👩‍⚕️ Instrutora: " + (turma.instrutor || "—");
       window.open(S.wa(msg), "_blank");

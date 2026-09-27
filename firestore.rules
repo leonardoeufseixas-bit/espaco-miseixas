@@ -3,35 +3,74 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    // Manter igual a emailsEquipe em config.js
+    function adminEmail() {
+      return signedIn() && request.auth.token.email != null
+        && request.auth.token.email.lower() in ['michele@admin.com'];
+    }
+    function isStaff() {
+      return adminEmail() || (signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'funcionario']);
+    }
 
     match /turmas/{id} {
       allow read: if true;
-      allow write: if signedIn();
+      allow write: if isStaff();
     }
     match /funcionarios/{id} {
       allow read: if true;
-      allow write: if signedIn();
-    }
-    match /agendamentos/{id} {
-      allow create: if true;
-      allow read, update, delete: if signedIn();
-    }
-    match /appointments/{id} {
-      allow create: if true;
-      allow read, update, delete: if signedIn();
-    }
-    match /clientes/{id} {
-      allow read, write: if signedIn();
-    }
-    match /users/{id} {
-      allow read, create, update: if isOwner(id);
-    }
-    match /atendimentos/{id} {
-      allow read, write: if signedIn();
+      allow write: if isStaff();
     }
     match /sys_config/{id} {
       allow read: if true;
-      allow write: if signedIn();
+      allow write: if isStaff();
+    }
+
+    // Contagem pública de vagas por turma/data (sem dados pessoais).
+    match /ocupacao/{id} {
+      allow read: if true;
+      allow write: if isStaff();
+      allow create: if request.resource.data.keys().hasOnly(['turmaId', 'data', 'ocupados'])
+        && request.resource.data.ocupados == 1;
+      allow update: if request.resource.data.keys().hasOnly(['turmaId', 'data', 'ocupados'])
+        && request.resource.data.turmaId == resource.data.turmaId
+        && request.resource.data.data == resource.data.data
+        && request.resource.data.ocupados >= 0
+        && (request.resource.data.ocupados == resource.data.ocupados + 1
+          || request.resource.data.ocupados == resource.data.ocupados - 1);
+    }
+
+    match /agendamentos/{id} {
+      allow create: if true;
+      allow read: if isStaff()
+        || (signedIn() && (resource.data.clienteId == request.auth.uid || resource.data.clientId == request.auth.uid));
+      allow update: if isStaff()
+        || (signedIn() && resource.data.clienteId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status == 'cancelado');
+      allow delete: if isStaff();
+    }
+    match /appointments/{id} {
+      allow create: if true;
+      allow read, update, delete: if isStaff();
+    }
+
+    match /clientes/{id} {
+      allow read, write: if isStaff() || isOwner(id);
+    }
+
+    match /users/{id} {
+      allow read: if isOwner(id) || isStaff();
+      allow create: if isOwner(id)
+        && (request.resource.data.role == 'cliente' || adminEmail());
+      allow update: if isStaff()
+        || (isOwner(id) && request.resource.data.role == resource.data.role);
+      allow delete: if isStaff();
+    }
+
+    match /atendimentos/{id} {
+      allow read, write: if isStaff();
     }
   }
 }

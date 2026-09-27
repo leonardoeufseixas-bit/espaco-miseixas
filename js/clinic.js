@@ -1,5 +1,24 @@
 window.Clinic = {
-  hoje: function () { return new Date().toISOString().slice(0, 10); },
+  hoje: function () { return window.STUDIO.iso(new Date()); },
+  normalizarAg: function (a) {
+    const S = window.STUDIO;
+    return Object.assign({}, a, {
+      data: S.dataStr(a.data || a.date || a.dia),
+      hora: a.hora || a.horario || a.time || "",
+      status: String(a.status || "pendente").toLowerCase()
+    });
+  },
+  mesmaTurma: function (a, t) {
+    if (a.turmaId && a.turmaId === t.id) return true;
+    const S = window.STUDIO;
+    return !!a.data && this.diaNome(a.data) === S.normalizeDia(t.dia) && this.hora(a) === t.horario;
+  },
+  agendadosTurma: function (t, data, ags) {
+    const self = this;
+    return (ags || []).filter(function (a) {
+      return a.data === data && self.ativo(a) && self.mesmaTurma(a, t);
+    }).length;
+  },
   nome: function (a) { return a.clienteNome || a.clientName || a.nome || "—"; },
   tel: function (a) { return a.telefone || a.tel || a.phone || ""; },
   hora: function (a) { return a.hora || a.time || a.horario || ""; },
@@ -18,7 +37,8 @@ window.Clinic = {
     const dia = this.diaNome(dataStr);
     const doDia = (turmas || []).filter(function (t) { return t.dia === dia; });
     const cap = doDia.reduce(function (s, t) { return s + Number(t.vagas || 8); }, 0);
-    const ocup = (ags || []).filter(function (a) { return a.data === dataStr && window.Clinic.ativo(a); }).length;
+    const fixas = doDia.reduce(function (s, t) { return s + (t.alunos || []).length; }, 0);
+    const ocup = fixas + (ags || []).filter(function (a) { return a.data === dataStr && window.Clinic.ativo(a); }).length;
     const pct = cap ? ocup / cap : (ocup ? 1 : 0);
     return { cap: cap, ocup: ocup, pct: pct, cheio: cap > 0 && ocup >= cap, livre: Math.max(0, cap - ocup) };
   },

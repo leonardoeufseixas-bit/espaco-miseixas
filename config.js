@@ -20,7 +20,6 @@ window.STUDIO = {
   instagram: "https://www.instagram.com/espaco_miseixas/",
   instagramHandle: "@espaco_miseixas",
   endereco: "Rua Rio Grande do Sul 196, Vargem Grande do Sul - SP",
-  codigoPainel: "196",
   emailsEquipe: ["michele@admin.com"],
   logoClaro: "imagem/logo-ms.png",
   logoEscuro: "imagem/logo-ms.png",
@@ -38,6 +37,7 @@ window.STUDIO = {
     { src: "imagem/aula5.jpg", alt: "Aula de Pilates", bw: false },
     { src: "imagem/aula7.jpg", alt: "Prática de Pilates", bw: false }
   ],
+  heroFoto: "https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FDesign%20sem%20nome.jpg?alt=media&token=ede6c3fb-1aa5-44d4-b179-72b022b5a408",
   videoHero: "https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FPippit_Wellness_Studio_Golden_Hour.mp4?alt=media&token=ee0c22a1-d895-4b6b-ae5a-c8013d134cdb",
   videoSobre: "https://firebasestorage.googleapis.com/v0/b/deliveryseixas.firebasestorage.app/o/Michele%2FSaveClip.App_AQNCi4WYU6iKuaSpvJTXvpy1trRKlnLDZoeNfzMcojNJl0NqY8xXoru6c9_5T-Xg-nSTkYevxdoXsOBARM2lLSTIJwDJL8EzW7p-W_k.mp4?alt=media&token=530a902f-880c-46f4-a70a-cd5a4d956a2a",
   instrutoras: [
@@ -124,14 +124,32 @@ window.STUDIO = {
     if (mapped.length) return mapped;
     return this.turmasPadrao.map(function (t, i) { return Object.assign({ id: "padrao-" + i }, t); });
   },
+  iso: function (d) {
+    const x = d || new Date();
+    return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0");
+  },
+  dataStr: function (v) {
+    if (!v) return "";
+    if (typeof v === "string") {
+      const br = v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      return br ? br[3] + "-" + br[2] + "-" + br[1] : v.slice(0, 10);
+    }
+    if (typeof v.toDate === "function") return this.iso(v.toDate());
+    if (v instanceof Date) return this.iso(v);
+    if (typeof v.seconds === "number") return this.iso(new Date(v.seconds * 1000));
+    return "";
+  },
   proximaData: function (diaNome) {
-    const idx = this.diaIndex[diaNome];
-    if (idx == null) return new Date().toISOString().slice(0, 10);
+    const idx = this.diaIndex[this.normalizeDia(diaNome) || diaNome];
     const d = new Date();
+    if (idx == null) return this.iso(d);
     const diff = (idx - d.getDay() + 7) % 7;
     if (diff === 0 && d.getHours() >= 21) d.setDate(d.getDate() + 7);
     else d.setDate(d.getDate() + diff);
-    return d.toISOString().slice(0, 10);
+    return this.iso(d);
+  },
+  ocupacaoId: function (turmaId, data) {
+    return String(turmaId) + "_" + data;
   },
   dataBR: function (s) {
     if (!s) return "—";
@@ -148,8 +166,7 @@ window.STUDIO = {
   isAdminEmail: function (email) {
     const e = String(email || "").toLowerCase().trim();
     if (!e) return false;
-    if ((this.emailsEquipe || []).indexOf(e) >= 0) return true;
-    return e.indexOf("admin") >= 0;
+    return (this.emailsEquipe || []).indexOf(e) >= 0;
   },
   isEquipe: function (user, data) {
     const role = this.normalizeRole(data && data.role);
@@ -192,10 +209,11 @@ window.STUDIO = {
   waAgendar: function () {
     return this.wa("Olá! Quero agendar uma *aula experimental* de Pilates no Studio de Pilates M. S.\n\nPode me passar os horários com vaga?");
   },
-  lotacao: function (turma) {
+  /* alunos[] = fixas da turma (toda semana); agendados = marcações avulsas daquela data */
+  lotacao: function (turma, agendados) {
     const alunos = turma.alunos || [];
     const vagas = Number(turma.vagas || 8);
-    const ocupados = alunos.length;
+    const ocupados = alunos.length + Math.max(0, Number(agendados || 0));
     return { ocupados: ocupados, vagas: vagas, livres: Math.max(0, vagas - ocupados), cheia: ocupados >= vagas };
   }
 };

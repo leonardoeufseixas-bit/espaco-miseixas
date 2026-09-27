@@ -10,26 +10,9 @@
 </head>
 <body>
   <div id="login-wrap" class="auth-page">
-    <div class="auth-card">
+    <div class="auth-card" style="text-align:center">
       <img class="logo" src="imagem/logo-ms.png" alt="Studio de Pilates M. S.">
-      <h1>Painel da administradora</h1>
-      <p class="sub">Studio de Pilates M. S.</p>
-      <div class="campo"><label>E-mail</label><input id="l-email" type="email" placeholder="michele@email.com"></div>
-      <div class="campo"><label>Senha</label><input id="l-senha" type="password" placeholder="••••••••"></div>
-      <p class="err" id="l-err"></p>
-      <button class="btn btn-brown btn-full" id="l-btn">Entrar no painel</button>
-      <div id="primeiro-box" class="hidden" style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
-        <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Código <strong>196</strong> (número da Rua Rio Grande do Sul). Cria o login ou promove uma conta que já existe para administradora.</p>
-        <div class="campo"><label>Nome</label><input id="p-nome" placeholder="Michele Seixas"></div>
-        <div class="campo"><label>E-mail</label><input id="p-email" type="email"></div>
-        <div class="campo"><label>Senha</label><input id="p-senha" type="password"></div>
-        <div class="campo"><label>WhatsApp</label><input id="p-tel" placeholder="(19) 99290-8985"></div>
-        <div class="campo"><label>Código</label><input id="p-codigo" placeholder="196"></div>
-        <p class="err" id="p-err"></p>
-        <button class="btn btn-gold btn-full" id="p-btn">Liberar painel</button>
-      </div>
-      <p class="switch">Primeiro acesso? <a href="#" id="go-primeiro">Criar ou liberar o painel (código 196)</a></p>
-      <p class="switch"><a href="cliente.html">Sou aluna · Minha área</a> · <a href="index.html">Site</a></p>
+      <p class="sub">Abrindo o painel...</p>
     </div>
   </div>
 
@@ -171,8 +154,8 @@
   }}</script>
   <script type="module">
     import { initializeApp } from "firebase/app";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-    import { getFirestore, collection, doc, setDoc, addDoc, getDoc, getDocs, updateDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
+    import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+    import { getFirestore, collection, doc, setDoc, addDoc, getDoc, getDocs, updateDoc, serverTimestamp, onSnapshot, query, where, writeBatch } from "firebase/firestore";
 
     const S = window.STUDIO, C = window.Clinic, B = window.StudioBooking;
     const auth = getAuth(initializeApp(S.firebaseConfig));
@@ -195,49 +178,40 @@
     }
     document.querySelectorAll(".sb nav button").forEach(b => b.onclick = () => ir(b.dataset.tela));
     $("hamb").onclick = () => $("sidebar").classList.toggle("open");
-    $("btnSair").onclick = () => signOut(auth);
-    $("go-primeiro").onclick = e => { e.preventDefault(); $("primeiro-box").classList.remove("hidden"); };
+    $("btnSair").onclick = async () => { await signOut(auth); location.replace("cliente.html"); };
 
-    $("l-btn").onclick = async () => {
-      $("l-err").textContent = "";
-      try { await signInWithEmailAndPassword(auth, $("l-email").value.trim(), $("l-senha").value); }
-      catch { $("l-err").textContent = "E-mail ou senha incorretos."; }
-    };
-    async function gravarAdmin(user, extra) {
-      const base = extra || {};
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email || base.email || "",
-        nome: base.nome || "Michele",
-        telefone: base.telefone || base.tel || "",
-        role: S.normalizeRole(base.role) === "funcionario" ? "funcionario" : "admin",
-        atualizadoEm: serverTimestamp()
-      }, { merge: true });
+    const ocupSalva = {};
+    let syncTimer = null;
+    function agendarSync() {
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(sincronizarOcupacao, 800);
     }
-
-    $("p-btn").onclick = async () => {
-      $("p-err").textContent = "";
-      if ($("p-codigo").value.trim() !== String(S.codigoPainel)) { $("p-err").textContent = "Código incorreto."; return; }
-      const nome = $("p-nome").value.trim(), email = $("p-email").value.trim(), senha = $("p-senha").value, tel = $("p-tel").value.trim();
-      if (!nome || !email || !senha || !tel) { $("p-err").textContent = "Preencha todos os campos."; return; }
-      try {
-        let user;
-        try {
-          const cred = await createUserWithEmailAndPassword(auth, email, senha);
-          user = cred.user;
-        } catch (e) {
-          if (e.code !== "auth/email-already-in-use") throw e;
-          const cred = await signInWithEmailAndPassword(auth, email, senha);
-          user = cred.user;
-        }
-        await gravarAdmin(user, { nome, email, telefone: tel, role: "admin" });
-        location.reload();
-      } catch (e) {
-        $("p-err").textContent = e.code === "auth/wrong-password" || e.code === "auth/invalid-credential"
-          ? "E-mail já existe. Use a senha certa para liberar o painel."
-          : (e.message || "Não foi possível criar.");
+    async function sincronizarOcupacao() {
+      if (!state.turmas.length) return;
+      const hoje = C.hoje();
+      const alvo = {};
+      state.ags.forEach(a => {
+        if (!a.data || a.data < hoje || !C.ativo(a)) return;
+        const t = state.turmas.find(x => C.mesmaTurma(a, x));
+        if (!t) return;
+        const id = S.ocupacaoId(t.id, a.data);
+        alvo[id] = alvo[id] || { turmaId: t.id, data: a.data, ocupados: 0 };
+        alvo[id].ocupados++;
+      });
+      Object.keys(ocupSalva).forEach(id => {
+        if (!alvo[id] && ocupSalva[id].data >= hoje) alvo[id] = { turmaId: ocupSalva[id].turmaId, data: ocupSalva[id].data, ocupados: 0 };
+      });
+      const batch = writeBatch(db);
+      let n = 0;
+      Object.keys(alvo).forEach(id => {
+        if (ocupSalva[id] && ocupSalva[id].ocupados === alvo[id].ocupados) return;
+        batch.set(doc(db, "ocupacao", id), alvo[id]);
+        n++;
+      });
+      if (n) {
+        try { await batch.commit(); } catch (e) { console.warn("ocupacao", e); }
       }
-    };
+    }
 
     async function seed() {
       const tSnap = await getDocs(collection(db, "turmas"));
@@ -270,14 +244,17 @@
       $("k-inativos").textContent = inativos.length;
       $("k-bonus").textContent = bonus.length;
       $("dash-hoje").innerHTML = hojeAgs.length ? hojeAgs.map(a => `<div class="row"><div><strong>${C.hora(a)}</strong><div style="font-size:12px;color:var(--muted)">${C.nome(a)} · ${a.instrutor || a.profissional || ""}</div></div><span class="badge b-${a.status}">${a.status}</span></div>`).join("") : "<p style='color:var(--muted)'>Nada marcado para hoje.</p>";
-      $("dash-cheias").innerHTML = S.diasOrdem.map(dia => {
-        const ts = state.turmas.filter(t => t.dia === dia);
-        return ts.map(t => {
-          const L = S.lotacao(t);
-          const pct = Math.round((L.ocupados / L.vagas) * 100);
-          return `<div class="row"><div><strong>${dia} ${t.horario}</strong><div style="font-size:12px;color:var(--muted)">${t.instrutor} · ${L.ocupados}/${L.vagas}</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:6px;width:160px"><i style="width:${pct}%"></i></div></div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : ""}</div>`;
-        }).join("");
+      const proximas = state.turmas.map(t => ({ t, L: lot(t) }))
+        .sort((a, b) => (b.L.ocupados / b.L.vagas) - (a.L.ocupados / a.L.vagas) || (a.L.data + a.t.horario).localeCompare(b.L.data + b.t.horario))
+        .slice(0, 6);
+      $("dash-cheias").innerHTML = proximas.map(({ t, L }) => {
+        const pct = Math.round((L.ocupados / L.vagas) * 100);
+        return `<div class="row"><div><strong>${t.dia} ${S.dataBR(L.data).slice(0, 5)} · ${t.horario}</strong><div style="font-size:12px;color:var(--muted)">${t.instrutor} · ${L.ocupados}/${L.vagas} ocupadas</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:6px;width:160px"><i style="width:${pct}%"></i></div></div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : L.livres <= 2 ? '<span class="badge b-pendente">' + L.livres + ' vaga(s)</span>' : ""}</div>`;
       }).join("") || "<p>Sem turmas.</p>";
+    }
+    function lot(t) {
+      const data = S.proximaData(t.dia);
+      return Object.assign(S.lotacao(t, C.agendadosTurma(t, data, state.ags)), { data });
     }
 
     function renderCal() {
@@ -330,9 +307,9 @@
         const ts = state.turmas.filter(t => t.dia === dia);
         if (!ts.length) return "";
         return `<h4 style="margin:16px 0 8px;color:var(--brown)">${dia}</h4>` + ts.map(t => {
-          const L = S.lotacao(t);
+          const L = lot(t);
           const pct = Math.round((L.ocupados / Math.max(1, L.vagas)) * 100);
-          return `<div class="row"><div style="flex:1"><strong>${t.horario} · ${t.nome}</strong><div style="font-size:12px;color:var(--muted)">${t.instrutor} · ${L.livres} vagas livres</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:8px"><i style="width:${pct}%"></i></div></div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : '<span class="badge b-confirmado">' + L.ocupados + "/" + L.vagas + "</span>"}</div>`;
+          return `<div class="row"><div style="flex:1"><strong>${t.horario} · ${t.nome}</strong><div style="font-size:12px;color:var(--muted)">${t.instrutor} · próxima ${S.dataBR(L.data).slice(0, 5)} · ${L.livres} vagas livres</div><div class="bar ${L.cheia ? "full" : ""}" style="margin-top:8px"><i style="width:${pct}%"></i></div></div>${L.cheia ? '<span class="badge b-cheio">Cheia</span>' : '<span class="badge b-confirmado">' + L.ocupados + "/" + L.vagas + "</span>"}</div>`;
         }).join("");
       }).join("");
     }
@@ -414,6 +391,10 @@
       const cli = mergeClientes().find(c => c.id === $("ag-cli").value);
       const turma = state.turmas.find(t => t.id === $("ag-turma").value);
       if (!cli || !turma || !$("ag-data").value) { $("ag-err").textContent = "Preencha aluna, turma e data."; return; }
+      if (C.diaNome($("ag-data").value) !== turma.dia) { $("ag-err").textContent = "Essa turma é de " + turma.dia + ". Escolha uma data nesse dia."; return; }
+      const L = S.lotacao(turma, C.agendadosTurma(turma, $("ag-data").value, state.ags));
+      if (L.cheia && !confirm("Essa turma já está cheia nessa data. Lançar mesmo assim (encaixe)?")) return;
+      $("ag-err").textContent = "";
       await addDoc(collection(db, "agendamentos"), B.payload({
         nome: cli.nome, tel: cli.telefone || cli.tel, clienteId: cli.id,
         servico: turma.nome || "Pilates", tipo: "aula", origem: "admin",
@@ -426,27 +407,19 @@
 
     let live = false;
     onAuthStateChanged(auth, async user => {
-      if (!user) {
-        live = false;
-        $("login-wrap").classList.remove("hide");
-        $("app").classList.remove("on");
-        return;
-      }
+      if (!user) { location.replace("cliente.html"); return; }
       let data = {};
       try {
         const us = await getDoc(doc(db, "users", user.uid));
         if (us.exists()) data = us.data();
       } catch (e) {}
-      if (!S.isEquipe(user, data)) {
-        $("login-wrap").classList.remove("hide");
-        $("app").classList.remove("on");
-        $("l-err").innerHTML = "Esta conta é de aluna. Use <a href=\"cliente.html\">Minha área</a> ou libere o painel com o código 196.";
-        $("primeiro-box").classList.remove("hidden");
-        $("p-email").value = user.email || "";
-        return;
+      if (!S.isEquipe(user, data)) { location.replace("cliente.html"); return; }
+      if (S.isAdminEmail(user.email) && S.normalizeRole(data.role) !== "admin") {
+        try {
+          await setDoc(doc(db, "users", user.uid), { uid: user.uid, email: user.email, nome: data.nome || "Michele", role: "admin", atualizadoEm: serverTimestamp() }, { merge: true });
+        } catch (e) { console.warn("users", e); }
       }
-      try { await gravarAdmin(user, { nome: data.nome, telefone: data.telefone || data.tel, role: data.role }); } catch (e) {}
-      await seed();
+      try { await seed(); } catch (e) { console.warn("seed", e); }
       $("sb-nome").textContent = data.nome || user.email;
       $("login-wrap").classList.add("hide");
       $("app").classList.add("on");
@@ -454,12 +427,17 @@
       live = true;
       onSnapshot(collection(db, "turmas"), snap => {
         state.turmas = S.gradeVisivel(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-        renderDash(); renderTurmas();
+        renderDash(); renderTurmas(); agendarSync();
       });
       onSnapshot(collection(db, "agendamentos"), snap => {
-        state.ags = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderDash(); renderCal(); renderLeads(); renderRetornos(); renderClientes();
+        state.ags = snap.docs.map(d => C.normalizarAg({ id: d.id, ...d.data() }));
+        renderDash(); renderCal(); renderLeads(); renderRetornos(); renderClientes(); agendarSync();
       });
+      onSnapshot(query(collection(db, "ocupacao"), where("data", ">=", C.hoje())), snap => {
+        Object.keys(ocupSalva).forEach(k => delete ocupSalva[k]);
+        snap.docs.forEach(d => { ocupSalva[d.id] = d.data(); });
+        agendarSync();
+      }, e => console.warn("ocupacao", e));
       onSnapshot(collection(db, "clientes"), snap => {
         state.clientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderClientes(); renderRetornos(); renderDash();

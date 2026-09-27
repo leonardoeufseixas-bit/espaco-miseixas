@@ -23,7 +23,7 @@
     <div class="auth-card">
       <img class="logo" src="imagem/logo-ms.png" alt="">
       <h1>Minha área</h1>
-      <p class="sub">Acompanhe aulas, horários e progresso</p>
+      <p class="sub">Alunas e equipe · um só acesso</p>
       <div id="box-login">
         <div class="campo"><label>E-mail</label><input id="l-email" type="email" placeholder="seu@email.com"></div>
         <div class="campo"><label>Senha</label><input id="l-senha" type="password"></div>
@@ -106,12 +106,19 @@
   <script type="module">
     import { initializeApp } from "firebase/app";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, query, where, onSnapshot, serverTimestamp } from "firebase/firestore";
+    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, query, where, onSnapshot, serverTimestamp, increment } from "firebase/firestore";
 
     const ST = window.STUDIO, C = window.Clinic, B = window.StudioBooking;
     const auth = getAuth(initializeApp(ST.firebaseConfig));
     const db = getFirestore();
-    const state = { nome: "", tel: "", clienteId: "", turmas: [], sel: null, aulas: [] };
+    const state = { nome: "", tel: "", clienteId: "", turmas: [], sel: null, aulas: [], ocup: {} };
+    const vagas = (t, data) => ST.lotacao(t, state.ocup[ST.ocupacaoId(t.id, data)]);
+    async function mexerVaga(turmaId, data, delta) {
+      if (!turmaId || !data) return;
+      try {
+        await setDoc(doc(db, "ocupacao", ST.ocupacaoId(turmaId, data)), { turmaId, data, ocupados: increment(delta) }, { merge: true });
+      } catch (e) { console.warn("ocupacao", e); }
+    }
     const $ = id => document.getElementById(id);
 
     function ir(tela) {
@@ -148,21 +155,31 @@
     async function loadTurmas() {
       try {
         const snap = await getDocs(collection(db, "turmas"));
-        state.turmas = ST.gradeVisivel(snap.docs.map(d => ({ id: d.id, ...d.data() }))).filter(t => !ST.lotacao(t).cheia);
+        state.turmas = ST.gradeVisivel(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch {
-        state.turmas = ST.gradeVisivel([]).filter(t => !ST.lotacao(t).cheia);
+        state.turmas = ST.gradeVisivel([]);
       }
+      onSnapshot(query(collection(db, "ocupacao"), where("data", ">=", C.hoje())), qs => {
+        state.ocup = {};
+        qs.docs.forEach(d => { state.ocup[d.id] = Number(d.data().ocupados || 0); });
+        if ($("t-turmas").classList.contains("on")) renderTurmas();
+      }, e => console.warn("ocupacao", e));
+    }
+    function datasComVaga(t) {
+      return B.proximasDatas(t.dia, 6).filter(d => !vagas(t, d).cheia);
     }
     function renderTurmas() {
       const el = $("lista-turmas");
-      if (!state.turmas.length) { el.innerHTML = "<p>Nenhuma turma com vaga agora.</p>"; return; }
-      el.innerHTML = state.turmas.map(t => {
-        const L = ST.lotacao(t);
-        return `<div class="row"><div><strong>${t.dia} · ${t.horario}</strong><div style="font-size:12px;color:var(--muted)">${t.nome} · ${t.instrutor} · ${L.livres} vagas</div></div><button class="btn btn-sm btn-brown" data-id="${t.id}">Escolher</button></div>`;
+      const lista = state.turmas.filter(t => datasComVaga(t).length);
+      if (!lista.length) { el.innerHTML = "<p>Nenhuma turma com vaga agora.</p>"; return; }
+      el.innerHTML = lista.map(t => {
+        const prox = datasComVaga(t)[0];
+        const L = vagas(t, prox);
+        return `<div class="row"><div><strong>${t.dia} · ${t.horario}</strong><div style="font-size:12px;color:var(--muted)">${t.nome} · ${t.instrutor} · próxima ${ST.dataBR(prox).slice(0, 5)} com ${L.livres} ${L.livres === 1 ? "vaga" : "vagas"}</div></div><button class="btn btn-sm btn-brown" data-id="${t.id}">Escolher</button></div>`;
       }).join("");
       el.querySelectorAll("[data-id]").forEach(btn => btn.onclick = () => {
         state.sel = state.turmas.find(t => t.id === btn.dataset.id);
-        $("sel-data").innerHTML = B.proximasDatas(state.sel.dia, 6).map(d => `<option value="${d}">${state.sel.dia} · ${ST.dataBR(d)}</option>`).join("");
+        $("sel-data").innerHTML = datasComVaga(state.sel).map(d => `<option value="${d}">${state.sel.dia} · ${ST.dataBR(d)} · ${vagas(state.sel, d).livres} vagas</option>`).join("");
         $("resumo-ag").innerHTML = `<strong>${state.sel.nome}</strong><br>${state.sel.horario} · ${state.sel.instrutor}`;
         $("bloco-confirmar").classList.remove("hidden");
       });
@@ -170,15 +187,25 @@
     $("btnConfirmar").onclick = async () => {
       if (!state.sel) return;
       const data = $("sel-data").value || ST.proximaData(state.sel.dia);
-      await addDoc(collection(db, "agendamentos"), B.payload({
-        nome: state.nome, tel: state.tel, clienteId: state.clienteId,
-        servico: "Aula de Pilates", tipo: "aula", origem: "area-cliente",
-        data, hora: state.sel.horario, instrutor: state.sel.instrutor,
-        turmaId: state.sel.id, turmaNome: state.sel.nome, status: "pendente"
-      }));
-      C.toast("Pedido enviado. A Michele confirma no WhatsApp.");
-      $("bloco-confirmar").classList.add("hidden");
-      ir("meus");
+      if (vagas(state.sel, data).cheia) { C.toast("Essa data acabou de lotar. Escolha outra."); renderTurmas(); return; }
+      if (state.aulas.some(a => C.ativo(a) && a.data === data && C.mesmaTurma(a, state.sel))) { C.toast("Você já está nessa aula."); return; }
+      $("btnConfirmar").disabled = true;
+      try {
+        await addDoc(collection(db, "agendamentos"), B.payload({
+          nome: state.nome, tel: state.tel, clienteId: state.clienteId,
+          servico: "Aula de Pilates", tipo: "aula", origem: "area-cliente",
+          data, hora: state.sel.horario, instrutor: state.sel.instrutor,
+          turmaId: state.sel.id, turmaNome: state.sel.nome, status: "pendente"
+        }));
+        await mexerVaga(state.sel.id, data, 1);
+        C.toast("Pedido enviado. A Michele confirma no WhatsApp.");
+        $("bloco-confirmar").classList.add("hidden");
+        ir("meus");
+      } catch (e) {
+        C.toast("Não foi possível agendar. Tente de novo.");
+      } finally {
+        $("btnConfirmar").disabled = false;
+      }
     };
 
     function renderAulas() {
@@ -206,7 +233,9 @@
         </div>`).join("") : "<p style='color:var(--muted)'>Nenhum agendamento ainda.</p>";
       el.querySelectorAll("[data-cancel]").forEach(b => b.onclick = async () => {
         if (!confirm("Cancelar esta aula?")) return;
+        const a = state.aulas.find(x => x.id === b.dataset.cancel);
         await updateDoc(doc(db, "agendamentos", b.dataset.cancel), { status: "cancelado" });
+        if (a) await mexerVaga(a.turmaId, a.data, -1);
       });
     }
 
@@ -216,8 +245,11 @@
         $("app").classList.remove("on");
         return;
       }
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const data = snap.exists() ? snap.data() : {};
+      let data = {};
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) data = snap.data();
+      } catch (e) { console.warn("users", e); }
       if (ST.isEquipe(user, data)) { location.replace("admin.html"); return; }
       state.nome = data.nome || data.name || user.email;
       state.tel = data.telefone || data.phone || "";
@@ -226,7 +258,7 @@
       $("app").classList.add("on");
       await loadTurmas();
       onSnapshot(query(collection(db, "agendamentos"), where("clienteId", "==", user.uid)), qs => {
-        state.aulas = qs.docs.map(x => ({ id: x.id, ...x.data() }));
+        state.aulas = qs.docs.map(x => C.normalizarAg({ id: x.id, ...x.data() }));
         renderAulas();
       });
       ir("dash");
